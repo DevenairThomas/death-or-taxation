@@ -1,0 +1,146 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://Scenes/Intro Screen/Intro Screen.gd" type="Script" id=1]
+[ext_resource path="res://assets/intro screen/intro background.jpg" type="Texture" id=2]
+[ext_resource path="res://assets/music/01 Fire Emblem_ Three Houses Main Theme.ogg" type="AudioStream" id=3]
+[ext_resource path="res://assets/font/Action Selector Font.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Scenes/Particles/Fog.tscn" type="PackedScene" id=6]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Fade "
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 0, 0, 0, 1 ) ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 1.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Options:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Options:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 1.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Intro Song:volume_db")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, -80.0 ]
+}
+
+[node name="Intro Screen" type="Control"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Black Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Intro Background" type="TextureRect" parent="."]
+margin_right = 240.0
+margin_bottom = 160.0
+texture = ExtResource( 2 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Intro Song" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 3 )
+
+[node name="Options" type="Control" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="New Game" type="Label" parent="Options"]
+margin_left = 150.629
+margin_top = 88.9829
+margin_right = 437.629
+margin_bottom = 138.983
+rect_scale = Vector2( 0.2, 0.2 )
+custom_fonts/font = ExtResource( 4 )
+text = "New Game"
+align = 1
+valign = 1
+
+[node name="Load Game" type="Label" parent="Options"]
+margin_left = 150.071
+margin_top = 104.604
+margin_right = 451.071
+margin_bottom = 207.604
+rect_scale = Vector2( 0.2, 0.2 )
+custom_fonts/font = ExtResource( 4 )
+text = "Load Game
+"
+align = 1
+valign = 1
+
+[node name="Options" type="Label" parent="Options"]
+margin_left = 159.416
+margin_top = 125.385
+margin_right = 364.416
+margin_bottom = 228.385
+rect_scale = Vector2( 0.2, 0.2 )
+custom_fonts/font = ExtResource( 4 )
+text = "Options
+"
+align = 1
+valign = 1
+
+[node name="Hand Selector" parent="Options" instance=ExtResource( 5 )]
+margin_left = 130.824
+margin_top = 88.1461
+margin_right = 146.824
+margin_bottom = 101.146
+
+[node name="Anim" type="AnimationPlayer" parent="."]
+"anims/Fade " = SubResource( 1 )
+"anims/Options Fade In" = SubResource( 2 )
+"anims/music fade out" = SubResource( 3 )
+
+[node name="Fog" parent="." instance=ExtResource( 6 )]
+position = Vector2( 119.829, 79.9534 )
+scale = Vector2( 3.75592, 2.49914 )

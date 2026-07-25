@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/UI/Action Selector/bottom.png" type="Texture" id=1]
+
+[node name="Bottom" type="TextureRect"]
+margin_right = 440.0
+margin_bottom = 39.0
+rect_scale = Vector2( 0.1, 0.1 )
+texture = ExtResource( 1 )

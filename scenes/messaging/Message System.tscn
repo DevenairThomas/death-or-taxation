@@ -1,0 +1,137 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://Scenes/Messaging/Message System.gd" type="Script" id=1]
+[ext_resource path="res://assets/Dialogue/dialogue Box 3H.png" type="Texture" id=2]
+[ext_resource path="res://assets/Dialogue/arrow 2.png" type="Texture" id=3]
+[ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://assets/font/Messaging Font.tres" type="DynamicFont" id=5]
+[ext_resource path="res://assets/units/eirika/eirika mugshot.png" type="Texture" id=7]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Up and Down"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Arrow Texture:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 411.755, 74.0046 ), Vector2( 411.755, 80.2358 ) ]
+}
+
+[sub_resource type="DynamicFontData" id=2]
+font_path = "res://assets/font/Main Font.ttf"
+
+[sub_resource type="DynamicFont" id=3]
+size = 50
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+use_mipmaps = true
+use_filter = true
+extra_spacing_char = 1
+font_data = SubResource( 2 )
+
+[sub_resource type="Animation" id=4]
+length = 2.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:percent_visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.062, 1.0 ]
+}
+
+[sub_resource type="DynamicFont" id=5]
+size = 50
+outline_color = Color( 0, 0, 0, 1 )
+use_mipmaps = true
+use_filter = true
+extra_spacing_top = 1
+extra_spacing_bottom = 1
+extra_spacing_char = 2
+font_data = ExtResource( 4 )
+
+[node name="Message System" type="CanvasLayer"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_horizontal_guides_": [ 103.002, 151.243 ],
+"_edit_vertical_guides_": [ 33.9794, 210.249 ]
+}
+
+[node name="Dialogue Box Texture" type="Sprite" parent="."]
+visible = false
+position = Vector2( 121.773, 123.833 )
+scale = Vector2( 0.153739, 0.243225 )
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Arrow Texture" type="Sprite" parent="Dialogue Box Texture"]
+position = Vector2( 411.755, 74.0046 )
+scale = Vector2( 1.12519, 0.686091 )
+texture = ExtResource( 3 )
+
+[node name="Anim" type="AnimationPlayer" parent="Dialogue Box Texture"]
+playback_speed = 1.25
+"anims/Up and Down" = SubResource( 1 )
+
+[node name="Dialogue Text" type="RichTextLabel" parent="Dialogue Box Texture"]
+margin_left = -442.0
+margin_top = -34.0
+margin_right = 488.0
+margin_bottom = 99.0
+custom_fonts/mono_font = ExtResource( 5 )
+custom_fonts/bold_italics_font = ExtResource( 5 )
+custom_fonts/italics_font = ExtResource( 5 )
+custom_fonts/bold_font = SubResource( 3 )
+custom_fonts/normal_font = ExtResource( 5 )
+custom_colors/default_color = Color( 0.0588235, 0.133333, 0.27451, 1 )
+bbcode_enabled = true
+visible_characters = 0
+percent_visible = 0.0
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Dialogue Scroll" type="AnimationPlayer" parent="Dialogue Box Texture/Dialogue Text"]
+playback_speed = 1.75
+anims/Scroll = SubResource( 4 )
+
+[node name="Character Name" type="Label" parent="Dialogue Box Texture"]
+margin_left = -511.0
+margin_top = -83.0
+margin_right = -43.0
+margin_bottom = -28.0
+rect_scale = Vector2( 0.6, 0.6 )
+custom_fonts/font = SubResource( 5 )
+text = "Eirika"
+align = 1
+valign = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Portrait" type="TextureRect" parent="Dialogue Box Texture"]
+visible = false
+margin_left = -494.849
+margin_top = -244.716
+margin_right = -244.849
+margin_bottom = -88.7156
+texture = ExtResource( 7 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="animation_finished" from="Dialogue Box Texture/Dialogue Text/Dialogue Scroll" to="." method="_on_Dialogue_Scroll_animation_finished"]

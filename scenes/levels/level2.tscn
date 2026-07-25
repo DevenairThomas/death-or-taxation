@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://assets/levels/level2/level2.tmx" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Levels/level2.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/Weather Effects/Rain.tscn" type="PackedScene" id=3]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec2 tiled_factor = vec2(5.0,5.0);
+uniform float aspect_ratio = 0.5;
+
+void fragment(){
+	vec2 tiled_uvs = UV * tiled_factor;
+	tiled_uvs.y *= aspect_ratio;
+	
+	vec2 waves_uv_offset;
+	waves_uv_offset.x = sin(TIME + tiled_uvs.x + tiled_uvs.y) * 0.0025;
+	//waves_uv_offset.y = sin(TIME + tiled_uvs.x + tiled_uvs.y) * 0.0025;
+	
+	COLOR = texture(TEXTURE, waves_uv_offset + UV);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/tiled_factor = Vector2( 3, 3 )
+shader_param/aspect_ratio = 0.5
+
+[sub_resource type="Animation" id=3]
+resource_name = "Fade"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "Fade 0.5"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0.5 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[node name="Level" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="YSort" type="YSort" parent="." index="0"]
+z_index = 1
+
+[node name="Background" parent="." index="1"]
+material = SubResource( 2 )
+
+[node name="Rain" parent="." index="5" instance=ExtResource( 3 )]
+
+[node name="Anim" type="AnimationPlayer" parent="." index="7"]
+anims/Fade = SubResource( 3 )
+"anims/Fade 0.5" = SubResource( 4 )
