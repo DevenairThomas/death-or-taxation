@@ -1,0 +1,13 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+.code-workspace
+.import/
+export.cfg
+export_presets.cfg
+
+# Other crap
+claude.md
+
+# Mono-specific ignores
+.mono/
