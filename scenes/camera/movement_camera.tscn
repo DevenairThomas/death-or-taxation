@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Scenes/Camera/MovementCamera.gd" type="Script" id=1]
+[ext_resource path="res://scenes/camera/movement_camera.gd" type="Script" id=1]
 
 [node name="MovementCamera" type="Camera2D"]
 limit_left = 0

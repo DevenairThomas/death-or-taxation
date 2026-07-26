@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Square Selectors/Animated Selectors.png"
+source_file="res://assets/ui/Square Selectors/Animated Selectors.png"
 dest_files=[ "res://.import/Animated Selectors.png-81ac689275a32d4b8315046c48bf1d40.stex" ]
 
 [params]

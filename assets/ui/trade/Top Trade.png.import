@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/trade/Top Trade.png"
+source_file="res://assets/ui/trade/Top Trade.png"
 dest_files=[ "res://.import/Top Trade.png-9ca970f80ac4c3d950dccd031e7f93e2.stex" ]
 
 [params]

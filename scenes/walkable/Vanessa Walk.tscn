@@ -1,8 +1,8 @@
 [gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://assets/sound/unitMovement/PEGASUS_FLAP_0.wav" type="AudioStream" id=1]
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Default Anim.tres" type="Animation" id=2]
-[ext_resource path="res://Scenes/Walkable/Vanessa Walk.gd" type="Script" id=3]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Default Anim.tres" type="Animation" id=2]
+[ext_resource path="res://scenes/walkable/Vanessa Walk.gd" type="Script" id=3]
 
 [sub_resource type="StreamTexture" id=1]
 load_path = "res://.import/ally pegasus knight.png-c0dbf085cae687c2b3828f58267ccdac.stex"

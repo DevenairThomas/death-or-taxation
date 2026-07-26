@@ -94,7 +94,7 @@ func start_battle():
 
 func preperation_mode():
 	# Turn on prep
-	BattlefieldInfo.preparation_screen.start(chapter_title, BattlefieldInfo.victory_text, "res://Scenes/Intro Screen/Intro Screen.tscn", prep_music_choice)
+	BattlefieldInfo.preparation_screen.start(chapter_title, BattlefieldInfo.victory_text, "res://scenes/intro_screen/Intro Screen.tscn", prep_music_choice)
 	
 	# Show Cursor
 	BattlefieldInfo.cursor.visible = true

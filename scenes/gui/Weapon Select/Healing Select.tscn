@@ -1,13 +1,13 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://Scenes/GUI/Weapon Select/Healing Select.gd" type="Script" id=1]
-[ext_resource path="res://Scenes/GUI/Action Selector/Actions/Top.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scenes/GUI/Action Selector/Actions/Bottom.tscn" type="PackedScene" id=3]
-[ext_resource path="res://icon.png" type="Texture" id=4]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/gui/Weapon Select/Healing Select.gd" type="Script" id=1]
+[ext_resource path="res://scenes/gui/Action Selector/Actions/Top.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/gui/Action Selector/Actions/Bottom.tscn" type="PackedScene" id=3]
+[ext_resource path="res://icon.svg" type="Texture" id=4]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=6]
-[ext_resource path="res://FE Icon.jpg" type="Texture" id=7]
-[ext_resource path="res://assets/UI/Item Preview/itemBox.png" type="Texture" id=8]
+[ext_resource path="res://icon.svg" type="Texture" id=7]
+[ext_resource path="res://assets/ui/Item Preview/itemBox.png" type="Texture" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 size = 26

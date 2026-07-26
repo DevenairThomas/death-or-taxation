@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Damage Preview/Cursor/staticCursor.png"
+source_file="res://assets/ui/Damage Preview/Cursor/staticCursor.png"
 dest_files=[ "res://.import/staticCursor.png-347a47e3122c058780e215316ad19a7f.stex" ]
 
 [params]

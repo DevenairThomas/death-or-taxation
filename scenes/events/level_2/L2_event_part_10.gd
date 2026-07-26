@@ -1,4 +1,4 @@
-extends "res://Scenes/Events/Event Base.gd"
+extends "res://scenes/events/event_base.gd"
 
 class_name L2_Event_Part1
 # Event Description:
@@ -33,7 +33,7 @@ func _init():
 	event_name = "Level 2 Event Eirika and allies talk, camera moves"
 	event_part = "Part 1"
 	
-	path = "res://Scenes/Events/Level 2/L2 Event Part 10.gd"
+	path = "res://scenes/events/level_2/L2_event_part_10.gd"
 
 func start():
 	# Play intro song

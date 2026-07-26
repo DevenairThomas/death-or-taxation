@@ -1,6 +1,6 @@
 extends Control
 
-var intro_screen = "res://Scenes/Intro Screen/Intro Screen.tscn"
+var intro_screen = "res://scenes/intro_screen/Intro Screen.tscn"
 
 var is_active = false
 

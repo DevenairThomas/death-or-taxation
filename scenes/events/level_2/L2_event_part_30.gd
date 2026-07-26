@@ -1,4 +1,4 @@
-extends "res://Scenes/Events/Event Base.gd"
+extends "res://scenes/events/event_base.gd"
 
 class_name L2_Event_Part3
 # Event Description:
@@ -25,7 +25,7 @@ var move_actor_2
 func _init():
 	event_name = "Level 2 Before Battle Event"
 	event_part = "Part 3"
-	path = "res://Scenes/Events/Level 2/L2 Event Part 30.gd"
+	path = "res://scenes/events/level_2/L2_event_part_30.gd"
 
 func start():
 	# Find Move Soldier

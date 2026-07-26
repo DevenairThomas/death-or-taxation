@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Panels/fullHealthBar.png"
+source_file="res://assets/ui/Panels/fullHealthBar.png"
 dest_files=[ "res://.import/fullHealthBar.png-0bb3dadf284780f9757629b0ae35ae61.stex" ]
 
 [params]

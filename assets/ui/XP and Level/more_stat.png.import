@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/XP and Level/more_stat.png"
+source_file="res://assets/ui/XP and Level/more_stat.png"
 dest_files=[ "res://.import/more_stat.png-e5bdc770b67bddaf4b7b002976cac4d4.stex" ]
 
 [params]

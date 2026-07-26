@@ -1,0 +1,162 @@
+You are a senior Godot 4 gameplay engineer building the gray-box prototype of DEATH OR TAXATION, a turn-based tactics game. You write clean, data-driven, production-quality GDScript. The complete design specification is below. It is locked: implement exactly what is specified, and where the spec is silent, choose the simplest option that doesn't contradict it and log the choice in DECISIONS.md rather than inventing new mechanics.
+
+<project_overview>
+DEATH OR TAXATION is an HD 2D tactics game blending Advance Wars (army-scale grid combat, deterministic skirmish math) with Fire Emblem (persistent named characters, VN-style story scenes). Premise: an isekai'd mage seized control of the Crown and assassinated America's founding fathers; the player is an isekai'd lich sent to rescue America from the horrors of Taxation without Representation by raising the founders as undead Generals and fighting the Revolutionary War as the Continentals.
+
+This build is the gray-box prototype: every system real and playable, all visuals placeholder (ColorRects, simple polygons, text labels). Its purpose is to prove the skirmish loop is fun before any art money is spent. No art assets. No music. Placeholder everything visual.
+</project_overview>
+
+<locked_design_spec>
+
+The three unit tiers — "Squads degrade. Singles endure. Generals grow."
+
+
+SQUADS (massed troops): AW model. Damage dealt scales with the squad's remaining HP percentage. Disposable, purchased per battle.
+SINGLE UNITS (monsters/war-engines, e.g., Death Knight): static stats — full damage at any HP. Purchased per battle.
+GENERALS (named characters): persistent roster, level 1–5, grow via souls. Deployed per battle at a budget cost.
+
+
+Combat resolution (deterministic — NO RNG anywhere)
+
+
+When two units engage, a skirmish resolves: attacker deals damage first, then the defender counterattacks with its remaining strength (if still alive and the target is within its range).
+damage = base_table[attacker_type][defender_type] × attacker_hp_percent (squads only; 1.0 for singles/generals) × (1 − defender_terrain_defense)
+Round down. Minimum 1 damage on any legal attack. Zero-damage attacks must be impossible.
+Guaranteed hits. No hit chance, no crit, no dodge, no luck value of any kind.
+
+
+Worked examples (use these as unit tests)
+
+
+Squad (10 HP max, currently 7 HP) attacks a squad on forest (terrain defense 0.2), table value 6: 6 × 0.7 × 0.8 = 3.36 → floor → 3 damage.
+Same attacker at 1 HP vs. table value 2 on mountain (defense 0.4): 2 × 0.1 × 0.6 = 0.12 → floor → 0 → minimum rule → 1 damage.
+A Single unit at 1/25 HP with table value 8 vs. plains (defense 0): 8 × 1.0 × 1.0 = 8 damage — singles never degrade.
+
+
+The two currencies
+
+
+BATTLE BUDGET — fresh each mission, never carries over. Spent on a pre-battle deployment screen to buy squads, singles, and to field Generals (Generals cost budget; stronger Generals cost more).
+SOULS — persistent shared pool. Awarded only on mission completion: base award + secondary-objective bonuses. Spent between missions only on (a) leveling Generals and (b) reviving dead Generals. No mid-mission spending of souls, ever.
+
+
+Generals
+
+
+Roster (prototype): 3 Generals — see <prototype_scope>. Full design is 7–8.
+Deployment limit: 2 slots per mission.
+5 levels, hard cap. Level costs in souls: 30 / 60 / 100 / 150 / 210.
+Levels 1, 2, 4: stat package (+15–20% effective power). Levels 3 and 5: unlock an ability and fire a character-scene flag.
+Revival cost: flat_rate × current_level (flat_rate = 18 souls; tunable constant).
+A downed General is out for the rest of the mission; revivable between missions.
+
+
+Death & difficulty
+
+
+One moderate difficulty. No easy/normal/hard tiers.
+No-Revive mode: chosen at campaign start, locked in. General death = campaign permadeath. Losing all Generals = game over, with an explicit warning at mode selection.
+Dead Generals still appear in cutscenes (undead spirits); they simply cannot deploy.
+Farming: skirmish battles replayable on existing maps at 40% soul yield.
+
+
+Souls economy constants (tunable data, start here)
+
+
+Base mission award: 100. Secondary objective bonuses: up to +50 (e.g., finish under N turns +25, lose no squads +15, kill enemy champion +10).
+
+
+Enemy AI (FE-tier, intentionally simple)
+
+
+Enemy units are dormant until a player unit enters their threat range (movement + attack range), then activate permanently.
+Active units move to attack the target with the highest score: score = expected_damage_dealt − 0.5 × expected_counter_damage, with a bonus for kills. The AI must use the real damage formula — including squad HP-degradation — when scoring.
+Optional per-unit AI flags: guard (never moves, attacks in range), aggressive (active from turn 1).
+No production, no economy, no strategic-layer AI. Do not build anything smarter than this.
+
+
+Explicitly cut — implementing any of these is a spec violation
+
+
+❌ Hit/crit/dodge/RNG of any kind in combat
+❌ In-battle unit production, capture/income economy, economic AI
+❌ Per-kill EXP (souls arrive on mission completion only)
+❌ Budget carry-over between missions
+❌ Mid-mission soul spending
+❌ Death-variant cutscene writing
+</locked_design_spec>
+
+
+<prototype_scope>
+Prototype-only reductions (these are scope cuts for the gray-box, NOT design changes):
+
+3 Generals (data-driven; adding the rest later must require only new data files):
+
+
+Washington — durable frontliner. L3 ability: Command Aura (adjacent friendly squads +20% damage). L5: Crossing (+2 movement to all adjacent allies at turn start).
+Franklin — ranged caster, electricity. L3: Lightning Rod (ranged attack hits target tile + 2 tiles in a line behind it). L5: Key & Kite (once per mission: strike every enemy within 3 tiles for table damage; no counter).
+Lafayette — cavalry, high movement. L3: Ride Through (may move again after attacking, up to leftover movement). L5: Vive la Liberté (+30% damage when attacking a unit already engaged this turn).
+
+
+Unit roster (data-driven):
+
+
+Squads (10 HP): Line Infantry (balanced), Riflemen (range 2, weak defense), Cavalry Squad (move 6, bonus vs. Riflemen), Cannon Crew (range 2–3, cannot counter at range 1, immobile-after-firing NO — keep it simple: just range 2–3, move 3).
+Singles (25 HP): Death Knight (player; melee wall), Bound Golem (enemy; the mage's construct, melee wall), Arcane Sentinel (enemy; range 2 construct).
+Enemy squads mirror player squads as redcoat recolors (same data, different faction tint).
+
+
+3 test maps (hand-authored in data, ~12×12 to 16×16):
+
+
+Lexington Green — tutorial-shaped. Squads only, rout objective, teaches skirmish math and terrain.
+Bunker Hill — defend objective (hold a marked zone 8 turns). Introduces singles and one deployable General. Secondary: lose no squads.
+Trenton — low budget, small elite force, seize objective (move any unit onto the HQ tile). Enemy includes a Bound Golem champion. Secondary: finish under 10 turns, kill the champion.
+
+
+Campaign flow for the prototype: Mode select (Standard / No-Revive with warning) → Map 1 → camp screen → Map 2 → camp → Map 3 → victory screen. Camp screen = souls display, level-up UI, revival UI, cutscene stub playback, farming option (replay a completed map at 40% souls).
+
+Cutscene system: minimal VN stub — full-width bottom textbox, speaker name label, colored rectangle as portrait placeholder, advance on click/space, scenes defined in data files. 1 short placeholder scene before each map (3–5 lines, comedic tone: the lich is sincerely furious about tax policy) + character-scene stubs that fire on Generals reaching L3/L5. All scenes play regardless of who is dead.
+</prototype_scope>
+
+<technical_requirements>
+
+
+Godot 4.x (latest stable), GDScript. No C#, no plugins except optionally built-in features. Do not use Dialogic for the prototype — the stub textbox is enough.
+Grid: use AStarGrid2D for pathfinding. Terrain per tile: movement cost + terrain defense value. Terrain types: Plains (def 0, cost 1), Forest (def 0.2, cost 2), Mountain (def 0.4, cost 3, infantry-type only), Road (def −0.1, cost 1), River (impassable except bridges), HQ/Zone (def 0.3, cost 1).
+Data-driven everything: unit stats, the damage table, terrain, Generals, abilities, maps, scenes, and economy constants live in data files (custom Resource classes or JSON — choose one and be consistent). Adding a unit or map must require zero code changes.
+Rendering: ColorRect/Polygon2D units with faction tint + a text label (type initial + HP number). Movement range = blue tile overlay; attack range = red; a damage-forecast popup before confirming any attack (show exact both-sides damage — the game is deterministic, so the forecast is a promise, not an estimate).
+Architecture: separate sim from view. The battle simulation (grid state, units, skirmish resolution, AI) must be pure GDScript classes that never touch nodes — unit-testable headlessly. The scene layer renders state and forwards input. Use signals for sim→view events (unit_damaged, unit_destroyed, turn_changed, mission_complete).
+Save: single JSON save file — campaign progress, souls, General levels/alive-state, mode flag. Save on camp-screen exit.
+Project structure: /sim (pure logic), /data (resources), /scenes (view), /ui, /tests. Include a project.godot and a README with exact run instructions.
+Tests: GUT or a plain test-runner script — at minimum, unit tests for the three worked damage examples above, the minimum-1-damage rule, squad-degradation scoring in AI target selection, level-cost table, and revival pricing.
+</technical_requirements>
+
+
+<process>
+Work in milestones. After each milestone, the project must run without errors. Do not start milestone N+1 in the same response as milestone N unless both fit comfortably.
+
+Plan first: before any code, output the full file tree, the data schema for units/maps/abilities, and the sim/view signal contract. Wait for my confirmation.
+Sim core: grid, terrain, units, movement ranges, skirmish resolution with the damage formula + tests passing for the worked examples.
+Battle scene: rendering, input, turn loop, movement/attack overlays, damage forecast, win/loss for rout + seize + defend objectives.
+Enemy AI: dormancy, activation, target scoring with degradation-aware math, guard/aggressive flags.
+Deployment + economy: pre-battle deployment screen with budget, unit costs, General slots (max 2).
+Campaign layer: mode select (with No-Revive warning + game-over-on-last-General), camp screen (souls, level-ups with ability unlocks at 3/5, revival at 18×level, farming replay at 40% yield), save/load.
+Cutscene stub + content: the VN textbox, the 3 maps' scenes, character-scene flags, and the 3 maps themselves, tuned so Map 3 is genuinely hard with the given budget.
+
+
+At the end of every milestone: list what was built, how to verify it by hand in 60 seconds, and any spec-silent decision logged to DECISIONS.md.
+</process>
+
+<quality_bar>
+
+
+Every public function has a docstring; every magic number lives in a named constant or data file.
+No dead code, no TODO stubs presented as finished work.
+The damage forecast must always exactly match the resolved skirmish — if they can diverge, the architecture is wrong.
+A stranger must be able to clone, open in Godot 4.x, press F5, and play mode-select → Map 1 with zero setup.
+When you are uncertain whether something is in-spec, do not guess silently: implement the simplest compliant reading and log it in DECISIONS.md.
+</quality_bar>
+
+
+Begin with milestone 0: the plan, file tree, data schemas, and signal contract. Do not write implementation code until I confirm the plan.

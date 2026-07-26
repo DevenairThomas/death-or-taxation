@@ -13,9 +13,9 @@ func _ready():
 	
 	# Weapons and Inventory
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.BOW)
-	UnitInventory.add_item(preload("res://Scenes/Items/Lance/Iron Lance.tscn").instance())
-	UnitInventory.add_item(preload("res://Scenes/Items/Swords/Iron Sword.tscn").instance())
-	UnitInventory.add_item(preload("res://Scenes/Items/Bows/Iron Bow.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Lance/Iron Lance.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Swords/Iron Sword.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Bows/Iron Bow.tscn").instance())
 	
 	# Set combat node
-	combat_node = preload("res://Scenes/Units/Enemy_Units/Black Archer Combat.tscn")
+	combat_node = preload("res://scenes/units/Enemy_Units/Black Archer Combat.tscn")

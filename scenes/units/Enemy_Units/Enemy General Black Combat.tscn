@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Scenes/Units/Enemy_Units/Enemy General Black Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Enemy_Units/Enemy General Black Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/sound/misc/ARMOR_0.wav" type="AudioStream" id=2]
 [ext_resource path="res://assets/units/general/general axe black.png" type="Texture" id=3]
 [ext_resource path="res://assets/units/general/general crit axe black.png" type="Texture" id=4]

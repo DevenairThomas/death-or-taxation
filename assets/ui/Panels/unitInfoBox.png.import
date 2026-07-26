@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Panels/unitInfoBox.png"
+source_file="res://assets/ui/Panels/unitInfoBox.png"
 dest_files=[ "res://.import/unitInfoBox.png-6ce74a1f208acb696021328175ca8b3a.stex" ]
 
 [params]

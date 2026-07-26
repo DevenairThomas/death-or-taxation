@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/XP and Level/Level Up Panel.png"
+source_file="res://assets/ui/XP and Level/Level Up Panel.png"
 dest_files=[ "res://.import/Level Up Panel.png-b56cc6bd0864ff51ea285d765960f4a5.stex" ]
 
 [params]

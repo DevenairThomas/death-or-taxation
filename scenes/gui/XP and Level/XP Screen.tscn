@@ -1,9 +1,9 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Scenes/GUI/XP and Level/XP Screen.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/XP and Level/xp_ui.png" type="Texture" id=2]
-[ext_resource path="res://assets/UI/XP and Level/xp_empty_bar.png" type="Texture" id=3]
-[ext_resource path="res://assets/UI/XP and Level/xp_full_bar.png" type="Texture" id=4]
+[ext_resource path="res://scenes/gui/XP and Level/XP Screen.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/XP and Level/xp_ui.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/XP and Level/xp_empty_bar.png" type="Texture" id=3]
+[ext_resource path="res://assets/ui/XP and Level/xp_full_bar.png" type="Texture" id=4]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://assets/sound/misc/xp gain.wav" type="AudioStream" id=6]
 

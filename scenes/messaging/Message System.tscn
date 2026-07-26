@@ -1,8 +1,8 @@
 [gd_scene load_steps=12 format=2]
 
-[ext_resource path="res://Scenes/Messaging/Message System.gd" type="Script" id=1]
-[ext_resource path="res://assets/Dialogue/dialogue Box 3H.png" type="Texture" id=2]
-[ext_resource path="res://assets/Dialogue/arrow 2.png" type="Texture" id=3]
+[ext_resource path="res://scenes/messaging/Message System.gd" type="Script" id=1]
+[ext_resource path="res://assets/dialogue/dialogue Box 3H.png" type="Texture" id=2]
+[ext_resource path="res://assets/dialogue/arrow 2.png" type="Texture" id=3]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://assets/font/Messaging Font.tres" type="DynamicFont" id=5]
 [ext_resource path="res://assets/units/eirika/eirika mugshot.png" type="Texture" id=7]

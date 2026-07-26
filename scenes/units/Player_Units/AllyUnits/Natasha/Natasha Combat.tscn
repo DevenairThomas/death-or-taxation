@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Natasha/Natasha Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Natasha/Natasha Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/units/cleric/Natasha Combat.png" type="Texture" id=2]
 [ext_resource path="res://assets/units/cleric/Heal Restore.png" type="Texture" id=3]
 [ext_resource path="res://assets/battle_effects/Heal Star.png" type="Texture" id=4]

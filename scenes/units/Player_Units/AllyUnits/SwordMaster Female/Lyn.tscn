@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/SwordMaster Female/Lyn.gd" type="Script" id=1]
-[ext_resource path="res://Scenes/GUI/Damage Preview/Cursor Select.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/SwordMaster Female/Lyn.gd" type="Script" id=1]
+[ext_resource path="res://scenes/gui/Damage Preview/Cursor Select.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/units/Swordmaster female/Lyn Swordman.png" type="Texture" id=3]
 
 [sub_resource type="Animation" id=1]

@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Scenes/GUI/Damage Preview/Damage Preview.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/Damage Preview/damageBox.png" type="Texture" id=2]
-[ext_resource path="res://FE Icon.jpg" type="Texture" id=3]
+[ext_resource path="res://scenes/gui/Damage Preview/Damage Preview.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/Damage Preview/damageBox.png" type="Texture" id=2]
+[ext_resource path="res://icon.svg" type="Texture" id=3]
 [ext_resource path="res://assets/font/Action Selector Font.tres" type="DynamicFont" id=4]
-[ext_resource path="res://Scenes/Combat/Double Attack Logo.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scenes/Combat/Up Arrow Combat.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scenes/Combat/Down Arrow Combat.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/combat/double_attack_logo.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/combat/up_arrow_combat.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/combat/down_arrow_combat.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=8]
 
 [node name="Damage Preview" type="CanvasLayer"]
 script = ExtResource( 1 )

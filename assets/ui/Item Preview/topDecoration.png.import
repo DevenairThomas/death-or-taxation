@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Item Preview/topDecoration.png"
+source_file="res://assets/ui/Item Preview/topDecoration.png"
 dest_files=[ "res://.import/topDecoration.png-dd30ab8b188436bedd6742c7292d3dbb.stex" ]
 
 [params]

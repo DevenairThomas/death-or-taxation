@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Action Selector/mid.png"
+source_file="res://assets/ui/Action Selector/mid.png"
 dest_files=[ "res://.import/mid.png-4c3cbad7df9283ad2f7aae331f02b3d3.stex" ]
 
 [params]

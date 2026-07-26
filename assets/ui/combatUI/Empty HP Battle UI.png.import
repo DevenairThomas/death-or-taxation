@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/combatUI/Empty HP Battle UI.png"
+source_file="res://assets/ui/combatUI/Empty HP Battle UI.png"
 dest_files=[ "res://.import/Empty HP Battle UI.png-cbd215fef1170ab229bb6708c6aa9f05.stex" ]
 
 [params]

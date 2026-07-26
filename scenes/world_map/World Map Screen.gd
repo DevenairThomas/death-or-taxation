@@ -3,9 +3,9 @@ extends Node2D
 # The world map which is shown in between chapters
 
 # Way Point markers
-var castle_waypoint_marker = preload("res://Scenes/World Map/World Map Icons/Castle Icon.tscn")
-var fort_waypoint_marker = preload("res://Scenes/World Map/World Map Icons/Fortress Icon.tscn")
-var village_waypoint_marker = preload("res://Scenes/World Map/World Map Icons/Village Icon.tscn")
+var castle_waypoint_marker = preload("res://scenes/world_map/World Map Icons/Castle Icon.tscn")
+var fort_waypoint_marker = preload("res://scenes/world_map/World Map Icons/Fortress Icon.tscn")
+var village_waypoint_marker = preload("res://scenes/world_map/World Map Icons/Village Icon.tscn")
 
 # Way Points Array
 var castle_waypoints = []

@@ -19,8 +19,8 @@ signal done_leveling_up
 var break_time = 0
 
 # Magic Panel
-var magic_panel = preload("res://assets/UI/XP and Level/Level Up Panel Mag.png")
-var str_panel = preload("res://assets/UI/XP and Level/Level Up Panel.png")
+var magic_panel = preload("res://assets/ui/XP and Level/Level Up Panel Mag.png")
+var str_panel = preload("res://assets/ui/XP and Level/Level Up Panel.png")
 
 # Prevent 0 upgrades
 var number_of_upgrades = 0

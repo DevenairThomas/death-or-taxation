@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=2]
 
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Ally Archer/Naomi Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Ally Archer/Naomi Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/units/archer/neimi archer regular.png" type="Texture" id=2]
 [ext_resource path="res://assets/units/archer/neimi crit bow.png" type="Texture" id=3]
 [ext_resource path="res://assets/battle_effects/Physical Effects.png" type="Texture" id=4]

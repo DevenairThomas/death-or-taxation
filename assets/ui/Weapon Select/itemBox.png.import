@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Weapon Select/itemBox.png"
+source_file="res://assets/ui/Weapon Select/itemBox.png"
 dest_files=[ "res://.import/itemBox.png-af421f00a4e58699cd59e9f9ecb4189b.stex" ]
 
 [params]

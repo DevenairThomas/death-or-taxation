@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Textures/Rain Noise.png"
+source_file="res://assets/textures/Rain Noise.png"
 dest_files=[ "res://.import/Rain Noise.png-04dd31f286ffbc02f0176b395695435c.stex" ]
 
 [params]

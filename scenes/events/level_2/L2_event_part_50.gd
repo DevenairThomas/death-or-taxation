@@ -1,4 +1,4 @@
-extends "res://Scenes/Events/Event Base.gd"
+extends "res://scenes/events/event_base.gd"
 
 class_name L2_Event_Part5
 # Event Description:
@@ -20,7 +20,7 @@ var dialogue = [
 func _init():
 	event_name = "Level 2 Before Battle Event"
 	event_part = "Part 3"
-	path = "res://Scenes/Events/Level 2/L2 Event Part 50.gd"
+	path = "res://scenes/events/level_2/L2_event_part_50.gd"
 
 func start():
 	# Register to the dialogue system

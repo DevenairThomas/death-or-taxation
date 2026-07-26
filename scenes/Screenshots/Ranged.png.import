@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://Screenshots/Ranged.png"
+source_file="res://scenes/Screenshots/Ranged.png"
 dest_files=[ "res://.import/Ranged.png-8db46e4f13c679fc067d519d105c6f46.stex" ]
 
 [params]

@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Panels/terrainInfoBox.png"
+source_file="res://assets/ui/Panels/terrainInfoBox.png"
 dest_files=[ "res://.import/terrainInfoBox.png-de7fe47b8a7f0856e8100950bc7a03f8.stex" ]
 
 [params]

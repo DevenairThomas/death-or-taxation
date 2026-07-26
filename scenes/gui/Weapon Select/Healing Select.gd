@@ -82,7 +82,7 @@ func build_item_list():
 							# Is the unit already at full HP?
 							if check_tile[1].occupyingUnit.UnitStats.current_health < check_tile[1].occupyingUnit.UnitStats.max_health:
 								# Create a slot
-								var item_slot = preload("res://Scenes/GUI/Weapon Select/Weapon Select Slot.tscn").instance() 
+								var item_slot = preload("res://scenes/gui/Weapon Select/Weapon Select Slot.tscn").instance() 
 								
 								# Fill data
 								item_slot.start(weapon)

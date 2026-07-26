@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/shop/shop bg 2.jpg"
+source_file="res://assets/ui/shop/shop bg 2.jpg"
 dest_files=[ "res://.import/shop bg 2.jpg-09195ef7396204683fc27667f0a3a643.stex" ]
 
 [params]

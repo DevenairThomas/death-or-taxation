@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/combatUI/River.png"
+source_file="res://assets/ui/combatUI/River.png"
 dest_files=[ "res://.import/River.png-7e0e589804324c27de39b5e6477f1c24.stex" ]
 
 [params]

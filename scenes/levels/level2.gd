@@ -6,7 +6,7 @@ export var map_width: int # cell size
 var all_allies_location = {} # Holds all ally info
 var all_enemies_location = {} # holds all enemy info
 var grid = [] # Holds all cell data
-var cell = preload("res://Scenes/GUI/Cell/Cell.tscn")
+var cell = preload("res://scenes/gui/Cell/Cell.tscn")
 
 # Map information has been loaded
 signal mapInformationLoaded
@@ -92,7 +92,7 @@ func _ready():
 			BattlefieldInfo.ally_units[ally_name].UnitMovementStats.currentTile = grid[BattlefieldInfo.ally_units[ally_name].position.x / Cell.CELL_SIZE][BattlefieldInfo.ally_units[ally_name].position.y / Cell.CELL_SIZE]
 			grid[BattlefieldInfo.ally_units[ally_name].position.x / Cell.CELL_SIZE][BattlefieldInfo.ally_units[ally_name].position.y / Cell.CELL_SIZE].occupyingUnit = BattlefieldInfo.ally_units[ally_name]
 		else:
-			var path = str("res://Scenes/Units/Player_Units/AllyUnits/", allyCellInfo.get_meta("InstanceName"),"/",allyCellInfo.get_meta("InstanceName"),".tscn")
+			var path = str("res://scenes/units/Player_Units/AllyUnits/", allyCellInfo.get_meta("InstanceName"),"/",allyCellInfo.get_meta("InstanceName"),".tscn")
 			var new_ally = load(path).instance()
 			new_ally.visible = false
 			BattlefieldInfo.y_sort_player_party.add_child(new_ally)
@@ -164,7 +164,7 @@ func _ready():
 	
 	# Create Enemy Units
 	for enemy in enemyInfoLayer.get_children():
-		var path = str("res://Scenes/Units/Enemy_Units/", enemy.get_meta("InstanceName"),".tscn")
+		var path = str("res://scenes/units/Enemy_Units/", enemy.get_meta("InstanceName"),".tscn")
 		var newEnemy = load(path).instance()
 		
 		# Set AI Type

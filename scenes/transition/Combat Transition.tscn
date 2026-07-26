@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Scenes/Transition/Combat Transition.gd" type="Script" id=1]
-[ext_resource path="res://assets/Textures/Combat Transition.shader" type="Shader" id=2]
+[ext_resource path="res://scenes/transition/Combat Transition.gd" type="Script" id=1]
+[ext_resource path="res://assets/textures/Combat Transition.shader" type="Shader" id=2]
 [ext_resource path="res://assets/transition/shards.png" type="Texture" id=3]
 [ext_resource path="res://assets/sound/transition/Battle Start 1.wav" type="AudioStream" id=4]
 

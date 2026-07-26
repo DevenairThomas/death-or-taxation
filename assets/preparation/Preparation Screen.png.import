@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Preparation/Preparation Screen.png"
+source_file="res://assets/preparation/Preparation Screen.png"
 dest_files=[ "res://.import/Preparation Screen.png-790ccba5b0623eed34d07f2151a3be95.stex" ]
 
 [params]

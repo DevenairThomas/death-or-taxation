@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Scenes/Combat/Item Broke Screen.gd" type="Script" id=1]
+[ext_resource path="res://scenes/combat/item_broke_screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/sound/misc/item broke.wav" type="AudioStream" id=2]
-[ext_resource path="res://assets/UI/Panels/unitInfoBox.png" type="Texture" id=3]
-[ext_resource path="res://FE Icon.jpg" type="Texture" id=4]
+[ext_resource path="res://assets/ui/Panels/unitInfoBox.png" type="Texture" id=3]
+[ext_resource path="res://icon.svg" type="Texture" id=4]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=5]
 
 [sub_resource type="DynamicFont" id=1]

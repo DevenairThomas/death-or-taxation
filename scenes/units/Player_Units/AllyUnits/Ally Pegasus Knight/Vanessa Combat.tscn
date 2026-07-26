@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Ally Pegasus Knight/Vanessa Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Ally Pegasus Knight/Vanessa Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/units/pegasus knight/vanessa lance regular.png" type="Texture" id=2]
 [ext_resource path="res://assets/units/pegasus knight/vanessa lance crit.png" type="Texture" id=3]
 [ext_resource path="res://assets/sound/unitMovement/PEGASUS_FLAP_0.wav" type="AudioStream" id=4]

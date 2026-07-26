@@ -137,7 +137,7 @@ func game_over_scene():
 	BattlefieldInfo.cursor.set_process_input(false)
 	
 	# Free current battlefield scene
-	SceneTransition.change_scene("res://Scenes/Game Over/Game Over Screen.tscn", 2)
+	SceneTransition.change_scene("res://scenes/game_over/Game Over Screen.tscn", 2)
 
 func victory_next_level():
 	BattlefieldInfo.level_container.next_level()

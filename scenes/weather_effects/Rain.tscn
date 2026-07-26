@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://assets/Textures/Rain Noise Texture.tres" type="Material" id=1]
+[ext_resource path="res://assets/textures/Rain Noise Texture.tres" type="Material" id=1]
 [ext_resource path="res://assets/levels/level2/level2.png" type="Texture" id=2]
 
 [node name="Rain" type="Sprite"]

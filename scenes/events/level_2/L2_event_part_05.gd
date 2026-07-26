@@ -1,4 +1,4 @@
-extends "res://Scenes/Events/Event Base.gd"
+extends "res://scenes/events/event_base.gd"
 
 class_name L2_Event_Part05
 # Event Description:
@@ -27,7 +27,7 @@ var move_actor_4
 func _init():
 	event_name = "Level 2 Seth gives order to the soldiers."
 	event_part = "Part 0.5"
-	path = "res://Scenes/Events/Level 2/L2 Event Part 05.gd"
+	path = "res://scenes/events/level_2/L2_event_part_05.gd"
 
 func start():
 	for ally in BattlefieldInfo.ally_units.values():

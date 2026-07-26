@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Scenes/Units/Enemy_Units/Bandit Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Enemy_Units/Bandit Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/units/bandit/fighter_Regular_black.png" type="Texture" id=2]
 [ext_resource path="res://assets/battle_effects/Physical Effects.png" type="Texture" id=3]
 [ext_resource path="res://assets/transition/white flash.png" type="Texture" id=4]

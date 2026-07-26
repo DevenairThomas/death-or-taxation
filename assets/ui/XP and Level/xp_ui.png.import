@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/XP and Level/xp_ui.png"
+source_file="res://assets/ui/XP and Level/xp_ui.png"
 dest_files=[ "res://.import/xp_ui.png-fed851976d724eb686563b84d6142b41.stex" ]
 
 [params]

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Scenes/Battlefield/Battlefield Container.gd" type="Script" id=1]
-[ext_resource path="res://Scenes/Levels/level2.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/battlefield/battlefield_container.gd" type="Script" id=1]
+[ext_resource path="res://scenes/levels/level2.tscn" type="PackedScene" id=2]
 
 [node name="Chapter 3" type="Node2D"]
 show_behind_parent = true

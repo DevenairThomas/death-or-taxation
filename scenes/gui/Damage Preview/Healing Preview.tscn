@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Scenes/GUI/Damage Preview/Healing Preview.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/Damage Preview/damageBox.png" type="Texture" id=2]
-[ext_resource path="res://FE Icon.jpg" type="Texture" id=3]
+[ext_resource path="res://scenes/gui/Damage Preview/Healing Preview.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/Damage Preview/damageBox.png" type="Texture" id=2]
+[ext_resource path="res://icon.svg" type="Texture" id=3]
 [ext_resource path="res://assets/font/Action Selector Font.tres" type="DynamicFont" id=4]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
 
 [node name="Healing Preview" type="CanvasLayer"]
 script = ExtResource( 1 )

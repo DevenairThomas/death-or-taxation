@@ -2,8 +2,8 @@
 
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://assets/font/Preparation Screen Item List Font.tres" type="DynamicFont" id=2]
-[ext_resource path="res://Scenes/GUI/Unit Selectors/Unit Select.gd" type="Script" id=3]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/gui/Unit Selectors/Unit Select.gd" type="Script" id=3]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=4]
 
 [sub_resource type="DynamicFont" id=1]
 size = 10

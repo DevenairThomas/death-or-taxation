@@ -1,10 +1,10 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Scenes/Units/Enemy_Units/Bandit.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Enemy_Units/Bandit.gd" type="Script" id=1]
 [ext_resource path="res://assets/units/bandit/bandit_black.png" type="Texture" id=2]
 [ext_resource path="res://assets/sound/unitMovement/Light Foot Steps 1.wav" type="AudioStream" id=3]
-[ext_resource path="res://Scenes/AI/AI.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Scenes/GUI/Damage Preview/Cursor Select.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/ai/ai.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/gui/Damage Preview/Cursor Select.tscn" type="PackedScene" id=5]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Down"

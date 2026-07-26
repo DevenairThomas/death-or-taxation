@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Item Preview/itemBoxNoDeco.png"
+source_file="res://assets/ui/Item Preview/itemBoxNoDeco.png"
 dest_files=[ "res://.import/itemBoxNoDeco.png-3d0a6826dd294835a7033265a2646ddd.stex" ]
 
 [params]

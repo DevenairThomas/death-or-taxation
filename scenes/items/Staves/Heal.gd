@@ -1,4 +1,4 @@
-extends "res://Scenes/Items/Item.gd"
+extends "res://scenes/items/Item.gd"
 
 
 

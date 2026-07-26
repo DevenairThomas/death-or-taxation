@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Panels/victoryConditionBox.png"
+source_file="res://assets/ui/Panels/victoryConditionBox.png"
 dest_files=[ "res://.import/victoryConditionBox.png-ff64a42c309990a8181c05e1206d18d8.stex" ]
 
 [params]

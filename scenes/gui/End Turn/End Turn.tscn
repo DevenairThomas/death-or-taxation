@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Scenes/GUI/End Turn/End Turn.gd" type="Script" id=1]
-[ext_resource path="res://Scenes/GUI/Action Selector/Actions/Top.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scenes/GUI/End Turn/Status End Turn.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Scenes/GUI/End Turn/Unit End Turn.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Scenes/GUI/End Turn/Suspend.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scenes/GUI/End Turn/End End Turn.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Scenes/GUI/Action Selector/Actions/Bottom.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/gui/End Turn/End Turn.gd" type="Script" id=1]
+[ext_resource path="res://scenes/gui/Action Selector/Actions/Top.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/gui/End Turn/Status End Turn.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/gui/End Turn/Unit End Turn.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/gui/End Turn/Suspend.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/gui/End Turn/End End Turn.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/gui/Action Selector/Actions/Bottom.tscn" type="PackedScene" id=8]
 
 [node name="End Turn" type="CanvasLayer"]
 script = ExtResource( 1 )

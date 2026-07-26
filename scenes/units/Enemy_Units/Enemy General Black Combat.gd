@@ -1,4 +1,4 @@
-extends "res://Scenes/Units/Unit_Scripts/Combat Unit.gd"
+extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"
 
 signal play_player_dodge_anim
 

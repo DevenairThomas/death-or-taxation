@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Scenes/Battlefield/BattlefieldInfo.gd" type="Script" id=1]
+[ext_resource path="res://scenes/battlefield/battlefield_info.gd" type="Script" id=1]
 
 [node name="GameSystem" type="Node"]
 script = ExtResource( 1 )

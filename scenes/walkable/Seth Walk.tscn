@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/units/cavalier/cavalierAlly.png" type="Texture" id=1]
 [ext_resource path="res://assets/sound/unitMovement/Horse Steps.wav" type="AudioStream" id=2]
-[ext_resource path="res://Scenes/Walkable/Seth Walk.gd" type="Script" id=3]
+[ext_resource path="res://scenes/walkable/Seth Walk.gd" type="Script" id=3]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Down"

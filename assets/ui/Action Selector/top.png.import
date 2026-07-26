@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Action Selector/top.png"
+source_file="res://assets/ui/Action Selector/top.png"
 dest_files=[ "res://.import/top.png-6aea61d12ad06715e3d86a8735a16d13.stex" ]
 
 [params]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Scenes/Combat/Up Arrow Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/combat/up_arrow_combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/battle_effects/Up Arrow.png" type="Texture" id=2]
 
 

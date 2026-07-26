@@ -1,14 +1,14 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Scenes/Walkable/Test Walk Map.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Scenes/Walkable/Eirika Walk.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scenes/Walkable/Walkable Map.gd" type="Script" id=3]
+[ext_resource path="res://scenes/walkable/Test Walk Map.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/walkable/Eirika Walk.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/walkable/Walkable Map.gd" type="Script" id=3]
 [ext_resource path="res://assets/music/06 Life at Garreg Mach Monastery.ogg" type="AudioStream" id=4]
-[ext_resource path="res://Scenes/Walkable/Seth Walk.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scenes/Walkable/Vanessa Walk.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scenes/Walkable/Naomi Walk.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Scenes/Walkable/Anna Walk.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Scenes/Walkable/Colm Walk.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/walkable/Seth Walk.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/walkable/Vanessa Walk.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/walkable/Naomi Walk.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/walkable/Anna Walk.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/walkable/Colm Walk.tscn" type="PackedScene" id=9]
 
 [node name="Walkable Map" type="Node2D"]
 script = ExtResource( 3 )

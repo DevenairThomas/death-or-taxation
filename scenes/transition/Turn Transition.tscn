@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Scenes/Transition/Turn Transition.gd" type="Script" id=1]
+[ext_resource path="res://scenes/transition/Turn Transition.gd" type="Script" id=1]
 [ext_resource path="res://assets/transition/player phase.png" type="Texture" id=2]
 [ext_resource path="res://assets/transition/enemy phase.png" type="Texture" id=3]
 [ext_resource path="res://assets/sound/transition/Next Turn.wav" type="AudioStream" id=4]

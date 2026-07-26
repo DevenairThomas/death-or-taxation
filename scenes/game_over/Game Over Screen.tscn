@@ -1,8 +1,8 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Scenes/Game Over/Game Over Screen.gd" type="Script" id=1]
+[ext_resource path="res://scenes/game_over/Game Over Screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/music/Game Over.ogg" type="AudioStream" id=2]
-[ext_resource path="res://assets/Shaders/Burn Shader Effect.tres" type="Material" id=3]
+[ext_resource path="res://assets/shaders/Burn Shader Effect.tres" type="Material" id=3]
 [ext_resource path="res://assets/game over screen/Game Over Screen.jpg" type="Texture" id=4]
 
 [sub_resource type="Shader" id=1]

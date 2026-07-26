@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://Scenes/GUI/Cell/MovementRangeRect.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/Square Selectors/Animated Selectors.png" type="Texture" id=2]
+[ext_resource path="res://scenes/gui/Cell/MovementRangeRect.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/Square Selectors/Animated Selectors.png" type="Texture" id=2]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Wave"

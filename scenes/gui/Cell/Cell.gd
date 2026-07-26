@@ -7,7 +7,7 @@ class_name Cell
 const CELL_SIZE = 16
 
 # Color cell
-var color_cell_scene = load("res://Scenes/GUI/CellColors/MovementRangeRect.tscn")
+var color_cell_scene = load("res://scenes/gui/CellColors/MovementRangeRect.tscn")
 
 # BFS Search
 var movement_processed = false

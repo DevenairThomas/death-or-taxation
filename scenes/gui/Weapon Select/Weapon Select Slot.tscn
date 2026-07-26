@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Scenes/GUI/Weapon Select/Weapon Select Slot.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/Action Selector/mid.png" type="Texture" id=2]
+[ext_resource path="res://scenes/gui/Weapon Select/Weapon Select Slot.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/Action Selector/mid.png" type="Texture" id=2]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://FE Icon.jpg" type="Texture" id=4]
+[ext_resource path="res://icon.svg" type="Texture" id=4]
 
 [sub_resource type="DynamicFont" id=1]
 size = 26

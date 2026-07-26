@@ -5,15 +5,15 @@ class_name ALL_ITEMS_REF
 # Dictionary container all the items with their position
 # Default items
 const all_items = {
-	"Iron Sword" : "res://Scenes/Items/Swords/Iron Sword.tscn",
-	"Iron Bow" : "res://Scenes/Items/Bows/Iron Bow.tscn",
-	"Iron Axe" : "res://Scenes/Items/Axes/Iron Axe.tscn",
-	"Silver Lance": "res://Scenes/Items/Lance/Silver Lance.tscn",
-	"Iron Lance": "res://Scenes/Items/Lance/Iron Lance.tscn",
-	"Fire Tome" : "res://Scenes/Items/Tomes/Fire.tscn",
-	"Heal Staff" : "res://Scenes/Items/Staves/Heal.tscn",
-	"Flux Tome" : "res://Scenes/Items/Tomes/Flux.tscn",
-	"Killing Edge" : "res://Scenes/Items/Swords/Killing Edge.tscn"
+	"Iron Sword" : "res://scenes/items/Swords/Iron Sword.tscn",
+	"Iron Bow" : "res://scenes/items/Bows/Iron Bow.tscn",
+	"Iron Axe" : "res://scenes/items/Axes/Iron Axe.tscn",
+	"Silver Lance": "res://scenes/items/Lance/Silver Lance.tscn",
+	"Iron Lance": "res://scenes/items/Lance/Iron Lance.tscn",
+	"Fire Tome" : "res://scenes/items/Tomes/Fire.tscn",
+	"Heal Staff" : "res://scenes/items/Staves/Heal.tscn",
+	"Flux Tome" : "res://scenes/items/Tomes/Flux.tscn",
+	"Killing Edge" : "res://scenes/items/Swords/Killing Edge.tscn"
 }
 
 # Add item

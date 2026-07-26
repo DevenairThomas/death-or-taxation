@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Inventory/equip discard box.png"
+source_file="res://assets/ui/Inventory/equip discard box.png"
 dest_files=[ "res://.import/equip discard box.png-4e90fd187ac0ee84b41f048358d59b6a.stex" ]
 
 [params]

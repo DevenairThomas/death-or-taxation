@@ -14,10 +14,10 @@ func _ready():
 	
 	# Weapons and Inventory
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.ELEMENTAL)
-	UnitInventory.add_item(preload("res://Scenes/Items/Tomes/Fire.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Tomes/Fire.tscn").instance())
 	
 	# Set combat node
-	combat_node = preload("res://Scenes/Units/Player_Units/AllyUnits/Ally Mage/Ally Mage Combat.tscn")
+	combat_node = preload("res://scenes/units/Player_Units/AllyUnits/Ally Mage/Ally Mage Combat.tscn")
 	
 	# Death sentence
 	death_sentence = []

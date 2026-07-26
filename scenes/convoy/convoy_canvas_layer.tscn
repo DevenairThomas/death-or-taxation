@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Scenes/Convoy/Convoy UI.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/convoy/convoy_ui.tscn" type="PackedScene" id=1]
 
 [node name="Convoy Canvas Layer" type="CanvasLayer"]
 

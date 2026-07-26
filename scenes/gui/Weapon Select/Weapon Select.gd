@@ -95,7 +95,7 @@ func build_item_list():
 				
 	for weapon in usable_weapons:
 		# Create a slot
-		var item_slot = preload("res://Scenes/GUI/Weapon Select/Weapon Select Slot.tscn").instance() 
+		var item_slot = preload("res://scenes/gui/Weapon Select/Weapon Select Slot.tscn").instance() 
 		
 		# Fill data
 		item_slot.start(weapon)

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/units/thief/Thief Blue Ally.png" type="Texture" id=1]
 [ext_resource path="res://assets/sound/unitMovement/Light Foot Steps 1.wav" type="AudioStream" id=2]
-[ext_resource path="res://Scenes/Walkable/Colm Walk.gd" type="Script" id=3]
+[ext_resource path="res://scenes/walkable/Colm Walk.gd" type="Script" id=3]
 
 [sub_resource type="Animation" id=14]
 resource_name = "Down"

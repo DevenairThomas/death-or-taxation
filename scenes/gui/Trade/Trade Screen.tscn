@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Scenes/GUI/Trade/Trade Screen.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/trade/Top Trade.png" type="Texture" id=2]
+[ext_resource path="res://scenes/gui/Trade/Trade Screen.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/trade/Top Trade.png" type="Texture" id=2]
 [ext_resource path="res://assets/font/Font_Resource.tres" type="DynamicFont" id=3]
-[ext_resource path="res://icon.png" type="Texture" id=4]
-[ext_resource path="res://assets/UI/Inventory/bottom inventory.png" type="Texture" id=5]
-[ext_resource path="res://Scenes/GUI/Item Screen/Item Select Slot.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scenes/GUI/Trade/Trade Items Screen.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=8]
+[ext_resource path="res://icon.svg" type="Texture" id=4]
+[ext_resource path="res://assets/ui/Inventory/bottom inventory.png" type="Texture" id=5]
+[ext_resource path="res://scenes/gui/Item Screen/Item Select Slot.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/gui/Trade/Trade Items Screen.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=8]
 
 [node name="Trade Screen" type="CanvasLayer"]
 script = ExtResource( 1 )

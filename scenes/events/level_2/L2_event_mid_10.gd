@@ -21,7 +21,7 @@ func _init():
 	BattlefieldInfo.turn_manager.connect("enemy_turn_increased", self, "start_mid")
 	BattlefieldInfo.turn_manager.connect("player_turn_increased", self, "play_player_transition")
 	
-	path = "res://Scenes/Events/Level 2/L2 Event Mid 10.gd"
+	path = "res://scenes/events/level_2/L2_event_mid_10.gd"
 
 func play_player_transition(turn_number):
 	BattlefieldInfo.turn_manager.start_ally_transition()
@@ -67,9 +67,9 @@ func start_dialogue(unit):
 func spawn_enemies():
 	
 	# Enemy list
-	var e_soldier = preload("res://Scenes/Units/Enemy_Units/Enemy Soldier.tscn")
-	var a_soldier = preload("res://Scenes/Units/Enemy_Units/Black Archer.tscn")
-	var b_soldier = preload("res://Scenes/Units/Enemy_Units/Bandit.tscn")
+	var e_soldier = preload("res://scenes/units/Enemy_Units/Enemy Soldier.tscn")
+	var a_soldier = preload("res://scenes/units/Enemy_Units/Black Archer.tscn")
+	var b_soldier = preload("res://scenes/units/Enemy_Units/Bandit.tscn")
 	
 	# Spawn a bunch of new enemies
 	for spawn_point in BattlefieldInfo.spawn_points:

@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.gd" type="Script" id=1]
-[ext_resource path="res://assets/UI/Damage Preview/Cursor/hand.png" type="Texture" id=2]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.gd" type="Script" id=1]
+[ext_resource path="res://assets/ui/Damage Preview/Cursor/hand.png" type="Texture" id=2]
 [ext_resource path="res://assets/sound/cursor/menu cursor.wav" type="AudioStream" id=3]
 [ext_resource path="res://assets/sound/cursor/accept.wav" type="AudioStream" id=4]
 [ext_resource path="res://assets/sound/cursor/backSound.wav" type="AudioStream" id=5]

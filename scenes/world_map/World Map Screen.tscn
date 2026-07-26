@@ -1,15 +1,15 @@
 [gd_scene load_steps=23 format=2]
 
-[ext_resource path="res://Scenes/World Map/World Map Screen.gd" type="Script" id=1]
+[ext_resource path="res://scenes/world_map/World Map Screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/world map/world map.png" type="Texture" id=2]
 [ext_resource path="res://assets/music/Fire Emblem 8 Remastered - 4 In The Beginning.ogg" type="AudioStream" id=3]
-[ext_resource path="res://Scenes/Messaging/Message System.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/messaging/Message System.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/units/eirika/eirika.png" type="Texture" id=5]
 [ext_resource path="res://assets/sound/unitMovement/Light Foot Steps 1.wav" type="AudioStream" id=6]
-[ext_resource path="res://Scenes/GUI/Damage Preview/Cursor Select.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Scenes/World Map/World Map Icons/Castle Icon.tscn" type="PackedScene" id=8]
-[ext_resource path="res://Scenes/World Map/World Map Icons/Fortress Icon.tscn" type="PackedScene" id=9]
-[ext_resource path="res://Scenes/World Map/World Map Icons/Village Icon.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/gui/Damage Preview/Cursor Select.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/world_map/World Map Icons/Castle Icon.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/world_map/World Map Icons/Fortress Icon.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/world_map/World Map Icons/Village Icon.tscn" type="PackedScene" id=10]
 
 [sub_resource type="Animation" id=1]
 length = 2.0

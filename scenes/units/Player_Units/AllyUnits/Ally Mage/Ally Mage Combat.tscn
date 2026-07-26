@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=2]
 
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Ally Mage/Ally Mage Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Ally Mage/Ally Mage Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/sound/weapon sounds/Draw Weapon.wav" type="AudioStream" id=2]
 [ext_resource path="res://assets/sound/battle sounds/FIRE_0.wav" type="AudioStream" id=3]
 [ext_resource path="res://assets/sound/battle sounds/FIRE_1.wav" type="AudioStream" id=4]

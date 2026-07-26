@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://Screenshots/Movement.png"
+source_file="res://scenes/Screenshots/Movement.png"
 dest_files=[ "res://.import/Movement.png-f6729699003269f9ada220444fa06ac5.stex" ]
 
 [params]

@@ -1,15 +1,15 @@
 [gd_scene load_steps=17 format=2]
 
-[ext_resource path="res://Scenes/Preparation Screen/Preparation Screen.gd" type="Script" id=1]
-[ext_resource path="res://assets/Preparation/Preparation Screen.png" type="Texture" id=2]
+[ext_resource path="res://scenes/preparation_screen/Preparation Screen.gd" type="Script" id=1]
+[ext_resource path="res://assets/preparation/Preparation Screen.png" type="Texture" id=2]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/music/Swift As Wind.wav" type="AudioStream" id=5]
 [ext_resource path="res://assets/music/Fierce as fire.wav" type="AudioStream" id=6]
 [ext_resource path="res://assets/sound/transition/Chapter Start.wav" type="AudioStream" id=7]
 [ext_resource path="res://assets/font/Preparation Screen Item List Font.tres" type="DynamicFont" id=8]
-[ext_resource path="res://Scenes/GUI/Unit Selectors/Unit Select.tscn" type="PackedScene" id=9]
-[ext_resource path="res://Scenes/GUI/Shop/Shop UI.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/gui/Unit Selectors/Unit Select.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/gui/Shop/Shop UI.tscn" type="PackedScene" id=10]
 
 [sub_resource type="DynamicFont" id=1]
 size = 20

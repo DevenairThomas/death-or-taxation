@@ -1,11 +1,11 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://Scenes/Intro Screen/Intro Screen.gd" type="Script" id=1]
+[ext_resource path="res://scenes/intro_screen/Intro Screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/intro screen/intro background.jpg" type="Texture" id=2]
 [ext_resource path="res://assets/music/01 Fire Emblem_ Three Houses Main Theme.ogg" type="AudioStream" id=3]
 [ext_resource path="res://assets/font/Action Selector Font.tres" type="DynamicFont" id=4]
-[ext_resource path="res://Scenes/GUI/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scenes/Particles/Fog.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/particles/Fog.tscn" type="PackedScene" id=6]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Fade "

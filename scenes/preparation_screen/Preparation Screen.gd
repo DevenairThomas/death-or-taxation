@@ -34,7 +34,7 @@ func _ready():
 	BattlefieldInfo.preparation_screen = self
 	
 	# Test
-	# start("Test Title Chapter", BattlefieldInfo.victory_text, "res://Scenes/Intro Screen/Intro Screen.tscn", "A")
+	# start("Test Title Chapter", BattlefieldInfo.victory_text, "res://scenes/intro_screen/Intro Screen.tscn", "A")
 
 func start(chapter_text, victory_text, path_to_next_level, prep_song):\
 	# Remove intro screen if it's still there

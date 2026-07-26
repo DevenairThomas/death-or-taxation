@@ -1,9 +1,9 @@
 [gd_scene load_steps=16 format=2]
 
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Ally Pegasus Knight/Ally Pegasus Knight.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Ally Pegasus Knight/Ally Pegasus Knight.gd" type="Script" id=1]
 [ext_resource path="res://assets/sound/unitMovement/PEGASUS_FLAP_0.wav" type="AudioStream" id=2]
-[ext_resource path="res://Scenes/GUI/Damage Preview/Cursor Select.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Scenes/Units/Player_Units/AllyUnits/Default Anim.tres" type="Animation" id=4]
+[ext_resource path="res://scenes/gui/Damage Preview/Cursor Select.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/units/Player_Units/AllyUnits/Default Anim.tres" type="Animation" id=4]
 
 [sub_resource type="StreamTexture" id=1]
 load_path = "res://.import/ally pegasus knight.png-c0dbf085cae687c2b3828f58267ccdac.stex"

@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/UI/Damage Preview/damageBox.png"
+source_file="res://assets/ui/Damage Preview/damageBox.png"
 dest_files=[ "res://.import/damageBox.png-997f779151b65464f65c6aba61fe1e7c.stex" ]
 
 [params]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://Scenes/Units/Enemy_Units/Dark Mage Enemy Combat.gd" type="Script" id=1]
+[ext_resource path="res://scenes/units/Enemy_Units/Dark Mage Enemy Combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/units/darkmage/Dark Mage Combat.png" type="Texture" id=2]
 [ext_resource path="res://assets/transition/white flash.png" type="Texture" id=3]
 [ext_resource path="res://assets/battle_effects/flux.png" type="Texture" id=4]

@@ -7,13 +7,13 @@ var player_node_name
 var enemy_node_name
 
 # Backgrounds
-var plain = preload("res://assets/UI/combatUI/Plains.png")
-var forest = preload("res://assets/UI/combatUI/Forest.png")
-var fortress = preload("res://assets/UI/combatUI/Fortress.png")
-var mountain = preload("res://assets/UI/combatUI/Mountain.png")
-var river = preload("res://assets/UI/combatUI/River.png")
-var sea = preload("res://assets/UI/combatUI/Sea.png")
-var village = preload("res://assets/UI/combatUI/Village.png")
+var plain = preload("res://assets/ui/combatUI/Plains.png")
+var forest = preload("res://assets/ui/combatUI/Forest.png")
+var fortress = preload("res://assets/ui/combatUI/Fortress.png")
+var mountain = preload("res://assets/ui/combatUI/Mountain.png")
+var river = preload("res://assets/ui/combatUI/River.png")
+var sea = preload("res://assets/ui/combatUI/Sea.png")
+var village = preload("res://assets/ui/combatUI/Village.png")
 
 # Speed for HP decrease
 const SPEED = 20

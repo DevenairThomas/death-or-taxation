@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://assets/backgrounds/FE BG 5.jpg" type="Texture" id=1]
-[ext_resource path="res://Engine/Systems/Game Settings.gd" type="Script" id=2]
+[ext_resource path="res://engine/systems/game_settings.gd" type="Script" id=2]
 [ext_resource path="res://assets/music/Destiny - Fire Emblem Awakening.ogg" type="AudioStream" id=3]
 [ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=4]
 

@@ -47,7 +47,7 @@ func _ready():
 	add_child(UnitActionStatus, true)
 	
 	# Inventory
-	UnitInventory = preload("res://Scenes/Units/Unit_Scripts/Inventory.tscn").instance()
+	UnitInventory = preload("res://scenes/units/Unit_Scripts/Inventory.tscn").instance()
 	add_child(UnitInventory)
 	
 	# Unit stats

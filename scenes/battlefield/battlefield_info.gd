@@ -131,41 +131,41 @@ func _ready():
 	movement_calculator = MovementCalculator.new(self)
 	
 	# Movement System
-	unit_movement_system = preload("res://Engine/Systems/Unit_Movement_System.gd").new()
+	unit_movement_system = preload("res://engine/systems/unit_movement_system.gd").new()
 	unit_movement_system.set_name("Unit Movement System")
 	add_child(unit_movement_system)
 	
 	# Cinematic Movement System
-	movement_system_cinematic = preload("res://Engine/Systems/Unit_Movement_System_Cinematic.gd").new()
+	movement_system_cinematic = preload("res://engine/systems/unit_movement_system_cinematic.gd").new()
 	movement_system_cinematic.set_name("Movement System Cinematic")
 	add_child(movement_system_cinematic)
 	
 	# Turn Manager
-	turn_manager = preload("res://Engine/Systems/Turn Manager.tscn").instance()
+	turn_manager = preload("res://engine/systems/turn_manager.tscn").instance()
 	add_child(turn_manager)
 	
 	# Music player
-	music_player = preload("res://Scenes/Audio/MusicPlayer.tscn").instance()
+	music_player = preload("res://scenes/audio/music_player.tscn").instance()
 	add_child(music_player)
 	
 	# Battle Sounds
-	battle_sounds = preload("res://Scenes/Audio/Battle Sounds.tscn").instance()
+	battle_sounds = preload("res://scenes/audio/battle_sounds.tscn").instance()
 	add_child(battle_sounds)
 	
 	# Weapon Sounds
-	weapon_sounds = preload("res://Scenes/Audio/Weapon Sounds.tscn").instance()
+	weapon_sounds = preload("res://scenes/audio/weapon _sounds.tscn").instance()
 	add_child(weapon_sounds)
 	
 	# Extra sounds
-	extra_sound_effects = preload("res://Scenes/Audio/Extra Sound Effects.tscn").instance()
+	extra_sound_effects = preload("res://scenes/audio/extra_sound _effects.tscn").instance()
 	add_child(extra_sound_effects)
 	
 	# Map Updater
-	tile_unit_updater = preload("res://Engine/Systems/TileUnitUpdater.tscn").instance()
+	tile_unit_updater = preload("res://engine/systems/tile_unit_updater.tscn").instance()
 	add_child(tile_unit_updater)
 	
 	# Victory Checker
-	victory_system = preload("res://Engine/Systems/Victory Checker.tscn").instance()
+	victory_system = preload("res://engine/systems/victory_checker.tscn").instance()
 	add_child(victory_system)
 	
 	# Player sort

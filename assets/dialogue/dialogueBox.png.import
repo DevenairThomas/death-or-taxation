@@ -9,7 +9,7 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Dialogue/dialogueBox.png"
+source_file="res://assets/dialogue/dialogueBox.png"
 dest_files=[ "res://.import/dialogueBox.png-ea3eda4221689e3bddac6287cb36b6eb.stex" ]
 
 [params]

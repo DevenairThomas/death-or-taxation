@@ -19,7 +19,7 @@ enum CONVOY_STATUS {SELECT_UNIT, PASS_ITEM_TO_UNIT, SELECT_ITEM, OFF, SELL_ITEM,
 var current_convoy_status
 
 # Icon for unit picker -> Change later for real icon
-var icon = preload("res://FE Icon.jpg")
+var icon = preload("res://icon.svg")
 
 # Node access
 onready var sword_list = $"All Lists/Sword"
