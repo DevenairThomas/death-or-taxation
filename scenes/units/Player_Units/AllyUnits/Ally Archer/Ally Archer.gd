@@ -1,6 +1,7 @@
 extends Battlefield_Unit
 
 func _ready():
+	super._ready()
 	# Initial Animation
 	$Animation.current_animation = "Idle"
 	

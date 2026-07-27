@@ -2,8 +2,6 @@ extends Node
 
 class_name Unit_Action_Status
 
-signal unit_became_done
-
 # Listings:
 # Move -> Can do everything
 # Action -> Can do one action (Attack, Heal, Cast Magic, inventory, etc...)

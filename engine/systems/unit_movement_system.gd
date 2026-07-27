@@ -57,7 +57,7 @@ func process_movement(delta):
 		is_moving = false
 		
 		# Set the new current tile and update the world tiles
-		var h = unit.UnitMovementStats.currentTile 
+		var _h = unit.UnitMovementStats.currentTile
 		unit.UnitMovementStats.currentTile = destination_cell
 		unit.UnitMovementStats.currentTile.occupyingUnit = unit
 		
@@ -83,7 +83,7 @@ func process_movement(delta):
 			# Set unit's status to action state and animation
 			unit.UnitActionStatus.set_current_action(Unit_Action_Status.ACTION)
 			if BattlefieldInfo.current_Unit_Selected.get_node("Animation").current_animation == "Idle":
-				BattlefieldInfo.current_Unit_Selected.get_node("Animation").current_animation == "Idle"
+				BattlefieldInfo.current_Unit_Selected.get_node("Animation").current_animation = "Idle"
 			else:
 				BattlefieldInfo.current_Unit_Selected.get_node("Animation").current_animation = str(BattlefieldInfo.current_Unit_Selected.get_node("Animation").current_animation, " no sound")
 			

@@ -11,8 +11,8 @@ var battlefield
 var queue = []
 
 # Constructor
-func _init(battlefield):
-	self.battlefield = battlefield
+func _init(p_battlefield):
+	self.battlefield = p_battlefield
 	
 
 # Calculate Movement Blue Squares
@@ -155,7 +155,7 @@ func processHealingTile(Unit):
 				new_queue.append([next_cost, adjTile])
 
 # Returns the penalty cost associated with the unit's class for moving across different tiles
-func getPenaltyCost(Unit, Unit_Movement, cell) -> int:
+func getPenaltyCost(Unit, move_stats, cell) -> int:
 	# Flying units can get through
 	if Unit.UnitStats.pegasus:
 		if cell.movementCost < 1000:
@@ -167,23 +167,23 @@ func getPenaltyCost(Unit, Unit_Movement, cell) -> int:
 	var cell_type = cell.tileName
 	match cell_type:
 		"Plain", "Road", "Bridge", "Throne":
-			return Unit_Movement.defaultPenalty
+			return move_stats.defaultPenalty
 		"Mountain", "Cliff":
-			return Unit_Movement.mountainPenalty
+			return move_stats.mountainPenalty
 		"Hill":
-			return Unit_Movement.hillPenalty
+			return move_stats.hillPenalty
 		"Forest":
-			return Unit_Movement.forestPenalty
+			return move_stats.forestPenalty
 		"Fortress":
-			return Unit_Movement.fortressPenalty
+			return move_stats.fortressPenalty
 		"Village":
-			return Unit_Movement.buildingPenalty
+			return move_stats.buildingPenalty
 		"River":
-			return Unit_Movement.riverPenalty
+			return move_stats.riverPenalty
 		"Ruins":
-			return Unit_Movement.ruinsPenalty
+			return move_stats.ruinsPenalty
 		"Sea":
-			return Unit_Movement.seaPenalty
+			return move_stats.seaPenalty
 		_:
 			# fall through
 			return 0
@@ -223,7 +223,7 @@ func turn_off_purple(Unit, AllTiles) -> void:
 		AllTiles[greenTile.getPosition().x][greenTile.getPosition().y].get_node("MovementRangeRect").turnOff("Purple")
 
 # Find the shortest path to the target destination | No A* algorithm | Player version only
-func get_path_to_destination(Unit, target_destination, AllTiles):
+func get_path_to_destination(Unit, target_destination, _AllTiles):
 	# Create the pathfinding queue directly?
 	create_pathfinding_queue(target_destination, Unit)
 

@@ -29,8 +29,8 @@ func _ready():
 	BattlefieldInfo.message_system = self
 	# test()
 
-func start(text_queue):
-	self.text_queue = parse(text_queue)
+func start(new_text_queue):
+	self.text_queue = parse(new_text_queue)
 	
 	# Grab first one and scroll and set to input
 	next_line(self.text_queue.pop_front())
@@ -80,7 +80,7 @@ func _input(event):
 		choice:
 			pass
 
-func _on_Dialogue_Scroll_animation_finished(anim_name):
+func _on_Dialogue_Scroll_animation_finished(_anim_name):
 	current_state = next
 
 func turn_on():

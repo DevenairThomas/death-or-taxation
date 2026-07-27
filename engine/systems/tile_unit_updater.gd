@@ -74,7 +74,7 @@ func set_healed_status(unit):
 	healed = true
 
 # Anything else
-func misc_tiles(unit, tile):
+func misc_tiles(_unit, _tile):
 	pass
 
 # Set Camera
