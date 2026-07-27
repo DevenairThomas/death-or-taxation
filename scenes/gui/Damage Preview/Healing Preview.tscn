@@ -43,8 +43,8 @@ offset_bottom = 165.0
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "Player Name"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -57,8 +57,8 @@ offset_bottom = 153.71
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -71,8 +71,8 @@ offset_bottom = 171.525
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -85,8 +85,8 @@ offset_bottom = 189.121
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -99,8 +99,8 @@ offset_bottom = 205.155
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "-"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Enemy" type="Control" parent="Preview"]
 offset_left = -44.221
@@ -124,8 +124,8 @@ offset_bottom = 251.512
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "Enemy Name"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -138,8 +138,8 @@ offset_bottom = 289.0
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "Iron Axe"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Enemy HP" type="Label" parent="Preview/Enemy"]
 offset_left = 60.0
@@ -149,8 +149,8 @@ offset_bottom = 153.71
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Enemy Dmg" type="Label" parent="Preview/Enemy"]
 offset_left = 60.0
@@ -160,8 +160,8 @@ offset_bottom = 171.525
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "-"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Enemy Hit" type="Label" parent="Preview/Enemy"]
 offset_left = 60.0
@@ -171,8 +171,8 @@ offset_bottom = 189.121
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "-"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Enemy Crit" type="Label" parent="Preview/Enemy"]
 offset_left = 60.0
@@ -182,8 +182,8 @@ offset_bottom = 205.155
 scale = Vector2( 0.1, 0.1 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "-"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.4

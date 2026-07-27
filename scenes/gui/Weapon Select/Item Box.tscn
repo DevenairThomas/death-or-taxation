@@ -27,8 +27,8 @@ offset_right = 582.59
 offset_bottom = 242.0
 theme_override_fonts/font = ExtResource( 3 )
 text = "Weapon"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -40,8 +40,8 @@ offset_right = 288.969
 offset_bottom = 391.239
 theme_override_fonts/font = ExtResource( 3 )
 text = "Atk"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -53,8 +53,8 @@ offset_right = 472.527
 offset_bottom = 391.239
 theme_override_fonts/font = ExtResource( 3 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -66,8 +66,8 @@ offset_right = 719.34
 offset_bottom = 391.239
 theme_override_fonts/font = ExtResource( 3 )
 text = "Crit"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -79,8 +79,8 @@ offset_right = 945.565
 offset_bottom = 391.239
 theme_override_fonts/font = ExtResource( 3 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -92,8 +92,8 @@ offset_right = 288.969
 offset_bottom = 518.558
 theme_override_fonts/font = ExtResource( 3 )
 text = "Hit"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -105,8 +105,8 @@ offset_right = 472.527
 offset_bottom = 518.558
 theme_override_fonts/font = ExtResource( 3 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -118,8 +118,8 @@ offset_right = 745.565
 offset_bottom = 518.558
 theme_override_fonts/font = ExtResource( 3 )
 text = "Avoid"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -131,8 +131,8 @@ offset_right = 945.565
 offset_bottom = 518.558
 theme_override_fonts/font = ExtResource( 3 )
 text = "100"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }

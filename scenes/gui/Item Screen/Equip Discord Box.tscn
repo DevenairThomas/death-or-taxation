@@ -30,8 +30,8 @@ offset_bottom = 29.9338
 scale = Vector2( 0.3, 0.3 )
 theme_override_fonts/font = SubResource( 1 )
 text = "Equip"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Discard" type="Label" parent="Box Texture2D"]
 offset_left = 3.05467
@@ -41,8 +41,8 @@ offset_bottom = 48.9364
 scale = Vector2( 0.3, 0.3 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "Discard"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Hand Selector" parent="." instance=ExtResource( 5 )]
 offset_left = -12.8577

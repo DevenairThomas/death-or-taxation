@@ -97,8 +97,8 @@ offset_bottom = 91.0
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = " E Name"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -112,8 +112,8 @@ scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 3 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Killing Edge"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -126,7 +126,7 @@ offset_bottom = 133.0
 scale = Vector2( 0.4, 0.4 )
 theme_override_fonts/font = SubResource( 4 )
 text = "50"
-align = 2
+horizontal_alignment = 2
 __meta__ = {
 "_edit_lock_": true
 }
@@ -139,7 +139,7 @@ offset_bottom = 141.0
 scale = Vector2( 0.4, 0.4 )
 theme_override_fonts/font = SubResource( 4 )
 text = "10"
-align = 2
+horizontal_alignment = 2
 __meta__ = {
 "_edit_lock_": true
 }
@@ -152,7 +152,7 @@ offset_bottom = 149.0
 scale = Vector2( 0.4, 0.4 )
 theme_override_fonts/font = SubResource( 4 )
 text = "1"
-align = 2
+horizontal_alignment = 2
 __meta__ = {
 "_edit_lock_": true
 }
@@ -180,8 +180,8 @@ offset_bottom = 212.0
 scale = Vector2( 0.3, 0.3 )
 theme_override_fonts/font = SubResource( 5 )
 text = "60"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -218,8 +218,8 @@ offset_bottom = 78.0
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "P Name"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -232,8 +232,8 @@ offset_bottom = 212.003
 scale = Vector2( 0.3, 0.3 )
 theme_override_fonts/font = SubResource( 5 )
 text = "60"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }
@@ -262,7 +262,7 @@ offset_bottom = 132.732
 scale = Vector2( 0.4, 0.4 )
 theme_override_fonts/font = SubResource( 4 )
 text = "50"
-align = 2
+horizontal_alignment = 2
 
 [node name="Player Dmg" type="Label" parent="Combat Control/Combat UI/Player"]
 offset_left = 220.8
@@ -272,7 +272,7 @@ offset_bottom = 140.732
 scale = Vector2( 0.4, 0.4 )
 theme_override_fonts/font = SubResource( 4 )
 text = "10"
-align = 2
+horizontal_alignment = 2
 
 [node name="Player Crt" type="Label" parent="Combat Control/Combat UI/Player"]
 offset_left = 221.112
@@ -282,7 +282,7 @@ offset_bottom = 148.732
 scale = Vector2( 0.4, 0.4 )
 theme_override_fonts/font = SubResource( 4 )
 text = "1"
-align = 2
+horizontal_alignment = 2
 
 [node name="Player Weapon Name" type="Label" parent="Combat Control/Combat UI/Player"]
 offset_left = 142.414
@@ -293,8 +293,8 @@ scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 3 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Lightning Edge"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_lock_": true
 }

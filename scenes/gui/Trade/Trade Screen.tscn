@@ -35,8 +35,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = ExtResource( 3 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Eirika"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Unit Portrait" type="TextureRect" parent="Select Unit/Top"]
 offset_left = 11.0

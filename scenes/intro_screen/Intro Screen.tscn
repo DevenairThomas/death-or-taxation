@@ -103,8 +103,8 @@ offset_bottom = 138.983
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "New Game"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Load Game" type="Label" parent="Options"]
 offset_left = 150.071
@@ -115,8 +115,8 @@ scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "Load Game
 "
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Options" type="Label" parent="Options"]
 offset_left = 159.416
@@ -127,8 +127,8 @@ scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = ExtResource( 4 )
 text = "Options
 "
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Hand Selector" parent="Options" instance=ExtResource( 5 )]
 offset_left = 130.824
@@ -142,5 +142,6 @@ offset_bottom = 101.146
 "anims/music fade out" = SubResource( 3 )
 
 [node name="Fog" parent="." instance=ExtResource( 6 )]
+visible = false
 position = Vector2( 119.829, 79.9534 )
 scale = Vector2( 3.75592, 2.49914 )

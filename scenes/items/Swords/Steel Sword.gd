@@ -27,7 +27,7 @@ func _ready():
 	weapon_string_name = "sword"
 
 # Special ability -> Modify this later
-func special_ability(unit_holding_this_item, unit_that_is_being_attacked):
+func special_ability(_unit_holding_this_item, _unit_that_is_being_attacked):
 	return 1
 
 func draw_attack_sound():

@@ -166,3 +166,11 @@ Unused `_input(event)` params → `_event` (convoy, Unit Picker Solo, Unit Inven
 
 ### M12 — GDScript warning cleanup (batch 3)
 Unused `_input(event)`/`_process(delta)` params underscore-prefixed (Cell, battlefield_info, Status Screen, Intro Screen); unused item `special_ability` params (Iron Lance, Unarmed) and `allow_selection(anim_name)`, `unit_movement_system_cinematic` `h` prefixed; shadowed params renamed (`Cell.init(...)` → `p_*`, `combat.start_combat(current_combat_state)` → `initial_combat_state`); dead `signal scene_loaded` removed.
+
+### M13 — Title menu regression (fog wash-out + Label alignment)
+Diagnosed by capturing an in-engine screenshot (`get_viewport().get_texture().get_image()` via a temporary autoload). The New Game/Load Game/Options menu was rendering fine, but the `Fog` node (the procedural cyan-noise Sprite2D, the last child of `Intro Screen` so it draws on top) sat centred over the menu and washed it out — once M9 disabled the world-map camera and M11 set the 240×160 viewport, the fog was no longer offset off-screen. Hidden it (`visible = false` on the `Fog` node); re-enable it earlier in the child order if the atmosphere is wanted.
+- **`Label.align` / `valign` removed in Godot 4** → `horizontal_alignment` / `vertical_alignment` (same int values). The converter missed all of them: **165 + 168 across 43 scenes**. Fixed project-wide; this also corrects mispositioned text elsewhere in the UI.
+- Intro menu input moved from `Input.is_action_just_pressed(...)` inside `_input(event)` to the correct `event.is_action_pressed(...)`.
+
+### M14 — GDScript warning cleanup (batch 4)
+`special_ability` unused params (`Iron Sword`, `Rapier`, `Silver Lance`, `Steel Sword`) underscore-prefixed.

@@ -106,8 +106,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 0.352941, 0.890196, 0.333333, 1 )
 text = "Killing Edge"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -121,8 +121,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Uses" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
 offset_left = 49.3363
@@ -133,8 +133,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Uses"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -148,8 +148,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -163,8 +163,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Damage"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -178,8 +178,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -193,8 +193,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Crit"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -208,8 +208,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -223,8 +223,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Hit"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }

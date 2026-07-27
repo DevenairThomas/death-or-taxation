@@ -33,7 +33,10 @@ func _input(event):
 				$"Anim".play("Options Fade In")
 				current_state = WAIT
 		GAME_SELECT:
-			if Input.is_action_just_pressed("ui_up"):
+			# Use the event itself (not Input.is_action_just_pressed) since this is
+			# _input(event): the global "just pressed" state is frame-based and can
+			# miss/duplicate here, whereas event.is_action_pressed tests this event.
+			if event.is_action_pressed("ui_up"):
 				current_option_number -= 1
 				$"Options/Hand Selector".position.y -= 18
 				if current_option_number < 0:
@@ -42,7 +45,7 @@ func _input(event):
 					$"Options/Hand Selector".position.y += 18
 				current_option = options[current_option_number]
 				$"Options/Hand Selector/Move".play(0)
-			if Input.is_action_just_pressed("ui_down"):
+			if event.is_action_pressed("ui_down"):
 				current_option_number += 1
 				$"Options/Hand Selector".position.y += 18
 				if current_option_number > options.size() - 1:
@@ -51,7 +54,7 @@ func _input(event):
 					$"Options/Hand Selector".position.y -= 18
 				current_option = options[current_option_number]
 				$"Options/Hand Selector/Move".play(0)
-			if Input.is_action_just_pressed("ui_accept"):
+			if event.is_action_pressed("ui_accept"):
 				$"Options/Hand Selector/Accept".play(0)
 				process_selection()
 				

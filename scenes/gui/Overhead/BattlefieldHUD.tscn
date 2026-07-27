@@ -155,8 +155,8 @@ theme_override_fonts/font = SubResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "Name"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ColorRect" type="ColorRect" parent="Battlefield HUD/Unit Info"]
 modulate = Color( 0.568627, 0.811765, 0.945098, 0.654902 )
@@ -180,8 +180,8 @@ theme_override_fonts/font = SubResource( 5 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "20 / 20"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Empty HP" type="Sprite2D" parent="Battlefield HUD/Unit Info"]
 position = Vector2( 44, 28 )
@@ -231,8 +231,8 @@ theme_override_fonts/font = SubResource( 8 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_shadow_color = Color( 0, 0, 0, 1 )
 text = "Seize Throne"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 autowrap = true
 
 [node name="Terrain Info" type="Panel" parent="Battlefield HUD"]
@@ -254,8 +254,8 @@ theme_override_fonts/font = SubResource( 10 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_shadow_color = Color( 0, 0, 0, 1 )
 text = "Plains"
-align = 1
-valign = 1
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Def" type="Label" parent="Battlefield HUD/Terrain Info"]
 offset_left = 15.0
