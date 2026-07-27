@@ -28,7 +28,7 @@ func check_victory_status():
 	
 	match victory_condition_state:
 		ELIMINATE_ALL_ENEMIES:
-			if BattlefieldInfo.enemy_units.empty():
+			if BattlefieldInfo.enemy_units.is_empty():
 				BattlefieldInfo.victory = true
 		SURVIVE:
 			if turns_left_to_survive == BattlefieldInfo.turn_manager.player_turn_number:

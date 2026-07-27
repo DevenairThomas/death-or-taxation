@@ -8,7 +8,7 @@ signal done_spawning
 
 func _ready():
 	# Listen to the enemy turn
-	BattlefieldInfo.turn_manager.connect("enemy_turn_increased", self, "process_spawning_event")
+	BattlefieldInfo.turn_manager.connect("enemy_turn_increased", Callable(self, "process_spawning_event"))
 
 func process_spawning_event(turn_number):
 	pass

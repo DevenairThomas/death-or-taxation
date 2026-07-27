@@ -23,7 +23,7 @@ func start_events_queue():
 	BattlefieldInfo.cursor.disable_standard("Disabled")
 	
 	# If the event queue is empty, we are done processing events
-	if queue_of_events.empty():
+	if queue_of_events.is_empty():
 		print("FROM EVENT SYSTEM: Event queue is empty!")
 		# Clear the final event
 		if current_event != null:
@@ -44,7 +44,7 @@ func start_events_queue():
 	if current_event != null:
 		current_event.queue_free()
 	current_event = queue_of_events.pop_front()
-	current_event.connect("event_done", self, "start_events_queue")
+	current_event.connect("event_done", Callable(self, "start_events_queue"))
 	print("FROM EVENT SYSTEM: Current event processing: ", current_event.event_name, " Part: ", current_event.event_part)
 	current_event.start()
 

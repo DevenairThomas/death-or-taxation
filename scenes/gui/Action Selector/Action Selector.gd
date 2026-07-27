@@ -30,12 +30,12 @@ var current_option_selected = "Wait"
 
 func _ready():
 	# Connect to Cursor
-	get_parent().get_node("GameCamera/Areas/BottomLeft").connect("body_entered", self, "left_side")
-	get_parent().get_node("GameCamera/Areas/BottomRight").connect("body_entered", self, "right_side")
-	get_parent().get_node("GameCamera/Areas/TopLeft").connect("body_entered", self, "left_side")
-	get_parent().get_node("GameCamera/Areas/TopRight").connect("body_entered", self, "right_side")
+	get_parent().get_node("GameCamera/Areas/BottomLeft").connect("body_entered", Callable(self, "left_side"))
+	get_parent().get_node("GameCamera/Areas/BottomRight").connect("body_entered", Callable(self, "right_side"))
+	get_parent().get_node("GameCamera/Areas/TopLeft").connect("body_entered", Callable(self, "left_side"))
+	get_parent().get_node("GameCamera/Areas/TopRight").connect("body_entered", Callable(self, "right_side"))
 	
-	BattlefieldInfo.unit_movement_system.connect("action_selector_screen", self, "start")
+	BattlefieldInfo.unit_movement_system.connect("action_selector_screen", Callable(self, "start"))
 
 # Start this screen
 func start():
@@ -72,7 +72,7 @@ func movement(direction):
 			if current_number_action < 0:
 				current_number_action = 0
 			else:
-				$"Action Menu/Hand Selector".rect_position.y -= ACTION_SIZE_Y - 1
+				$"Action Menu/Hand Selector".position.y -= ACTION_SIZE_Y - 1
 				$"Action Menu/Hand Selector/Move".play(0)
 			current_option_selected = current_actions[current_number_action]
 		"down":
@@ -80,7 +80,7 @@ func movement(direction):
 			if current_number_action > current_actions.size() - 1:
 				current_number_action = current_actions.size() - 1
 			else:
-				$"Action Menu/Hand Selector".rect_position.y += ACTION_SIZE_Y - 1
+				$"Action Menu/Hand Selector".position.y += ACTION_SIZE_Y - 1
 				$"Action Menu/Hand Selector/Move".play(0)
 			current_option_selected = current_actions[current_number_action]
 
@@ -89,26 +89,26 @@ func movement(direction):
 func build_menu(menu_items):
 	# Move old items
 	for child_nodes in $"Action Menu".get_children():
-		child_nodes.rect_position = OFF_SIDE
+		child_nodes.position = OFF_SIDE
 	current_actions.clear()
 	
 	# Sort the array alphabetically
 	# menu_items.sort()
 	
 	# Put the top Item first
-	$"Action Menu/Top".rect_position = new_menu_position
+	$"Action Menu/Top".position = new_menu_position
 	
 #	Get each item and build the menu
 	var last_item = $"Action Menu/Top"
 	for menu_item in menu_items:
-		get_node(str("Action Menu/",menu_item)).rect_position = Vector2($"Action Menu/Top".rect_position.x + MARGIN_LEFT_OF_TOP, last_item.rect_position.y + ACTION_SIZE_Y - 1)
+		get_node(str("Action Menu/",menu_item)).position = Vector2($"Action Menu/Top".position.x + MARGIN_LEFT_OF_TOP, last_item.position.y + ACTION_SIZE_Y - 1)
 		last_item = get_node(str("Action Menu/",menu_item))
 		current_actions.append(menu_item)
 	# Move bottom
-	$"Action Menu/Bottom".rect_position = Vector2(last_item.rect_position.x, last_item.rect_position.y + ACTION_SIZE_Y - 1) 
+	$"Action Menu/Bottom".position = Vector2(last_item.position.x, last_item.position.y + ACTION_SIZE_Y - 1) 
 	
 	# Set the hand cursor to the first item in the list
-	$"Action Menu/Hand Selector".rect_position = get_node(str("Action Menu/", current_actions[0])).rect_position + HAND_OFF_SET
+	$"Action Menu/Hand Selector".position = get_node(str("Action Menu/", current_actions[0])).position + HAND_OFF_SET
 	current_option_selected = current_actions[0]
 	current_number_action = 0
 
@@ -126,7 +126,7 @@ func get_menu_items():
 					#var max_range # Max range
 					#var min_range # Min range
 					queue.append([weapon.max_range, BattlefieldInfo.current_Unit_Selected.UnitMovementStats.currentTile])
-					while !queue.empty():
+					while !queue.is_empty():
 						# Pop first tile
 						var check_tile = queue.pop_front()
 						
@@ -156,7 +156,7 @@ func get_menu_items():
 					#var max_range # Max range
 					#var min_range # Min range
 					queue.append([weapon.max_range, BattlefieldInfo.current_Unit_Selected.UnitMovementStats.currentTile])
-					while !queue.empty():
+					while !queue.is_empty():
 						# Pop first tile
 						var check_tile = queue.pop_front()
 						
@@ -180,7 +180,7 @@ func get_menu_items():
 			menu_items.append("Convoy")
 	
 	# Item
-	if !BattlefieldInfo.current_Unit_Selected.UnitInventory.inventory.empty():
+	if !BattlefieldInfo.current_Unit_Selected.UnitInventory.inventory.is_empty():
 		menu_items.append("Item")
 	
 	# Trade Option | Convoy
@@ -302,7 +302,7 @@ func hide_action_menu():
 	
 	# Move old items
 	for child_nodes in $"Action Menu".get_children():
-		child_nodes.rect_position = OFF_SIDE
+		child_nodes.position = OFF_SIDE
 	
 	# Turn off active
 	is_active = false

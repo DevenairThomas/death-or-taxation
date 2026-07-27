@@ -4,7 +4,7 @@ class_name World_Map_Event
 
 # Represents an event in the world map
 # World map
-onready var world_map = WorldMapScreen
+@onready var world_map = WorldMapScreen
 
 # Text
 var text_array = []

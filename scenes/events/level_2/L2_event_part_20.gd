@@ -37,13 +37,13 @@ func start():
 	Dead_soldier = BattlefieldInfo.ally_units["Dead Soldier"]
 	
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "move_actor")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "move_actor"))
 	
 	# Movement System Connect
-	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", self, "enable_combat")
+	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", Callable(self, "enable_combat"))
 	
 	# Battle Screen Connect
-	BattlefieldInfo.combat_screen.connect("combat_screen_done", self, "move_camera")
+	BattlefieldInfo.combat_screen.connect("combat_screen_done", Callable(self, "move_camera"))
 	
 	# Stop other music
 	BattlefieldInfo.music_player.get_node("Unfufilled").stop()
@@ -73,7 +73,7 @@ func move_camera():
 	BattlefieldInfo.ally_units["Eirika"].visible = true
 	
 	# Move Camera and Remove old camera
-	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", self, "event_complete")
+	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", Callable(self, "event_complete"))
 	BattlefieldInfo.main_game_camera.get_node("Tween").interpolate_property(BattlefieldInfo.main_game_camera, "position", BattlefieldInfo.main_game_camera.position, new_position_for_camera, 1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	BattlefieldInfo.main_game_camera.current = true
 	BattlefieldInfo.main_game_camera.get_node("Tween").start()

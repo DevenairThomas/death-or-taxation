@@ -45,8 +45,8 @@ func start(unit):
 	second_item = null
 	
 	# Reset hand back to original spot
-	$"Hand Selector 1".rect_position = original_hand_position
-	$"Hand Selector 2".rect_position = second_hand_position_off_screen
+	$"Hand Selector 1".position = original_hand_position
+	$"Hand Selector 2".position = second_hand_position_off_screen
 	
 	# Build Inventory
 	build_inventory_menu()
@@ -88,8 +88,8 @@ func build_inventory_menu():
 		item_slots_player_1.append(item)
 		
 	# Do we have any extra slots?
-	if !ui_item_slots_1.empty():
-		while !ui_item_slots_1.empty():
+	if !ui_item_slots_1.is_empty():
+		while !ui_item_slots_1.is_empty():
 			var item_slot = ui_item_slots_1.pop_front()
 			item_slot.empty_slot()
 			item_slots_player_1.append($Empty_Item)
@@ -101,8 +101,8 @@ func build_inventory_menu():
 		item_slots_player_2.append(item2)
 	
 	# Do we have any extra slots?
-	if !ui_item_slots_2.empty():
-		while !ui_item_slots_2.empty():
+	if !ui_item_slots_2.is_empty():
+		while !ui_item_slots_2.is_empty():
 			var item_slot = ui_item_slots_2.pop_front()
 			item_slot.empty_slot()
 			item_slots_player_2.append($Empty_Item)
@@ -117,7 +117,7 @@ func _input(event):
 				# Are we on the RIGHT side?
 				if hand_position == RIGHT:
 					# Move cursor to the "left" side
-					$"Hand Selector 1".rect_position -= inventory_x_difference
+					$"Hand Selector 1".position -= inventory_x_difference
 					$"Hand Selector 1/Move".play(0)
 					# New Item Position
 					first_item = item_slots_player_1[slot_number]
@@ -126,7 +126,7 @@ func _input(event):
 				# Are we on the LEFT side?
 				if hand_position == LEFT:
 					# Move cursor to the "left" side
-					$"Hand Selector 1".rect_position += inventory_x_difference
+					$"Hand Selector 1".position += inventory_x_difference
 					$"Hand Selector 1/Move".play(0)
 					# New Item Position
 					first_item = item_slots_player_1[slot_number]
@@ -140,7 +140,7 @@ func _input(event):
 						first_item = item_slots_player_2[slot_number]
 					else:
 						slot_number -= 1
-						$"Hand Selector 1".rect_position -= inventory_y_difference
+						$"Hand Selector 1".position -= inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						first_item = item_slots_player_2[slot_number]
 				else:
@@ -149,7 +149,7 @@ func _input(event):
 						first_item = item_slots_player_1[slot_number]
 					else:
 						slot_number -= 1
-						$"Hand Selector 1".rect_position -= inventory_y_difference
+						$"Hand Selector 1".position -= inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						first_item = item_slots_player_1[slot_number]
 			elif Input.is_action_just_pressed("ui_down"):
@@ -161,7 +161,7 @@ func _input(event):
 						first_item = item_slots_player_2[slot_number]
 					else:
 						slot_number += 1
-						$"Hand Selector 1".rect_position += inventory_y_difference
+						$"Hand Selector 1".position += inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						first_item = item_slots_player_2[slot_number]
 				else:
@@ -170,7 +170,7 @@ func _input(event):
 						first_item = item_slots_player_1[slot_number]
 					else:
 						slot_number += 1
-						$"Hand Selector 1".rect_position += inventory_y_difference
+						$"Hand Selector 1".position += inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						first_item = item_slots_player_1[slot_number]
 			elif Input.is_action_just_pressed("ui_accept"):
@@ -188,7 +188,7 @@ func _input(event):
 						second_item = item_slots_player_2[slot_number]
 					else:
 						slot_number -= 1
-						$"Hand Selector 1".rect_position -= inventory_y_difference
+						$"Hand Selector 1".position -= inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						second_item = item_slots_player_2[slot_number]
 				else:
@@ -197,7 +197,7 @@ func _input(event):
 						second_item = item_slots_player_1[slot_number]
 					else:
 						slot_number -= 1
-						$"Hand Selector 1".rect_position -= inventory_y_difference
+						$"Hand Selector 1".position -= inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						second_item = item_slots_player_1[slot_number]
 			elif Input.is_action_just_pressed("ui_down"):
@@ -209,7 +209,7 @@ func _input(event):
 						second_item = item_slots_player_2[slot_number]
 					else:
 						slot_number += 1
-						$"Hand Selector 1".rect_position += inventory_y_difference
+						$"Hand Selector 1".position += inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						second_item = item_slots_player_2[slot_number]
 				else:
@@ -218,14 +218,14 @@ func _input(event):
 						second_item = item_slots_player_1[slot_number]
 					else:
 						slot_number += 1
-						$"Hand Selector 1".rect_position += inventory_y_difference
+						$"Hand Selector 1".position += inventory_y_difference
 						$"Hand Selector 1/Move".play(0)
 						second_item = item_slots_player_1[slot_number]
 			elif Input.is_action_just_pressed("ui_accept"):
 				process_selection()
 			elif Input.is_action_just_pressed("ui_cancel"):
 				# Move the second hand away
-				$"Hand Selector 2".rect_position = Vector2(-150, -150)
+				$"Hand Selector 2".position = Vector2(-150, -150)
 				current_state = NO_ITEM_SELECTED
 				second_item = null
 				
@@ -247,10 +247,10 @@ func process_selection():
 					current_state = ONE_ITEM_SELECTED
 					
 					# Set second hand position
-					$"Hand Selector 2".rect_position = $"Hand Selector 1".rect_position
+					$"Hand Selector 2".position = $"Hand Selector 1".position
 					
 					# Move the hand to the left side
-					$"Hand Selector 1".rect_position -= inventory_x_difference
+					$"Hand Selector 1".position -= inventory_x_difference
 					hand_position = LEFT
 					
 					# Set second item
@@ -264,10 +264,10 @@ func process_selection():
 					current_state = ONE_ITEM_SELECTED
 					
 					# Set second hand position
-					$"Hand Selector 2".rect_position = $"Hand Selector 1".rect_position
+					$"Hand Selector 2".position = $"Hand Selector 1".position
 					
 					# Move the hand to the left side
-					$"Hand Selector 1".rect_position += inventory_x_difference
+					$"Hand Selector 1".position += inventory_x_difference
 					hand_position = RIGHT
 					
 					# Set second item

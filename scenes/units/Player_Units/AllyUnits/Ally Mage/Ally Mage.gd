@@ -14,7 +14,7 @@ func _ready():
 	
 	# Weapons and Inventory
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.ELEMENTAL)
-	UnitInventory.add_item(preload("res://scenes/items/Tomes/Fire.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Tomes/Fire.tscn").instantiate())
 	
 	# Set combat node
 	combat_node = preload("res://scenes/units/Player_Units/AllyUnits/Ally Mage/Ally Mage Combat.tscn")

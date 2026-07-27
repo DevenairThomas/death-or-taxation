@@ -24,14 +24,14 @@ const OFF_SITE = Vector2(-300,-300)
 var current_yes_no_option = 0
 
 # Node access
-onready var unit_list = $"Unit List"
-onready var number_of_units = $Number
-onready var hand_selector = $"Yes No/Hand Selector"
-onready var anim = $Anim
+@onready var unit_list = $"Unit List"
+@onready var number_of_units = $Number
+@onready var hand_selector = $"Yes No/Hand Selector"
+@onready var anim = $Anim
 
 func _ready():
 	# Disable the scroll bar
-	var scroll_bar = unit_list.get_v_scroll()
+	var scroll_bar = unit_list.get_v_scroll_bar()
 	scroll_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scroll_bar.modulate = Color(1,1,1,0)
 	
@@ -49,26 +49,26 @@ func _input(event):
 					current_yes_no_option = 0
 					# Move hand
 					hand_selector.get_node("Move").play()
-					hand_selector.rect_position = YES_HAND_POSITION
+					hand_selector.position = YES_HAND_POSITION
 			elif Input.is_action_just_pressed("ui_right"):
 				if current_yes_no_option + 1 == 1:
 					current_yes_no_option = 1
 					# Move Hand
 					hand_selector.get_node("Move").play()
-					hand_selector.rect_position = NO_HAND_POSITION
+					hand_selector.position = NO_HAND_POSITION
 			elif Input.is_action_just_pressed("ui_accept"):
 				if current_yes_no_option == 0:
-					$"Yes No".rect_position = OFF_SITE
+					$"Yes No".position = OFF_SITE
 					exit()
 				else:
 					# Move off sight
-					$"Yes No".rect_position = OFF_SITE
+					$"Yes No".position = OFF_SITE
 					
 					# Back to select
 					current_state = UNIT_SELECTION_STATE.SELECT
 					
 					# Wait half a second to prevent some weird selection bug
-					yield(get_tree().create_timer(0.3),"timeout")
+					await get_tree().create_timer(0.3).timeout
 					
 					# Allow movement again
 					unit_list.set_process_input(true)
@@ -83,10 +83,10 @@ func _input(event):
 				
 				# Move the not allowed
 				hand_selector.get_node("Invalid").play()
-				$"Too Many Units".rect_position = OFF_SITE
+				$"Too Many Units".position = OFF_SITE
 				
 				# Wait half a second to prevent some weird selection bug
-				yield(get_tree().create_timer(0.3),"timeout")
+				await get_tree().create_timer(0.3).timeout
 				
 				# Allow movement again
 				unit_list.set_process_input(true)
@@ -109,7 +109,7 @@ func start(select_mode_value):
 	
 	# Play Anim
 	anim.play("Fade")
-	yield(anim, "animation_finished")
+	await anim.animation_finished
 	
 	# Allow input
 	unit_list.focus_mode = Control.FOCUS_ALL
@@ -132,8 +132,8 @@ func exit_check():
 		$"Yes No/Warning Message".text = str("You have selected ", units_selected.size()," units out of ", max_units_select_possible ,". Proceed with this?")
 		
 		# Move the warning message and yes no
-		$"Yes No".rect_position = MESSAGE_BOX_POSITION
-		hand_selector.rect_position = YES_HAND_POSITION
+		$"Yes No".position = MESSAGE_BOX_POSITION
+		hand_selector.position = YES_HAND_POSITION
 		current_yes_no_option = 0
 	elif units_selected.size() > max_units_select_possible:
 		# Stop unit list
@@ -145,7 +145,7 @@ func exit_check():
 		current_state = UNIT_SELECTION_STATE.EXCESS
 		
 		# Move the not allowed
-		$"Too Many Units".rect_position = MESSAGE_BOX_POSITION
+		$"Too Many Units".position = MESSAGE_BOX_POSITION
 	else:
 		exit()
 
@@ -212,12 +212,12 @@ func exit():
 	set_process_input(false)
 	
 	# Deselect everything
-	unit_list.unselect_all()
+	unit_list.deselect_all()
 	unit_list.release_focus()
 	
 	# Play anim backward
 	anim.play_backwards("Fade")
-	yield(anim, "animation_finished")
+	await anim.animation_finished
 	
 	# Start Prep screen again
 	BattlefieldInfo.preparation_screen.turn_on_without_anim()
@@ -227,11 +227,11 @@ func exit():
 func set_text():
 	# Color
 	if units_selected.size() < max_units_select_possible:
-		number_of_units.bbcode_text = str("[right]Units Selected [color=yellow]", units_selected.size() ,"/", max_units_select_possible,"[/color][/right]")
+		number_of_units.text = str("[right]Units Selected [color=yellow]", units_selected.size() ,"/", max_units_select_possible,"[/color][/right]")
 	elif  units_selected.size() == max_units_select_possible:
-		number_of_units.bbcode_text = str("[right]Units Selected [color=#1ed214]",  units_selected.size() ,"/", max_units_select_possible,"[/color][/right]")
+		number_of_units.text = str("[right]Units Selected [color=#1ed214]",  units_selected.size() ,"/", max_units_select_possible,"[/color][/right]")
 	elif  units_selected.size() > max_units_select_possible:
-		number_of_units.bbcode_text = str("[right]Units Selected [color=red]",  units_selected.size() ,"/", max_units_select_possible,"[/color][/right]")
+		number_of_units.text = str("[right]Units Selected [color=red]",  units_selected.size() ,"/", max_units_select_possible,"[/color][/right]")
 
 # Populate already selected units
 func populate_selected_units():
@@ -271,8 +271,8 @@ func reset():
 	unit_list.clear()
 	
 	# Move off site
-	$"Yes No".rect_position = OFF_SITE
-	$"Too Many Units".rect_position = OFF_SITE
+	$"Yes No".position = OFF_SITE
+	$"Too Many Units".position = OFF_SITE
 	
 	# Yes no choice
 	current_yes_no_option = 0

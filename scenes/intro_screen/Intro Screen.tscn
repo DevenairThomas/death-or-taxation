@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scenes/intro_screen/Intro Screen.gd" type="Script" id=1]
-[ext_resource path="res://assets/intro screen/intro background.jpg" type="Texture" id=2]
+[ext_resource path="res://assets/intro screen/intro background.jpg" type="Texture2D" id=2]
 [ext_resource path="res://assets/music/01 Fire Emblem_ Three Houses Main Theme.ogg" type="AudioStream" id=3]
-[ext_resource path="res://assets/font/Action Selector Font.tres" type="DynamicFont" id=4]
+[ext_resource path="res://assets/font/Action Selector Font.tres" type="FontFile" id=4]
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
 [ext_resource path="res://scenes/particles/Fog.tscn" type="PackedScene" id=6]
 
@@ -16,8 +16,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 1 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 0,
 "values": [ Color( 1, 1, 1, 1 ), Color( 0, 0, 0, 1 ) ]
 }
@@ -31,8 +31,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ true ]
 }
@@ -43,8 +43,8 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 1.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 0,
 "values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
 }
@@ -58,8 +58,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 0,
 "values": [ 0.0, -80.0 ]
 }
@@ -79,8 +79,8 @@ __meta__ = {
 }
 
 [node name="Intro Background" type="TextureRect" parent="."]
-margin_right = 240.0
-margin_bottom = 160.0
+offset_right = 240.0
+offset_bottom = 160.0
 texture = ExtResource( 2 )
 expand = true
 __meta__ = {
@@ -92,49 +92,49 @@ stream = ExtResource( 3 )
 
 [node name="Options" type="Control" parent="."]
 modulate = Color( 1, 1, 1, 0 )
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="New Game" type="Label" parent="Options"]
-margin_left = 150.629
-margin_top = 88.9829
-margin_right = 437.629
-margin_bottom = 138.983
-rect_scale = Vector2( 0.2, 0.2 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 150.629
+offset_top = 88.9829
+offset_right = 437.629
+offset_bottom = 138.983
+scale = Vector2( 0.2, 0.2 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "New Game"
 align = 1
 valign = 1
 
 [node name="Load Game" type="Label" parent="Options"]
-margin_left = 150.071
-margin_top = 104.604
-margin_right = 451.071
-margin_bottom = 207.604
-rect_scale = Vector2( 0.2, 0.2 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 150.071
+offset_top = 104.604
+offset_right = 451.071
+offset_bottom = 207.604
+scale = Vector2( 0.2, 0.2 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "Load Game
 "
 align = 1
 valign = 1
 
 [node name="Options" type="Label" parent="Options"]
-margin_left = 159.416
-margin_top = 125.385
-margin_right = 364.416
-margin_bottom = 228.385
-rect_scale = Vector2( 0.2, 0.2 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 159.416
+offset_top = 125.385
+offset_right = 364.416
+offset_bottom = 228.385
+scale = Vector2( 0.2, 0.2 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "Options
 "
 align = 1
 valign = 1
 
 [node name="Hand Selector" parent="Options" instance=ExtResource( 5 )]
-margin_left = 130.824
-margin_top = 88.1461
-margin_right = 146.824
-margin_bottom = 101.146
+offset_left = 130.824
+offset_top = 88.1461
+offset_right = 146.824
+offset_bottom = 101.146
 
 [node name="Anim" type="AnimationPlayer" parent="."]
 "anims/Fade " = SubResource( 1 )

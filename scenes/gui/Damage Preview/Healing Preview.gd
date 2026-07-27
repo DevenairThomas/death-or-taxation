@@ -20,9 +20,9 @@ var is_active
 
 func _ready():
 	is_active = false
-	$Preview.rect_position = RIGHT_SIDE
+	$Preview.position = RIGHT_SIDE
 	
-	get_parent().get_node("Action Selector Screen").connect("menu_moved", self, "set_menu_position")
+	get_parent().get_node("Action Selector Screen").connect("menu_moved", Callable(self, "set_menu_position"))
 
 # Input
 func _input(event):
@@ -93,7 +93,7 @@ func get_reachable_enemies():
 	#var max_range # Max range
 	#var min_range # Min range
 	queue.append([weapon.max_range, BattlefieldInfo.current_Unit_Selected.UnitMovementStats.currentTile])
-	while !queue.empty():
+	while !queue.is_empty():
 		# Pop first tile
 		var check_tile = queue.pop_front()
 		
@@ -143,9 +143,9 @@ func update_preview_box():
 # Need to find a better solution to this because this is kinda hacky and works like 85% of the time
 func set_menu_position(new_position):
 	if new_position == "left":
-		$Preview.rect_position = LEFT_SIDE
+		$Preview.position = LEFT_SIDE
 	else:
-		$Preview.rect_position = RIGHT_SIDE
+		$Preview.position = RIGHT_SIDE
 
 # Update chosen enemy
 func update_enemy_chosen():

@@ -19,7 +19,7 @@ var eirika_off_screen = Vector2(-300, -75)
 var current_event
 
 func _ready():
-	$"Eirika/Eirika Tween".connect("tween_completed", self, "set_eirika_idle")
+	$"Eirika/Eirika Tween".connect("tween_completed", Callable(self, "set_eirika_idle"))
 	$Eirika/Animation.play("Idle")
 
 # Start this map
@@ -45,7 +45,7 @@ func start():
 	$Anim.play("Fade ")
 
 	# Wait until animation is done
-	yield($Anim,"animation_finished")
+	await $Anim.animation_finished
 	
 	# Start music
 	$"World Map Music 1".volume_db = 0
@@ -55,24 +55,24 @@ func start():
 	current_event.run()
 	
 	# DC
-	SceneTransition.disconnect("scene_changed", self, "start")
+	SceneTransition.disconnect("scene_changed", Callable(self, "start"))
 
 # Place a new waypoint for a castle
 func place_castle_waypoint(castle_position):
-	var c_waypoint_marker = castle_waypoint_marker.instance()
+	var c_waypoint_marker = castle_waypoint_marker.instantiate()
 	c_waypoint_marker.position = castle_position
 	castle_waypoints.append(c_waypoint_marker)
 	add_child(c_waypoint_marker)
 
 # Place a new waypoint for a fort
 func place_fort_waypoint(fort_position):
-	var f_waypoint_marker = fort_waypoint_marker.instance()
+	var f_waypoint_marker = fort_waypoint_marker.instantiate()
 	f_waypoint_marker.position = fort_position
 	fort_waypoints.append(f_waypoint_marker)
 	add_child(f_waypoint_marker)
 
 func place_village_waypoint(village_position):
-	var v_waypoint_marker = village_waypoint_marker.instance()
+	var v_waypoint_marker = village_waypoint_marker.instantiate()
 	v_waypoint_marker.position = village_position
 	village_waypoints.append(v_waypoint_marker)
 	add_child(v_waypoint_marker)
@@ -115,14 +115,14 @@ func exit():
 	$Anim.play_backwards("Fade ")
 	$"World Map Music 1/Music Tween".interpolate_property($"World Map Music 1", "volume_db", 0.0, -80.0, 0.5, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	$"World Map Music 1/Music Tween".start()
-	yield($Anim,"animation_finished")
+	await $Anim.animation_finished
 	$"World Map Music 1".stop()
 	current_event = null
 	clear_map()
 
 # Connect to Scene changer
 func connect_to_scene_changer():
-	SceneTransition.connect("scene_changed", self, "start")
+	SceneTransition.connect("scene_changed", Callable(self, "start"))
 
 # Clear the map
 func clear_map():

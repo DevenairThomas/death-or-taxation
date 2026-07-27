@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://assets/levels/level2/level2.png" type="Texture" id=1]
+[ext_resource path="res://assets/levels/level2/level2.png" type="Texture2D" id=1]
 
-[node name="Castle Icon" type="Sprite"]
+[node name="Castle Icon" type="Sprite2D"]
 position = Vector2( 7.72639, 2.53191 )
 scale = Vector2( 0.385783, 0.368794 )
 z_index = 1

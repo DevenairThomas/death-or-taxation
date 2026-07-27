@@ -4,8 +4,8 @@ extends Node2D
 class_name Battlefield_Unit
 
 # Graphics
-export(String) var sprite_dir = "Idle"
-export(int) var animation_movement_speed = 10
+@export var sprite_dir: String = "Idle"
+@export var animation_movement_speed: int = 10
 
 # Movement -> Ally status is in here
 var UnitMovementStats
@@ -47,7 +47,7 @@ func _ready():
 	add_child(UnitActionStatus, true)
 	
 	# Inventory
-	UnitInventory = preload("res://scenes/units/Unit_Scripts/Inventory.tscn").instance()
+	UnitInventory = preload("res://scenes/units/Unit_Scripts/Inventory.tscn").instantiate()
 	add_child(UnitInventory)
 	
 	# Unit stats
@@ -55,10 +55,10 @@ func _ready():
 
 # Greyscale options
 func turn_greyscale_on():
-	get_node("Sprite").modulate = Color(0.33, 0.34, 0.37, 1)
+	get_node("Sprite2D").modulate = Color(0.33, 0.34, 0.37, 1)
 
 func turn_greyscale_off():
-	get_node("Sprite").modulate = Color(1, 1, 1, 1)
+	get_node("Sprite2D").modulate = Color(1, 1, 1, 1)
 
 # Get Direction to face
 # Returns the direction that the unit should be facing
@@ -84,7 +84,7 @@ func save():
 	var save_dict = {
 		# File and parent
 		"node_info" : {
-			"filename" : get_filename(),
+			"filename" : get_scene_file_path(),
 			"parent": get_parent().get_path(),
 		},
 		

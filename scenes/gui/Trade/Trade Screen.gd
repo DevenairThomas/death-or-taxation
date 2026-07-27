@@ -51,7 +51,7 @@ func start():
 # Build menu
 func build_menu(unit):
 	# Set position
-	$"Select Unit".rect_position = Vector2(0,0)
+	$"Select Unit".position = Vector2(0,0)
 	
 	# Turn off cursor
 	for unit in list_of_tradable_units:
@@ -70,10 +70,10 @@ func build_menu(unit):
 	$"Select Unit/Top/Unit Name".text = unit.UnitStats.name
 	
 	# Move the first part
-	$"Select Unit/Top".rect_position = Vector2(5,0)
+	$"Select Unit/Top".position = Vector2(5,0)
 	
 	# Build the menu for each
-	var last_item_slot = $"Select Unit/Top".rect_position.y + 7
+	var last_item_slot = $"Select Unit/Top".position.y + 7
 	for item in unit.UnitInventory.inventory:
 		# Pull item slot and set the correct data
 		var item_slot = item_slots_array.pop_front()
@@ -82,7 +82,7 @@ func build_menu(unit):
 		last_item_slot = item_slot.position.y
 	
 	# Put the bottom
-	$"Select Unit/Bottom".rect_position = Vector2(10, last_item_slot + ACTION_SIZE_Y - 1)
+	$"Select Unit/Bottom".position = Vector2(10, last_item_slot + ACTION_SIZE_Y - 1)
 	
 	# Activate the cursor
 	unit.get_node("Cursor Select").visible = true

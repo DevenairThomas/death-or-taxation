@@ -4,8 +4,8 @@
 code = "shader_type canvas_item;
 
 // Color Value in inspector
-uniform vec4 ash : hint_color;
-uniform vec4 fire : hint_color;
+uniform vec4 ash : source_color;
+uniform vec4 fire : source_color;
 
 // Amount of iterations for noise
 uniform int OCTAVES = 6;

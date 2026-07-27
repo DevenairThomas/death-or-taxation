@@ -49,7 +49,7 @@ func find_all_enemies_within_range():
 			var weapon = get_parent().UnitInventory
 			var queue = []
 			queue.append([weapon.MAX_ATTACK_RANGE, red_tile.occupyingUnit.UnitMovementStats.currentTile])
-			while !queue.empty():
+			while !queue.is_empty():
 				# Pop first tile
 				var check_tile = queue.pop_front()
 				
@@ -150,7 +150,7 @@ func find_tile_to_move_to(Unit_To_Move_Toward):
 	var weapon = get_parent().UnitInventory
 	var queue = []
 	queue.append([weapon.MAX_ATTACK_RANGE, Unit_To_Move_Toward.UnitMovementStats.currentTile])
-	while !queue.empty():
+	while !queue.is_empty():
 		# Pop first tile
 		var check_tile = queue.pop_front()
 		# Check if the tile is NOT occupied
@@ -243,7 +243,7 @@ func find_tile_to_move_to_no_enemies(eirika_tile: Cell = BattlefieldInfo.ally_un
 	var previous_tile = null
 	var adj_tiles_allowed = []
 	
-	while !get_parent().UnitMovementStats.movement_queue.empty():
+	while !get_parent().UnitMovementStats.movement_queue.is_empty():
 		test_tile = get_parent().UnitMovementStats.movement_queue.pop_back()
 		
 		if get_parent().UnitMovementStats.allowedMovement.has(test_tile) && test_tile.occupyingUnit == null:
@@ -266,7 +266,7 @@ func find_tile_to_move_to_no_enemies(eirika_tile: Cell = BattlefieldInfo.ally_un
 		previous_tile = test_tile
 	
 	# Prevent null errors if you can't go anywhere for some reason
-	if get_parent().UnitMovementStats.movement_queue.empty():
+	if get_parent().UnitMovementStats.movement_queue.is_empty():
 		get_parent().UnitMovementStats.movement_queue.append(get_parent().UnitMovementStats.currentTile)
 	else:
 		get_parent().UnitMovementStats.movement_queue.clear()
@@ -295,14 +295,14 @@ func find_tile_to_move_to_no_enemies_no_fluid(tile_to_move_to):
 	# Work backwards until we have a tile that is part of the system
 	var test_tile
 	
-	while !get_parent().UnitMovementStats.movement_queue.empty():
+	while !get_parent().UnitMovementStats.movement_queue.is_empty():
 		test_tile = get_parent().UnitMovementStats.movement_queue.pop_back()
 		
 		if get_parent().UnitMovementStats.allowedMovement.has(test_tile) && test_tile.occupyingUnit == null:
 			break
 	
 	# Prevent null errors if you can't go anywhere for some reason
-	if get_parent().UnitMovementStats.movement_queue.empty():
+	if get_parent().UnitMovementStats.movement_queue.is_empty():
 		get_parent().UnitMovementStats.movement_queue.append(get_parent().UnitMovementStats.currentTile)
 	else:
 		get_parent().UnitMovementStats.movement_queue.clear()
@@ -344,7 +344,7 @@ func next_step():
 # Passive Sript
 func passive():
 # Check if there are any enemies within range that we can attack
-	if all_attackable_enemies.empty():
+	if all_attackable_enemies.is_empty():
 		get_parent().UnitActionStatus.set_current_action(Unit_Action_Status.DONE)
 		BattlefieldInfo.movement_calculator.turn_off_all_tiles(get_parent(), BattlefieldInfo.grid)
 		# Move to the next enemy
@@ -357,7 +357,7 @@ func passive():
 # Aggressive Script
 func aggressive():
 	# Move toward Eirika if there are no enemies to attack
-	if all_attackable_enemies.empty():
+	if all_attackable_enemies.is_empty():
 		find_tile_to_move_to_no_enemies()
 	else:
 		# Find unit to attack
@@ -366,7 +366,7 @@ func aggressive():
 # Patrol Script
 func patrol():
 	# Check if there are any enemies within range that we can attack
-	if all_attackable_enemies.empty():
+	if all_attackable_enemies.is_empty():
 		# Check if we have reached the Tile target
 		if get_parent().UnitMovementStats.currentTile == tile_target:
 			if tile_target == tile_to_walk_A:

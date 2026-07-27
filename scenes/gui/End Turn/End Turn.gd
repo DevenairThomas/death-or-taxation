@@ -38,7 +38,7 @@ func movement(direction):
 			if current_number_action < 0:
 				current_number_action = 0
 			else:
-				$"End Turn/Hand Selector".rect_position.y -= ACTION_SIZE_Y - 1
+				$"End Turn/Hand Selector".position.y -= ACTION_SIZE_Y - 1
 				$"End Turn/Hand Selector/Move".play(0)
 			current_option_selected = menu_items[current_number_action]
 		"down":
@@ -46,7 +46,7 @@ func movement(direction):
 			if current_number_action > menu_items.size() - 1:
 				current_number_action = menu_items.size() - 1
 			else:
-				$"End Turn/Hand Selector".rect_position.y += ACTION_SIZE_Y - 1
+				$"End Turn/Hand Selector".position.y += ACTION_SIZE_Y - 1
 				$"End Turn/Hand Selector/Move".play(0)
 			current_option_selected = menu_items[current_number_action]
 
@@ -63,7 +63,7 @@ func process_selection():
 			turn_off()
 		"Suspend":
 			BattlefieldInfo.save_load_system.save_game()
-			yield(BattlefieldInfo.save_load_system, "saving_complete")
+			await BattlefieldInfo.save_load_system.saving_complete
 		"End":
 			# Get all ally units and put it to end
 			for ally_unit in BattlefieldInfo.ally_units.values():
@@ -93,7 +93,7 @@ func start():
 	# Reset hand
 	current_number_action = 0
 	current_option_selected = menu_items[current_number_action]
-	$"End Turn/Hand Selector".rect_position = original_hand_place
+	$"End Turn/Hand Selector".position = original_hand_place
 	
 	# Turn cursor off
 	get_parent().get_node("Cursor").enable(false, Cursor.WAIT)

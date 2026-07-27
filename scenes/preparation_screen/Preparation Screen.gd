@@ -72,7 +72,7 @@ func start(chapter_text, victory_text, path_to_next_level, prep_song):\
 	$"Prep Screen Control/Victory Condition".text = victory_text
 	
 	# Reset Hand
-	$"Prep Screen Control/Hand Selector".rect_position = hand_default_position
+	$"Prep Screen Control/Hand Selector".position = hand_default_position
 	
 	# Reset option
 	current_option_number = 0
@@ -85,7 +85,7 @@ func start(chapter_text, victory_text, path_to_next_level, prep_song):\
 	# Fade and allow input
 	$"Prep Screen Control".visible = true
 	$Anim.play("Fade")
-	yield($Anim, "animation_finished")
+	await $Anim.animation_finished
 	set_process_input(true)
 
 func _input(event):
@@ -97,7 +97,7 @@ func _input(event):
 			current_option = all_options_array[current_option_number]
 			
 			# Move hand down
-			$"Prep Screen Control/Hand Selector".rect_position -= hand_movement_vector
+			$"Prep Screen Control/Hand Selector".position -= hand_movement_vector
 			$"Prep Screen Control/Hand Selector/Move".play(0)
 			
 			# Set Text
@@ -110,7 +110,7 @@ func _input(event):
 			current_option = all_options_array[current_option_number]
 			
 			# Move hand down
-			$"Prep Screen Control/Hand Selector".rect_position += hand_movement_vector
+			$"Prep Screen Control/Hand Selector".position += hand_movement_vector
 			$"Prep Screen Control/Hand Selector/Move".play(0)
 			
 			# Set Text
@@ -152,7 +152,7 @@ func process_selection():
 			$Anim.play("Invi")
 			
 			# Prevent clicks right away
-			yield($Anim,"animation_finished")
+			await $Anim.animation_finished
 			
 			# Turn this off
 			turn_off()
@@ -175,7 +175,7 @@ func process_selection():
 			
 			# Hide this
 			$Anim.play_backwards("Fade Fast")
-			yield($Anim, "animation_finished")
+			await $Anim.animation_finished
 			$Shop.start()
 			$"Prep Screen Control".visible = false
 			
@@ -189,9 +189,9 @@ func process_selection():
 			temp_disable()
 		"Save":
 			BattlefieldInfo.save_load_system.save_game()
-			yield(BattlefieldInfo.save_load_system, "saving_complete")
+			await BattlefieldInfo.save_load_system.saving_complete
 			$"Prep Screen Control/Side Panel Text".text = "Game Saved!"
-			yield(get_tree().create_timer(1), "timeout")
+			await get_tree().create_timer(1).timeout
 			$"Prep Screen Control/Side Panel Text".text = SAVE
 			
 
@@ -222,7 +222,7 @@ func start_battle():
 	
 	# Turn off with sound as well
 	$Anim.play("Start Battle")
-	yield($Anim, "animation_finished")
+	await $Anim.animation_finished
 	stop_music()
 	
 	# Start level
@@ -243,7 +243,7 @@ func turn_on():
 	$"Prep Screen Control/Hand Selector".visible = true
 	
 	# Wait until done
-	yield($Anim, "animation_finished")
+	await $Anim.animation_finished
 	
 	# Allow movement
 	set_process_input(true)
@@ -254,7 +254,7 @@ func turn_on_fade():
 	$"Prep Screen Control".visible = true
 	
 	# Wait until done
-	yield($Anim, "animation_finished")
+	await $Anim.animation_finished
 	
 	
 	# Allow movement

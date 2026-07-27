@@ -1,4 +1,4 @@
-extends Sprite
+extends Sprite2D
 
 # Random screen flashes
 

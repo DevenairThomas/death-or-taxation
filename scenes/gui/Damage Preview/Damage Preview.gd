@@ -20,9 +20,9 @@ var is_active
 
 func _ready():
 	is_active = false
-	$Preview.rect_position = RIGHT_SIDE
+	$Preview.position = RIGHT_SIDE
 	
-	get_parent().get_node("Action Selector Screen").connect("menu_moved", self, "set_menu_position")
+	get_parent().get_node("Action Selector Screen").connect("menu_moved", Callable(self, "set_menu_position"))
 
 # Input
 func _input(event):
@@ -85,7 +85,7 @@ func get_reachable_enemies():
 	open_tile.append([BattlefieldInfo.combat_player_unit.UnitMovementStats.currentTile, attack_steps])
 	
 	# Process all tiles
-	while !open_tile.empty():
+	while !open_tile.is_empty():
 		# Pop first tile
 		var tile_to_check = open_tile.pop_front()
 		
@@ -172,9 +172,9 @@ func update_preview_box():
 # Set position of menu
 func set_menu_position(new_position):
 	if new_position == "left":
-		$Preview.rect_position = LEFT_SIDE
+		$Preview.position = LEFT_SIDE
 	else:
-		$Preview.rect_position = RIGHT_SIDE
+		$Preview.position = RIGHT_SIDE
 
 # Update chosen enemy
 func update_enemy_chosen():

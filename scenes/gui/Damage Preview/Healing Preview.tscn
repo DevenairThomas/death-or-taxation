@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scenes/gui/Damage Preview/Healing Preview.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/Damage Preview/damageBox.png" type="Texture" id=2]
-[ext_resource path="res://icon.svg" type="Texture" id=3]
-[ext_resource path="res://assets/font/Action Selector Font.tres" type="DynamicFont" id=4]
+[ext_resource path="res://assets/ui/Damage Preview/damageBox.png" type="Texture2D" id=2]
+[ext_resource path="res://icon.svg" type="Texture2D" id=3]
+[ext_resource path="res://assets/font/Action Selector Font.tres" type="FontFile" id=4]
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
 
 [node name="Healing Preview" type="CanvasLayer"]
@@ -13,35 +13,35 @@ script = ExtResource( 1 )
 visible = false
 
 [node name="Preview Panel" type="TextureRect" parent="Preview"]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 80.0
-margin_bottom = 140.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 80.0
+offset_bottom = 140.0
 texture = ExtResource( 2 )
 expand = true
 
 [node name="Player" type="Control" parent="Preview"]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Player Item Icon" type="TextureRect" parent="Preview/Player"]
-margin_left = 14.2298
-margin_top = 16.4909
-margin_right = 26.2298
-margin_bottom = 28.4909
+offset_left = 14.2298
+offset_top = 16.4909
+offset_right = 26.2298
+offset_bottom = 28.4909
 texture = ExtResource( 3 )
 expand = true
 
 [node name="Player Name" type="Label" parent="Preview/Player"]
-margin_left = 28.0
-margin_top = 15.0
-margin_right = 528.0
-margin_bottom = 165.0
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 28.0
+offset_top = 15.0
+offset_right = 528.0
+offset_bottom = 165.0
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "Player Name"
 align = 1
 valign = 1
@@ -50,12 +50,12 @@ __meta__ = {
 }
 
 [node name="Player HP" type="Label" parent="Preview/Player"]
-margin_left = 60.0
-margin_top = 32.71
-margin_right = 191.0
-margin_bottom = 153.71
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 32.71
+offset_right = 191.0
+offset_bottom = 153.71
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "100"
 align = 1
 valign = 1
@@ -64,12 +64,12 @@ __meta__ = {
 }
 
 [node name="Player Dmg" type="Label" parent="Preview/Player"]
-margin_left = 60.0
-margin_top = 50.525
-margin_right = 191.0
-margin_bottom = 171.525
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 50.525
+offset_right = 191.0
+offset_bottom = 171.525
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "100"
 align = 1
 valign = 1
@@ -78,12 +78,12 @@ __meta__ = {
 }
 
 [node name="Player Hit" type="Label" parent="Preview/Player"]
-margin_left = 60.0
-margin_top = 68.121
-margin_right = 191.0
-margin_bottom = 189.121
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 68.121
+offset_right = 191.0
+offset_bottom = 189.121
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "100"
 align = 1
 valign = 1
@@ -92,37 +92,37 @@ __meta__ = {
 }
 
 [node name="Player Crit" type="Label" parent="Preview/Player"]
-margin_left = 60.0
-margin_top = 84.155
-margin_right = 191.0
-margin_bottom = 205.155
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 84.155
+offset_right = 191.0
+offset_bottom = 205.155
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "-"
 align = 1
 valign = 1
 
 [node name="Enemy" type="Control" parent="Preview"]
-margin_left = -44.221
-margin_top = 0.258598
-margin_right = -44.221
-margin_bottom = 0.258598
+offset_left = -44.221
+offset_top = 0.258598
+offset_right = -44.221
+offset_bottom = 0.258598
 
 [node name="Enemy Item Icon" type="TextureRect" parent="Preview/Enemy"]
-margin_left = 106.736
-margin_top = 103.203
-margin_right = 118.736
-margin_bottom = 115.203
+offset_left = 106.736
+offset_top = 103.203
+offset_right = 118.736
+offset_bottom = 115.203
 texture = ExtResource( 3 )
 expand = true
 
 [node name="Enemy Name" type="Label" parent="Preview/Enemy"]
-margin_left = 56.1714
-margin_top = 101.512
-margin_right = 556.171
-margin_bottom = 251.512
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 56.1714
+offset_top = 101.512
+offset_right = 556.171
+offset_bottom = 251.512
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "Enemy Name"
 align = 1
 valign = 1
@@ -131,56 +131,56 @@ __meta__ = {
 }
 
 [node name="Enemy Item Name" type="Label" parent="Preview/Enemy"]
-margin_left = 56.0
-margin_top = 117.0
-margin_right = 726.0
-margin_bottom = 289.0
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 56.0
+offset_top = 117.0
+offset_right = 726.0
+offset_bottom = 289.0
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "Iron Axe"
 align = 1
 valign = 1
 
 [node name="Enemy HP" type="Label" parent="Preview/Enemy"]
-margin_left = 60.0
-margin_top = 32.71
-margin_right = 191.0
-margin_bottom = 153.71
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 32.71
+offset_right = 191.0
+offset_bottom = 153.71
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "100"
 align = 1
 valign = 1
 
 [node name="Enemy Dmg" type="Label" parent="Preview/Enemy"]
-margin_left = 60.0
-margin_top = 50.525
-margin_right = 191.0
-margin_bottom = 171.525
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 50.525
+offset_right = 191.0
+offset_bottom = 171.525
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "-"
 align = 1
 valign = 1
 
 [node name="Enemy Hit" type="Label" parent="Preview/Enemy"]
-margin_left = 60.0
-margin_top = 68.121
-margin_right = 191.0
-margin_bottom = 189.121
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 68.121
+offset_right = 191.0
+offset_bottom = 189.121
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "-"
 align = 1
 valign = 1
 
 [node name="Enemy Crit" type="Label" parent="Preview/Enemy"]
-margin_left = 60.0
-margin_top = 84.155
-margin_right = 191.0
-margin_bottom = 205.155
-rect_scale = Vector2( 0.1, 0.1 )
-custom_fonts/font = ExtResource( 4 )
+offset_left = 60.0
+offset_top = 84.155
+offset_right = 191.0
+offset_bottom = 205.155
+scale = Vector2( 0.1, 0.1 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "-"
 align = 1
 valign = 1
@@ -191,8 +191,8 @@ one_shot = true
 
 [node name="Hand Selector" parent="." instance=ExtResource( 5 )]
 visible = false
-margin_left = -59.8514
-margin_top = 27.736
-margin_right = -43.8514
-margin_bottom = 40.736
+offset_left = -59.8514
+offset_top = 27.736
+offset_right = -43.8514
+offset_bottom = 40.736
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

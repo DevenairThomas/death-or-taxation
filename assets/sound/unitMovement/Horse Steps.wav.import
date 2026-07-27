@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Horse Steps.wav-12bf0c84ffe1e06f0ce7d90805ff0824.sample"
+type="AudioStreamWAV"
+uid="uid://df5ej66qdma34"
+path="res://.godot/imported/Horse Steps.wav-12bf0c84ffe1e06f0ce7d90805ff0824.sample"
 
 [deps]
 
 source_file="res://assets/sound/unitMovement/Horse Steps.wav"
-dest_files=[ "res://.import/Horse Steps.wav-12bf0c84ffe1e06f0ce7d90805ff0824.sample" ]
+dest_files=["res://.godot/imported/Horse Steps.wav-12bf0c84ffe1e06f0ce7d90805ff0824.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=true
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

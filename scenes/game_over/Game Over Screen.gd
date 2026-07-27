@@ -13,12 +13,12 @@ func _ready():
 	$"Game Over Music".play(0)
 
 	# Param time
-	$"Game Over Screen Image".material.set_shader_param("start_time", 9999999.0)
+	$"Game Over Screen Image".material.set_shader_parameter("start_time", 9999999.0)
 
 	# Start Animation
 	$"AnimationPlayer".play("Start")
-	yield($AnimationPlayer, "animation_finished")
-	SceneTransition.connect("scene_changed", self, "clean_up")
+	await $AnimationPlayer.animation_finished
+	SceneTransition.connect("scene_changed", Callable(self, "clean_up"))
 	is_active = true
 	
 	# Remove current camera
@@ -37,19 +37,19 @@ func _input(event):
 			$"Game Over Text".visible = false
 		
 		# Burn scene up
-		$"Game Over Screen Image".material.set_shader_param("duration", 4.0)
-		$"Game Over Screen Image".material.set_shader_param("start_time", OS.get_ticks_msec() / 1000.0)
+		$"Game Over Screen Image".material.set_shader_parameter("duration", 4.0)
+		$"Game Over Screen Image".material.set_shader_parameter("start_time", Time.get_ticks_msec() / 1000.0)
 		
 		# Scene transition -> Finish burn effect
 		$"AnimationPlayer".play("Text Fade")
-		yield(get_tree().create_timer(4.2), "timeout")
+		await get_tree().create_timer(4.2).timeout
 		
 		# Fade music
 		$"AnimationPlayer".play("volume fade off")
 		$"Game Over Screen Image".modulate = Color(1,1,1,0)
-		SceneTransition.change_scene(intro_screen, 0.1)
+		SceneTransition.change_scene_to_file(intro_screen, 0.1)
 
 func clean_up():
 	$"Game Over Music".stop()
-	SceneTransition.disconnect("scene_changed", self, "clean_up")
+	SceneTransition.disconnect("scene_changed", Callable(self, "clean_up"))
 	queue_free()

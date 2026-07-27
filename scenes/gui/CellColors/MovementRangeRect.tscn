@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://scenes/gui/Cell/MovementRangeRect.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/Square Selectors/Animated Selectors.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/Square Selectors/Animated Selectors.png" type="Texture2D" id=2]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Wave"
@@ -15,8 +15,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 0, 0, 15, 15 ), Rect2( 16, 0, 15, 15 ), Rect2( 32, 0, 15, 15 ), Rect2( 48, 0, 15, 15 ), Rect2( 64, 0, 15, 15 ), Rect2( 80, 0, 15, 15 ), Rect2( 96, 0, 15, 15 ), Rect2( 112, 0, 15, 15 ), Rect2( 128, 0, 15, 15 ), Rect2( 144, 0, 15, 15 ), Rect2( 160, 0, 15, 15 ), Rect2( 176, 0, 15, 15 ), Rect2( 192, 0, 15, 15 ), Rect2( 208, 0, 15, 15 ), Rect2( 224, 0, 15, 15 ), Rect2( 240, 0, 15, 15 ) ]
 }
@@ -33,8 +33,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 0, 0, 15, 15 ), Rect2( 16, 0, 15, 15 ), Rect2( 32, 0, 15, 15 ), Rect2( 48, 0, 15, 15 ), Rect2( 64, 0, 15, 15 ), Rect2( 80, 0, 15, 15 ), Rect2( 96, 0, 15, 15 ), Rect2( 112, 0, 15, 15 ), Rect2( 128, 0, 15, 15 ), Rect2( 144, 0, 15, 15 ), Rect2( 160, 0, 15, 15 ), Rect2( 176, 0, 15, 15 ), Rect2( 192, 0, 15, 15 ), Rect2( 208, 0, 15, 15 ), Rect2( 224, 0, 15, 15 ), Rect2( 240, 0, 15, 15 ) ]
 }
@@ -51,8 +51,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 0, 16, 15, 15 ), Rect2( 16, 16, 15, 15 ), Rect2( 32, 16, 15, 15 ), Rect2( 48, 16, 15, 15 ), Rect2( 64, 16, 15, 15 ), Rect2( 80, 16, 15, 15 ), Rect2( 96, 16, 15, 15 ), Rect2( 112, 16, 15, 15 ), Rect2( 128, 16, 15, 15 ), Rect2( 144, 16, 15, 15 ), Rect2( 160, 16, 15, 15 ), Rect2( 176, 16, 15, 15 ), Rect2( 192, 16, 15, 15 ), Rect2( 208, 16, 15, 15 ), Rect2( 224, 16, 15, 15 ), Rect2( 240, 16, 15, 15 ) ]
 }
@@ -69,8 +69,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 0, 16, 15, 15 ), Rect2( 16, 16, 15, 15 ), Rect2( 32, 16, 15, 15 ), Rect2( 48, 16, 15, 15 ), Rect2( 64, 16, 15, 15 ), Rect2( 80, 16, 15, 15 ), Rect2( 96, 16, 15, 15 ), Rect2( 112, 16, 15, 15 ), Rect2( 128, 16, 15, 15 ), Rect2( 144, 16, 15, 15 ), Rect2( 160, 16, 15, 15 ), Rect2( 176, 16, 15, 15 ), Rect2( 192, 16, 15, 15 ), Rect2( 208, 16, 15, 15 ), Rect2( 224, 16, 15, 15 ), Rect2( 240, 16, 15, 15 ) ]
 }
@@ -86,8 +86,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 0, 32, 15, 15 ), Rect2( 16, 32, 15, 15 ), Rect2( 32, 32, 15, 15 ), Rect2( 48, 32, 15, 15 ), Rect2( 64, 32, 15, 15 ), Rect2( 80, 32, 15, 15 ), Rect2( 96, 32, 15, 15 ), Rect2( 112, 32, 15, 15 ), Rect2( 128, 32, 15, 15 ), Rect2( 144, 32, 15, 15 ), Rect2( 160, 32, 15, 15 ), Rect2( 176, 32, 15, 15 ), Rect2( 192, 32, 15, 15 ), Rect2( 208, 32, 15, 15 ), Rect2( 224, 32, 15, 15 ), Rect2( 240, 32, 15, 15 ) ]
 }
@@ -97,7 +97,7 @@ modulate = Color( 1, 1, 1, 0.631373 )
 z_index = 4
 script = ExtResource( 1 )
 
-[node name="Blue" type="Sprite" parent="."]
+[node name="Blue" type="Sprite2D" parent="."]
 visible = false
 position = Vector2( 1, 1 )
 z_index = 1
@@ -110,7 +110,7 @@ region_rect = Rect2( 0, 0, 15, 15 )
 playback_speed = 4.0
 anims/Wave = SubResource( 1 )
 
-[node name="Marked" type="Sprite" parent="."]
+[node name="Marked" type="Sprite2D" parent="."]
 visible = false
 modulate = Color( 1, 0.0823529, 0.984314, 1 )
 position = Vector2( 1, 1 )
@@ -124,7 +124,7 @@ region_rect = Rect2( 0, 0, 15, 15 )
 playback_speed = 4.0
 anims/Wave = SubResource( 2 )
 
-[node name="Red" type="Sprite" parent="."]
+[node name="Red" type="Sprite2D" parent="."]
 visible = false
 position = Vector2( 1, 1 )
 z_index = 1
@@ -137,7 +137,7 @@ region_rect = Rect2( 0, 16, 15, 15 )
 playback_speed = 4.0
 anims/Wave = SubResource( 3 )
 
-[node name="Purple" type="Sprite" parent="."]
+[node name="Purple" type="Sprite2D" parent="."]
 visible = false
 modulate = Color( 0.556863, 0.345098, 0.219608, 1 )
 position = Vector2( 1, 1 )
@@ -150,7 +150,7 @@ region_rect = Rect2( 0, 16, 15, 15 )
 playback_speed = 4.0
 anims/Wave = SubResource( 4 )
 
-[node name="Green" type="Sprite" parent="."]
+[node name="Green" type="Sprite2D" parent="."]
 visible = false
 position = Vector2( 1, 1 )
 z_index = 1

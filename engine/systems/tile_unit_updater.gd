@@ -16,7 +16,7 @@ func ally_turn_update():
 			heal(ally_unit, ally_unit.UnitMovementStats.currentTile)
 			
 			if healed || damaged:
-				yield(get_tree().create_timer(1), "timeout")
+				await get_tree().create_timer(1).timeout
 	emit_signal("update_done", "Ally")
 
 func enemy_turn_update():
@@ -24,7 +24,7 @@ func enemy_turn_update():
 		damage(enemy_unit, enemy_unit.UnitMovementStats.currentTile)
 		heal(enemy_unit, enemy_unit.UnitMovementStats.currentTile)
 		if healed || damaged:
-			yield(get_tree().create_timer(1), "timeout")
+			await get_tree().create_timer(1).timeout
 	emit_signal("update_done", "Enemy")
 
 func heal(unit, tile):

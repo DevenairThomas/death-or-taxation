@@ -14,7 +14,7 @@ func _ready():
 	
 	# Add axe'
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.AXE)
-	var axe = preload("res://scenes/items/Axes/Iron Axe.tscn").instance()
+	var axe = preload("res://scenes/items/Axes/Iron Axe.tscn").instantiate()
 	UnitInventory.add_item(axe)
 	
 	# Combat sprite

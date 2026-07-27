@@ -28,7 +28,7 @@ var number_of_upgrades = 0
 # Prepare random function
 func _ready():
 	randomize()
-	$"Level Up Panel/anim".connect("animation_finished", self, "process_stat_upgrade")
+	$"Level Up Panel/anim".connect("animation_finished", Callable(self, "process_stat_upgrade"))
 	set_process(false)
 
 func _process(delta):
@@ -162,8 +162,8 @@ func start():
 	$"Level Up Panel/Unit Mugshot".texture = BattlefieldInfo.combat_player_unit.unit_mugshot
 
 func dissolve_level_up_logo():
-	$"Level Up Logo".material.set_shader_param("duration", 1.5)
-	$"Level Up Logo".material.set_shader_param("start_time", OS.get_ticks_msec() / 1000.0)
+	$"Level Up Logo".material.set_shader_parameter("duration", 1.5)
+	$"Level Up Logo".material.set_shader_parameter("start_time", Time.get_ticks_msec() / 1000.0)
 
 func play_sound_and_graphic():
 	# Play fade in
@@ -201,7 +201,7 @@ func hit_occured(chance):
 	elif chance >= 100:
 		return true
 	
-	return int(rand_range(0,100)) <= chance
+	return int(randf_range(0,100)) <= chance
 
 func _on_Return_timeout():
 	set_process(false)
@@ -228,7 +228,7 @@ func _on_Return_timeout():
 	
 	# Broken weapon screen
 	if get_parent().get_parent().get_parent().broke_item:
-		get_parent().get_node("Item Broke Screen").start(BattlefieldInfo.combat_player_unit.UnitInventory.current_item_equipped, BattlefieldInfo.combat_player_unit)
+		get_parent().get_node("Item Broke Screen").start(Callable(BattlefieldInfo.combat_player_unit.UnitInventory.current_item_equipped, BattlefieldInfo.combat_player_unit))
 	else:
 		emit_signal("done_leveling_up")
 

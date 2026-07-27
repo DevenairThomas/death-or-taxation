@@ -37,7 +37,7 @@ func _ready():
 # Start this screen
 func start():
 	# Show action menu
-	$"Item Menu".rect_position = Vector2(0,0)
+	$"Item Menu".position = Vector2(0,0)
 	
 	# Build Menu
 	build_menu()
@@ -68,7 +68,7 @@ func movement(direction):
 			if current_number_action < 0:
 				current_number_action = 0
 			else:
-				$"Item Menu/Hand Selector".rect_position.y -= ACTION_SIZE_Y - 1
+				$"Item Menu/Hand Selector".position.y -= ACTION_SIZE_Y - 1
 				$"Item Menu/Hand Selector/Move".play(0)
 			current_option_selected = current_items[current_number_action]
 			set_item_stats(current_items[current_number_action])
@@ -77,7 +77,7 @@ func movement(direction):
 			if current_number_action > current_items.size() - 1:
 				current_number_action = current_items.size() - 1
 			else:
-				$"Item Menu/Hand Selector".rect_position.y += ACTION_SIZE_Y - 1
+				$"Item Menu/Hand Selector".position.y += ACTION_SIZE_Y - 1
 				$"Item Menu/Hand Selector/Move".play(0)
 			current_option_selected = current_items[current_number_action]
 			set_item_stats(current_items[current_number_action])
@@ -108,11 +108,11 @@ func build_menu():
 	current_items.clear()
 	
 	# Move Box
-	$"Item Menu/Equip Discord Box".rect_position = EQUIP_BOX_LOCATION
+	$"Item Menu/Equip Discord Box".position = EQUIP_BOX_LOCATION
 	
 	# Mugshot
 	$"Item Menu/Mugshot".texture = BattlefieldInfo.current_Unit_Selected.unit_mugshot
-	$"Item Menu/Mugshot".rect_position = MUGSHOT_POSITION
+	$"Item Menu/Mugshot".position = MUGSHOT_POSITION
 	
 #	Get each item and build the menu
 	var last_item = item_slot_array.front()
@@ -132,7 +132,7 @@ func build_menu():
 	$"Item Menu/Top".position = Vector2(56,26)
 	
 	# Set the hand cursor to the first item in the list
-	$"Item Menu/Hand Selector".rect_position = first_item.position + HAND_OFF_SET
+	$"Item Menu/Hand Selector".position = first_item.position + HAND_OFF_SET
 	current_number_action = 0
 	current_option_selected = current_items[current_number_action]
 	
@@ -144,7 +144,7 @@ func go_back():
 	is_active = false
 	
 	# Move everything off
-	$"Item Menu".rect_position = Vector2(-300, -300)
+	$"Item Menu".position = Vector2(-300, -300)
 	
 	# Go back to action selector
 	BattlefieldInfo.unit_movement_system.emit_signal("action_selector_screen")
@@ -165,7 +165,7 @@ func set_item_stats(item):
 		$"Item Menu/Mugshot/Item Stats/Background/anim".play("equipped")
 	else:
 		$"Item Menu/Mugshot/Item Stats/Background/anim".stop(true)
-		$"Item Menu/Mugshot/Item Stats/Background/Weapon Name".set("custom_colors/font_color", Color(1.0, 1.0, 1.0))
+		$"Item Menu/Mugshot/Item Stats/Background/Weapon Name".set("theme_override_colors/font_color", Color(1.0, 1.0, 1.0))
 
 func _on_Timer_timeout():
 	# Active Input

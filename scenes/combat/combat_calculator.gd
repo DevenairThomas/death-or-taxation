@@ -350,7 +350,7 @@ func crit_occurred(crit_chance):
 	elif crit_chance <= 0:
 		return false
 		
-	return int(rand_range(0, 100)) <= crit_chance
+	return int(randf_range(0, 100)) <= crit_chance
 
 func hit_occured(accuracy_chance):
 	if accuracy_chance >= 100:
@@ -358,7 +358,7 @@ func hit_occured(accuracy_chance):
 	elif accuracy_chance <= 0:
 		return false
 	
-	return int(rand_range(0,100)) <= accuracy_chance
+	return int(randf_range(0,100)) <= accuracy_chance
 
 func reset_stats():
 	# Double attack

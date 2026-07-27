@@ -15,8 +15,7 @@ func save_game():
 	print("Starting to save...")
 	
 	# Open new file
-	var save_game_file = File.new()
-	save_game_file.open("res://save/save_game_file.save", File.WRITE)
+	var save_game_file = FileAccess.open("res://save/save_game_file.save", FileAccess.WRITE)
 	
 	# Save current money
 	save_money(save_game_file)
@@ -46,8 +45,7 @@ func save_game():
 
 func load_game():
 	# Check if we have a save file
-	var saved_game = File.new()
-	if !saved_game.file_exists("res://save/save_game_file.save"):
+	if !FileAccess.file_exists("res://save/save_game_file.save"):
 		print("No save file found!")
 		return
 	
@@ -55,11 +53,13 @@ func load_game():
 	var saved_data = []
 	
 	# Load file
-	saved_game.open("res://save/save_game_file.save", File.READ)
+	var saved_game = FileAccess.open("res://save/save_game_file.save", FileAccess.READ)
 	
 	# Load all data from the file
-	while saved_game.get_position() < saved_game.get_len():
-		var node_data = parse_json(saved_game.get_line())
+	while saved_game.get_position() < saved_game.get_length():
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(saved_game.get_line())
+		var node_data = test_json_conv.get_data()
 		saved_data.append(node_data)
 	
 	# Reverse the loading process
@@ -70,7 +70,7 @@ func load_game():
 	# Load level
 	data = saved_data[1]
 	# Create level
-	var level_object = load(data["filename"]).instance()
+	var level_object = load(data["filename"]).instantiate()
 	get_node(data["parent"]).add_child(level_object)
 	
 	# Set new commander name
@@ -112,7 +112,7 @@ func load_game():
 		var unit_inventory_data = ally_unit["inventory_data"]
 		
 		# Create ally
-		var player_object = load(node_data["filename"]).instance()
+		var player_object = load(node_data["filename"]).instantiate()
 		player_object.name = unit_stats_data["identifier"]
 		
 		# Attach back to the y sort
@@ -127,13 +127,13 @@ func load_game():
 		
 		# Create new inventory objects
 		for item_data in unit_inventory_data:
-			var item_object = load(item_data["filename"]).instance()
+			var item_object = load(item_data["filename"]).instantiate()
 			player_object.UnitInventory.add_item(item_object)
 			item_object.load_item(item_data["item_stats"])
 		
 		# Unit Stats
 		for unit_stat_key in unit_stats_data.keys():
-			if typeof(unit_stats_data[unit_stat_key]) == TYPE_REAL:
+			if typeof(unit_stats_data[unit_stat_key]) == TYPE_FLOAT:
 				player_object.UnitStats.set(unit_stat_key, int(unit_stats_data[unit_stat_key]))
 			else:
 				player_object.UnitStats.set(unit_stat_key, unit_stats_data[unit_stat_key])
@@ -172,7 +172,7 @@ func load_game():
 			
 			# Create AI object
 			var ai_data = ally_unit["AI"]
-			var ai_object = load(ai_data["filename"]).instance()
+			var ai_object = load(ai_data["filename"]).instantiate()
 			ai_object.name = "AI"
 			
 			# Set AI Type
@@ -239,9 +239,9 @@ func save_player_units(save_game_file):
 	var player_array = {"player_units" : []}
 	
 	# Units in the current level units
-	for player_unit in BattlefieldInfo.current_level.get_node("YSort").get_children():
+	for player_unit in BattlefieldInfo.current_level.get_node("Node2D").get_children():
 		# Make sure node is an instanced scene
-		if player_unit.filename.empty():
+		if player_unit.filename.is_empty():
 			print("Persistent node '%s' is not an instanced scene, skipped." % player_unit.name)
 			continue
 		
@@ -258,7 +258,7 @@ func save_player_units(save_game_file):
 	# Units in the y sort of the battlefield
 	for player_unit in BattlefieldInfo.y_sort_player_party.get_children():
 		# Make sure node is an instanced scene
-		if player_unit.filename.empty():
+		if player_unit.filename.is_empty():
 			print("Persistent node '%s' is not an instanced scene, skipped." % player_unit.name)
 			continue
 		
@@ -273,28 +273,28 @@ func save_player_units(save_game_file):
 		player_array["player_units"].append(unit_data)
 	
 	# Save Data
-	save_game_file.store_line(to_json(player_array))
+	save_game_file.store_line(JSON.new().stringify(player_array))
 	
 
 func save_current_events(save_game_file):
 	print("Saving current events...")
-	save_game_file.store_line(to_json(BattlefieldInfo.event_system.save()))
+	save_game_file.store_line(JSON.new().stringify(BattlefieldInfo.event_system.save()))
 	
 
 func save_convoy(save_game_file):
 	print("Saving convoy...")
 	var convoy_save_data = BattlefieldInfo.convoy.save()
-	save_game_file.store_line(to_json(convoy_save_data))
+	save_game_file.store_line(JSON.new().stringify(convoy_save_data))
 
 func save_money(save_game_file):
 	print("Saving money...")
 	var money = {"money": BattlefieldInfo.money}
-	save_game_file.store_line(to_json(money))
+	save_game_file.store_line(JSON.new().stringify(money))
 
 func save_current_play_time(save_game_file):
 	print("Saving current play time...")
 	var total_elapsed_time = StatusScreen.current_play_session + StatusScreen.saved_time
-	save_game_file.store_line(to_json(total_elapsed_time))
+	save_game_file.store_line(JSON.new().stringify(total_elapsed_time))
 
 func save_turn_number(save_game_file):
 	print("Saving current turn manager")
@@ -302,13 +302,13 @@ func save_turn_number(save_game_file):
 		"player_turn" : BattlefieldInfo.turn_manager.player_turn_number,
 		"enemy_turn" : BattlefieldInfo.turn_manager.enemy_turn_number
 	}
-	save_game_file.store_line(to_json(turn_manager_number))
+	save_game_file.store_line(JSON.new().stringify(turn_manager_number))
 
 func save_current_level(save_game_file):
 	print("Saving current level...")
 	var current_level = {
-		"filename" : BattlefieldInfo.level_container.get_filename(),
+		"filename" : BattlefieldInfo.level_container.get_scene_file_path(),
 		"parent": BattlefieldInfo.level_container.get_parent().get_path(),
 		"enemy_commander_name": BattlefieldInfo.level_container.enemy_commander_name
 	}
-	save_game_file.store_line(to_json(current_level))
+	save_game_file.store_line(JSON.new().stringify(current_level))

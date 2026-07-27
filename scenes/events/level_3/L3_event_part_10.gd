@@ -16,7 +16,7 @@ func _init():
 
 func start():
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "event_complete")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "event_complete"))
 	
 	BattlefieldInfo.message_system.set_position(Messaging_System.BOTTOM)
 	

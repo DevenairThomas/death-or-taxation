@@ -3,13 +3,13 @@
 [ext_resource path="res://scenes/gui/Weapon Select/Healing Select.gd" type="Script" id=1]
 [ext_resource path="res://scenes/gui/Action Selector/Actions/Top.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/gui/Action Selector/Actions/Bottom.tscn" type="PackedScene" id=3]
-[ext_resource path="res://icon.svg" type="Texture" id=4]
+[ext_resource path="res://icon.svg" type="Texture2D" id=4]
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=6]
-[ext_resource path="res://icon.svg" type="Texture" id=7]
-[ext_resource path="res://assets/ui/Item Preview/itemBox.png" type="Texture" id=8]
+[ext_resource path="res://assets/font/Main Font.ttf" type="FontFile" id=6]
+[ext_resource path="res://icon.svg" type="Texture2D" id=7]
+[ext_resource path="res://assets/ui/Item Preview/itemBox.png" type="Texture2D" id=8]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 size = 26
 use_mipmaps = true
 use_filter = true
@@ -19,14 +19,14 @@ font_data = ExtResource( 6 )
 resource_name = "equipped"
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Weapon Name:custom_colors/font_color")
+tracks/0/path = NodePath("Weapon Name:theme_override_colors/font_color")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 0.4 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 0,
 "values": [ Color( 0.352941, 0.890196, 0.333333, 1 ), Color( 0.117647, 0.858824, 0.0901961, 1 ) ]
 }
@@ -45,24 +45,24 @@ __meta__ = {
 [node name="Weapon List" type="Control" parent="Weapon Select"]
 
 [node name="Top" parent="Weapon Select/Weapon List" instance=ExtResource( 2 )]
-margin_left = 9.76417
-margin_top = 7.23653
-margin_right = 951.764
-margin_bottom = 210.237
+offset_left = 9.76417
+offset_top = 7.23653
+offset_right = 951.764
+offset_bottom = 210.237
 expand = true
 
 [node name="Bottom" parent="Weapon Select/Weapon List" instance=ExtResource( 3 )]
-margin_left = -106.743
-margin_top = 48.4331
-margin_right = 775.257
-margin_bottom = 86.4331
+offset_left = -106.743
+offset_top = 48.4331
+offset_right = 775.257
+offset_bottom = 86.4331
 expand = true
 
 [node name="Unit Mugshot" type="TextureRect" parent="Weapon Select"]
-margin_left = 145.0
-margin_top = 22.0
-margin_right = 219.0
-margin_bottom = 95.0
+offset_left = 145.0
+offset_top = 22.0
+offset_right = 219.0
+offset_bottom = 95.0
 texture = ExtResource( 4 )
 expand = true
 __meta__ = {
@@ -70,16 +70,16 @@ __meta__ = {
 }
 
 [node name="Item Stats" type="Control" parent="Weapon Select/Unit Mugshot"]
-margin_left = -58.0
-margin_top = -31.0
-margin_right = -18.0
-margin_bottom = 9.0
+offset_left = -58.0
+offset_top = -31.0
+offset_right = -18.0
+offset_bottom = 9.0
 
 [node name="Background" type="TextureRect" parent="Weapon Select/Unit Mugshot/Item Stats"]
-margin_left = 4.98599
-margin_top = 100.185
-margin_right = 145.986
-margin_bottom = 155.185
+offset_left = 4.98599
+offset_top = 100.185
+offset_right = 145.986
+offset_bottom = 155.185
 texture = ExtResource( 8 )
 expand = true
 __meta__ = {
@@ -87,10 +87,10 @@ __meta__ = {
 }
 
 [node name="TextureRect2" type="TextureRect" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 14.7687
-margin_top = 17.8038
-margin_right = 31.7687
-margin_bottom = 35.8038
+offset_left = 14.7687
+offset_top = 17.8038
+offset_right = 31.7687
+offset_bottom = 35.8038
 texture = ExtResource( 7 )
 expand = true
 __meta__ = {
@@ -98,13 +98,13 @@ __meta__ = {
 }
 
 [node name="Weapon Name" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 47.4522
-margin_top = 12.3351
-margin_right = 374.452
-margin_bottom = 44.3351
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 0.352941, 0.890196, 0.333333, 1 )
+offset_left = 47.4522
+offset_top = 12.3351
+offset_right = 374.452
+offset_bottom = 44.3351
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 0.352941, 0.890196, 0.333333, 1 )
 text = "Killing Edge"
 align = 1
 valign = 1
@@ -113,25 +113,25 @@ __meta__ = {
 }
 
 [node name="Uses Amount" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 72.1711
-margin_top = 23.9681
-margin_right = 141.171
-margin_bottom = 50.9681
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 72.1711
+offset_top = 23.9681
+offset_right = 141.171
+offset_bottom = 50.9681
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
 align = 1
 valign = 1
 
 [node name="Uses" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 49.3363
-margin_top = 23.9043
-margin_right = 118.336
-margin_bottom = 50.9043
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 49.3363
+offset_top = 23.9043
+offset_right = 118.336
+offset_bottom = 50.9043
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Uses"
 align = 1
 valign = 1
@@ -140,13 +140,13 @@ __meta__ = {
 }
 
 [node name="Power Amt" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 71.5502
-margin_top = 35.7424
-margin_right = 140.55
-margin_bottom = 62.7424
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 71.5502
+offset_top = 35.7424
+offset_right = 140.55
+offset_bottom = 62.7424
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
 align = 1
 valign = 1
@@ -155,13 +155,13 @@ __meta__ = {
 }
 
 [node name="Power" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 44.1205
-margin_top = 35.5528
-margin_right = 155.12
-margin_bottom = 62.5528
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 44.1205
+offset_top = 35.5528
+offset_right = 155.12
+offset_bottom = 62.5528
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Damage"
 align = 1
 valign = 1
@@ -170,13 +170,13 @@ __meta__ = {
 }
 
 [node name="Crit Amt" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 121.292
-margin_top = 36.2094
-margin_right = 190.292
-margin_bottom = 63.2094
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 121.292
+offset_top = 36.2094
+offset_right = 190.292
+offset_bottom = 63.2094
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
 align = 1
 valign = 1
@@ -185,13 +185,13 @@ __meta__ = {
 }
 
 [node name="Crit" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 93.8623
-margin_top = 36.0198
-margin_right = 204.862
-margin_bottom = 63.0198
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 93.8623
+offset_top = 36.0198
+offset_right = 204.862
+offset_bottom = 63.0198
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Crit"
 align = 1
 valign = 1
@@ -200,13 +200,13 @@ __meta__ = {
 }
 
 [node name="Hit Amt" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 120.669
-margin_top = 24.3773
-margin_right = 189.669
-margin_bottom = 51.3773
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 120.669
+offset_top = 24.3773
+offset_right = 189.669
+offset_bottom = 51.3773
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
 align = 1
 valign = 1
@@ -215,13 +215,13 @@ __meta__ = {
 }
 
 [node name="Hit" type="Label" parent="Weapon Select/Unit Mugshot/Item Stats/Background"]
-margin_left = 94.2634
-margin_top = 24.2415
-margin_right = 205.263
-margin_bottom = 51.2415
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 1, 1, 1, 1 )
+offset_left = 94.2634
+offset_top = 24.2415
+offset_right = 205.263
+offset_bottom = 51.2415
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Hit"
 align = 1
 valign = 1
@@ -234,10 +234,10 @@ anims/equipped = SubResource( 2 )
 
 [node name="Hand Selector" parent="." instance=ExtResource( 5 )]
 show_behind_parent = true
-margin_left = -90.7582
-margin_top = 32.5644
-margin_right = -74.7582
-margin_bottom = 45.5644
+offset_left = -90.7582
+offset_top = 32.5644
+offset_right = -74.7582
+offset_bottom = 45.5644
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.2

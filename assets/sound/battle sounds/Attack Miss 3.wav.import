@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Attack Miss 3.wav-854bb07bdd8281965cf50ca4d156aaca.sample"
+type="AudioStreamWAV"
+uid="uid://baps8b7y2esxq"
+path="res://.godot/imported/Attack Miss 3.wav-854bb07bdd8281965cf50ca4d156aaca.sample"
 
 [deps]
 
 source_file="res://assets/sound/battle sounds/Attack Miss 3.wav"
-dest_files=[ "res://.import/Attack Miss 3.wav-854bb07bdd8281965cf50ca4d156aaca.sample" ]
+dest_files=["res://.godot/imported/Attack Miss 3.wav-854bb07bdd8281965cf50ca4d156aaca.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

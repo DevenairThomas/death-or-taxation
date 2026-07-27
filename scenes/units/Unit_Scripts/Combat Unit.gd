@@ -5,11 +5,11 @@ class_name Combat_Unit
 signal death_anim_done
 
 func play_attack_sound():
-	var random = int(rand_range(1,4))
+	var random = int(randf_range(1,4))
 	BattlefieldInfo.battle_sounds.get_node(str("Attack ", random)).play(0)
 
 func play_hit_sound():
-	var random = int(rand_range(1,4))
+	var random = int(randf_range(1,4))
 	BattlefieldInfo.battle_sounds.get_node(str("Attack Hit ", random)).play(0)
 
 func play_draw_sound():
@@ -19,13 +19,13 @@ func put_away_attack_sound():
 	BattlefieldInfo.combat_player_unit.UnitInventory.current_item_equipped.put_away_attack_sound()
 
 func play_miss_sound():
-	var random = int(rand_range(1,3))
+	var random = int(randf_range(1,3))
 	BattlefieldInfo.battle_sounds.get_node(str("Attack Miss ", random)).play(0)
 	# Play Miss anim
 	emit_signal("play_enemy_dodge_anim")
 
 func play_crit_sound():
-	var random = int(rand_range(1,2))
+	var random = int(randf_range(1,2))
 	BattlefieldInfo.battle_sounds.get_node(str("Critical Hit ", random)).play(0)
 
 func shake_camera_crit():

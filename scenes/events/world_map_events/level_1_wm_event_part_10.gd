@@ -18,8 +18,8 @@ func _init():
 	]
 	
 	# Signals needed
-	WorldMapScreen.get_node("Eirika/Eirika Tween").connect("tween_completed", self, "after_eirika_move")
-	WorldMapScreen.get_node("Message System").connect("no_more_text", self, "after_text")
+	WorldMapScreen.get_node("Eirika/Eirika Tween").connect("tween_completed", Callable(self, "after_eirika_move"))
+	WorldMapScreen.get_node("Message System").connect("no_more_text", Callable(self, "after_text"))
 	
 	# Set text position bottom
 	WorldMapScreen.get_node("Message System").set_position(Messaging_System.TOP)
@@ -34,7 +34,7 @@ func run():
 	WorldMapScreen.get_node("Eirika").position = eirika_initial
 	
 	# 1.5 second pause
-	yield(get_tree().create_timer(2), "timeout")
+	await get_tree().create_timer(2).timeout
 	
 	# Move Eirika and start text
 	WorldMapScreen.get_node("Message System").start(text_array)
@@ -54,9 +54,9 @@ func build_map():
 		WorldMapScreen.place_village_waypoint(v_waypoint)
 
 func after_text():
-	yield(get_tree().create_timer(0.5), "timeout")
-	SceneTransition.change_scene("res://scenes/chapter/Chapter Background.tscn", 0.1)
+	await get_tree().create_timer(0.5).timeout
+	SceneTransition.change_scene_to_file("res://scenes/chapter/Chapter Background.tscn", 0.1)
 	WorldMapScreen.exit()
-	yield(SceneTransition, "scene_changed")
+	await SceneTransition.scene_changed
 	SceneTransition.get_tree().current_scene.start("1", "Victims of War", level, 2)
 	queue_free()

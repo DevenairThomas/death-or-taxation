@@ -1,6 +1,6 @@
 extends Control
 
-export var is_active = false
+@export var is_active = false
 
 const ACTION_SIZE_Y = 19
 
@@ -18,7 +18,7 @@ func start(item):
 	current_option_selected = current_options[current_option_number]
 	
 	# Reset Hand position
-	$"Hand Selector".rect_position = Vector2(-8,7)
+	$"Hand Selector".position = Vector2(-8,7)
 	
 	$Timer.start(0)
 
@@ -44,7 +44,7 @@ func movement(direction):
 			if current_option_number < 0:
 				current_option_number = 0
 			else:
-				$"Hand Selector".rect_position.y -= ACTION_SIZE_Y
+				$"Hand Selector".position.y -= ACTION_SIZE_Y
 				$"Hand Selector/Move".play(0)
 			current_option_selected = current_options[current_option_number]
 		"down":
@@ -52,7 +52,7 @@ func movement(direction):
 			if current_option_number > current_options.size() - 1:
 				current_option_number = current_options.size() - 1
 			else:
-				$"Hand Selector".rect_position.y += ACTION_SIZE_Y
+				$"Hand Selector".position.y += ACTION_SIZE_Y
 				$"Hand Selector/Move".play(0)
 			current_option_selected = current_options[current_option_number]
 
@@ -64,7 +64,7 @@ func process_selection():
 			BattlefieldInfo.current_Unit_Selected.UnitInventory.remove_item(item_selected)
 			
 			# Is the inventory empty now?
-			if BattlefieldInfo.current_Unit_Selected.UnitInventory.inventory.empty():
+			if BattlefieldInfo.current_Unit_Selected.UnitInventory.inventory.is_empty():
 				back_to_action_selector()
 			else:
 				# Back to item screen

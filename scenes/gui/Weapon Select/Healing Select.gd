@@ -60,7 +60,7 @@ func build_item_list():
 	item_list_menu.clear()
 	
 	# Place Top
-	$"Weapon Select/Weapon List/Top".rect_position = OFF_SET
+	$"Weapon Select/Weapon List/Top".position = OFF_SET
 	
 	var last_position = OFF_SET + X_OFF_SET
 	# Build item slot
@@ -72,7 +72,7 @@ func build_item_list():
 				#var max_range # Max range
 				#var min_range # Min range
 				queue.append([weapon.max_range, BattlefieldInfo.current_Unit_Selected.UnitMovementStats.currentTile])
-				while !queue.empty():
+				while !queue.is_empty():
 					# Pop first tile
 					var check_tile = queue.pop_front()
 					
@@ -82,17 +82,17 @@ func build_item_list():
 							# Is the unit already at full HP?
 							if check_tile[1].occupyingUnit.UnitStats.current_health < check_tile[1].occupyingUnit.UnitStats.max_health:
 								# Create a slot
-								var item_slot = preload("res://scenes/gui/Weapon Select/Weapon Select Slot.tscn").instance() 
+								var item_slot = preload("res://scenes/gui/Weapon Select/Weapon Select Slot.tscn").instantiate() 
 								
 								# Fill data
 								item_slot.start(weapon)
 								
 								# Place position and add child
-								item_slot.rect_position = last_position + SLOT_Y - Vector2(0,1)
+								item_slot.position = last_position + SLOT_Y - Vector2(0,1)
 								$"Weapon Select/Weapon List".add_child(item_slot)
 								
 								# New previous position
-								last_position = item_slot.rect_position
+								last_position = item_slot.position
 								
 								# Add to array so we can queue free later
 								item_list_menu.append(weapon)
@@ -106,10 +106,10 @@ func build_item_list():
 							queue.append([next_cost, adjTile])
 	
 	# Add Bottom
-	$"Weapon Select/Weapon List/Bottom".rect_position = last_position + SLOT_Y
+	$"Weapon Select/Weapon List/Bottom".position = last_position + SLOT_Y
 	
 	# Place hand
-	$"Hand Selector".rect_position = HAND_POSITION
+	$"Hand Selector".position = HAND_POSITION
 
 # Place mugshot
 func create_mugshot():
@@ -123,7 +123,7 @@ func movement(direction):
 			if current_selected_number < 0:
 				current_selected_number = 0
 			else:
-				$"Hand Selector".rect_position.y -= SLOT_Y.y - 1
+				$"Hand Selector".position.y -= SLOT_Y.y - 1
 				$"Hand Selector/Move".play(0)
 			current_selected_option = item_list_menu[current_selected_number]
 		"down":
@@ -131,7 +131,7 @@ func movement(direction):
 			if current_selected_number >item_list_menu.size() - 1:
 				current_selected_number = item_list_menu.size() - 1
 			else:
-				$"Hand Selector".rect_position.y += SLOT_Y.y - 1
+				$"Hand Selector".position.y += SLOT_Y.y - 1
 				$"Hand Selector/Move".play(0)
 			current_selected_option = item_list_menu[current_selected_number]
 	update_item_box()
@@ -167,7 +167,7 @@ func set_item_stats(item):
 		$"Weapon Select/Unit Mugshot/Item Stats/Background/anim".play("equipped")
 	else:
 		$"Weapon Select/Unit Mugshot/Item Stats/Background/anim".stop(true)
-		$"Weapon Select/Unit Mugshot/Item Stats/Background/Weapon Name".set("custom_colors/font_color", Color(1.0, 1.0, 1.0))
+		$"Weapon Select/Unit Mugshot/Item Stats/Background/Weapon Name".set("theme_override_colors/font_color", Color(1.0, 1.0, 1.0))
 
 # Go to unit selection
 func process_selection():

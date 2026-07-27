@@ -1,13 +1,13 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 class_name Eirka_Walk
 
 # Sprite direction
-export(String) var sprite_dir = "left"
-export(Vector2) var move_dir = Vector2(0,0)
+@export var sprite_dir: String = "left"
+@export var move_dir: Vector2 = Vector2(0,0)
 
 # Movement Speed
-export(int) var SPEED = 100
+@export var SPEED: int = 100
 
 # Current mode
 enum STATUS {CHAT, UI, WALK}
@@ -20,7 +20,7 @@ func _ready():
 	$Animation.play("Idle")
 	
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "_back_to_walk")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "_back_to_walk"))
 
 # Set Sprite Direction
 func set_sprite_direction():
@@ -74,11 +74,12 @@ func _input(event):
 					current_chat_unit.start_dialogue()
 					current_status = STATUS.CHAT
 					# Wait for 0.2 seconds
-					yield(get_tree().create_timer(0.2), "timeout")
+					await get_tree().create_timer(0.2).timeout
 
 # Physics Movements
 func _physics_process(delta):
-	move_and_slide(move_dir.normalized() * SPEED)
+	set_velocity(move_dir.normalized() * SPEED)
+	move_and_slide()
 	set_sprite_direction()
 	animation_switch()
 	clamp_eirika()

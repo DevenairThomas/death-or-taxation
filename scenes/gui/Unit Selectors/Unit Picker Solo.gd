@@ -10,32 +10,32 @@ var unit_selected = null
 signal unit_picked
 
 # Node access
-onready var unit_list = $"Unit List"
-onready var anim = $"Anim"
+@onready var unit_list = $"Unit List"
+@onready var anim = $"Anim"
 
 # Convoy info
 const CONVOY_ID = "Convoy"
 
 func _ready():
 	set_process_input(false)
-	unit_list.unselect_all()
+	unit_list.deselect_all()
 	unit_list.release_focus()
 	
 	# Hide Scroll bar
-	unit_list.get_v_scroll().mouse_filter = Control.MOUSE_FILTER_IGNORE
-	unit_list.get_v_scroll().modulate = Color(1,1,1,0)
+	unit_list.get_v_scroll_bar().mouse_filter = Control.MOUSE_FILTER_IGNORE
+	unit_list.get_v_scroll_bar().modulate = Color(1,1,1,0)
 	
 	# Test adding units
 	# Eirika Test
 	var eririka_path = load("res://scenes/units/Player_Units/AllyUnits/Eirika/Eirika.tscn")
-	var eirika_t = eririka_path.instance()
+	var eirika_t = eririka_path.instantiate()
 	$"TEST NODE".add_child(eirika_t)
 	eirika_t.visible = false
 	eirika_t.UnitStats.identifier = "Eirika"
 
 	# Seth test
 	var seth_path = load("res://scenes/units/Player_Units/AllyUnits/Seth/Seth.tscn")
-	var seth_t = seth_path.instance()
+	var seth_t = seth_path.instantiate()
 	$"TEST NODE".add_child(seth_t)
 	seth_t.visible = false
 	seth_t.UnitStats.identifier = "Seth"
@@ -56,7 +56,7 @@ func start():
 	# Play the animation
 	visible = true
 	anim.play("Fade")
-	yield(anim,"animation_finished")
+	await anim.animation_finished
 	
 	# Allow input
 	unit_list.focus_mode = Control.FOCUS_ALL
@@ -77,18 +77,18 @@ func exit():
 	set_process_input(false)
 	unit_list.focus_mode = Control.FOCUS_NONE
 	unit_list.release_focus()
-	unit_list.unselect_all()
+	unit_list.deselect_all()
 	
 	# Go away
 	anim.play_backwards("Fade")
-	yield(anim,"animation_finished")
+	await anim.animation_finished
 	visible = false
 
 func stop_input():
 	set_process_input(false)
 	unit_list.focus_mode = Control.FOCUS_NONE
 	unit_list.release_focus()
-	unit_list.unselect_all()
+	unit_list.deselect_all()
 
 func allow_input():
 	# Allow input

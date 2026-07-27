@@ -2,5 +2,5 @@
 
 [ext_resource path="res://scenes/items/Swords/Rapier.gd" type="Script" id=1]
 
-[node name="Rapier" type="Sprite"]
+[node name="Rapier" type="Sprite2D"]
 script = ExtResource( 1 )

@@ -1,7 +1,7 @@
 # Generic Version of the Yes No Box
 extends Control
 
-export var is_active = false
+@export var is_active = false
 
 const ACTION_SIZE_Y = 19
 
@@ -20,7 +20,7 @@ func start():
 	current_option_selected = current_options[current_option_number]
 	
 	# Reset Hand position
-	$"Hand Selector".rect_position = Vector2(-8,7)
+	$"Hand Selector".position = Vector2(-8,7)
 	
 	$Timer.start(0)
 
@@ -47,7 +47,7 @@ func movement(direction):
 			if current_option_number < 0:
 				current_option_number = 0
 			else:
-				$"Hand Selector".rect_position.y -= ACTION_SIZE_Y
+				$"Hand Selector".position.y -= ACTION_SIZE_Y
 				$"Hand Selector/Move".play(0)
 			current_option_selected = current_options[current_option_number]
 			
@@ -56,7 +56,7 @@ func movement(direction):
 			if current_option_number > current_options.size() - 1:
 				current_option_number = current_options.size() - 1
 			else:
-				$"Hand Selector".rect_position.y += ACTION_SIZE_Y
+				$"Hand Selector".position.y += ACTION_SIZE_Y
 				$"Hand Selector/Move".play(0)
 			current_option_selected = current_options[current_option_number]
 

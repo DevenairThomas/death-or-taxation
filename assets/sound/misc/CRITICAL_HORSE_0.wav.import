@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/CRITICAL_HORSE_0.wav-267136ae0d19ce9880e9bc5dec763db7.sample"
+type="AudioStreamWAV"
+uid="uid://doos1a0e1yfhs"
+path="res://.godot/imported/CRITICAL_HORSE_0.wav-267136ae0d19ce9880e9bc5dec763db7.sample"
 
 [deps]
 
 source_file="res://assets/sound/misc/CRITICAL_HORSE_0.wav"
-dest_files=[ "res://.import/CRITICAL_HORSE_0.wav-267136ae0d19ce9880e9bc5dec763db7.sample" ]
+dest_files=["res://.godot/imported/CRITICAL_HORSE_0.wav-267136ae0d19ce9880e9bc5dec763db7.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

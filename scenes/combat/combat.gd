@@ -58,9 +58,9 @@ var highlight_positions = false
 
 # Ready
 func _ready():
-	$"Combat Control/Combat UI/XP Screen".connect("done_adding_xp", self, "back_to_battlefield")
-	$"Combat Control/Combat UI/Level Up Screen".connect("done_leveling_up", self, "back_to_battlefield")
-	get_parent().get_parent().get_node("Message System").connect("no_more_text", self, "process_after_text") # Change this later to accomodate boss units
+	$"Combat Control/Combat UI/XP Screen".connect("done_adding_xp", Callable(self, "back_to_battlefield"))
+	$"Combat Control/Combat UI/Level Up Screen".connect("done_leveling_up", Callable(self, "back_to_battlefield"))
+	get_parent().get_parent().get_node("Message System").connect("no_more_text", Callable(self, "process_after_text")) # Change this later to accomodate boss units
 	
 	BattlefieldInfo.combat_screen = self
 	set_process(true)
@@ -316,7 +316,7 @@ func start_combat(current_combat_state):
 	
 	# Play Transition
 	$"Combat Trans".play_transition_forward()
-	yield($"Combat Trans", "transition_done")
+	await $"Combat Trans".transition_done
 	
 	# Set to 0.5 Modulate
 	BattlefieldInfo.current_level.modulate = Color(1,1,1,0.5)
@@ -335,14 +335,14 @@ func start_combat(current_combat_state):
 	
 	# Play fade
 	$"Combat Trans".play_fade()
-	yield($"Combat Trans", "fade_done")
+	await $"Combat Trans".fade_done
 	
 	# Set Next
 	next_combat_state = current_combat_state
 	
 	# Check if there is before battle text here
 	if BattlefieldInfo.combat_ai_unit.before_battle_sentence != null:
-		yield(get_tree().create_timer(0.5), "timeout")
+		await get_tree().create_timer(0.5).timeout
 		BattlefieldInfo.message_system.set_position(Messaging_System.BOTTOM)
 		BattlefieldInfo.message_system.start(BattlefieldInfo.combat_ai_unit.before_battle_sentence)
 		messaging_state = before_fight
@@ -352,11 +352,11 @@ func start_combat(current_combat_state):
 # Get the appropriate art
 func place_combat_art():
 	# Player
-	player_node_name = BattlefieldInfo.combat_player_unit.combat_node.instance()
+	player_node_name = BattlefieldInfo.combat_player_unit.combat_node.instantiate()
 	player_node_name.position = $"Ally Unit".position
 	
 	# Placeholders
-	ally_placeholder = BattlefieldInfo.combat_player_unit.combat_node.instance()
+	ally_placeholder = BattlefieldInfo.combat_player_unit.combat_node.instantiate()
 	ally_placeholder.position = $"Ally Unit".position
 	var anim_name = str(BattlefieldInfo.combat_player_unit.UnitInventory.current_item_equipped.weapon_string_name, " regular")
 	ally_placeholder.get_node(anim_name).visible = true
@@ -364,17 +364,17 @@ func place_combat_art():
 	add_child(ally_placeholder)
 	
 	# Player Animation Signals
-	player_node_name.connect("play_enemy_dodge_anim", self, "play_enemy_miss_anim")
-	player_node_name.connect("death_anim_done", self, "on_ally_death_complete")
-	player_node_name.get_node("anim").connect("animation_finished", self, "update_hp_number")
+	player_node_name.connect("play_enemy_dodge_anim", Callable(self, "play_enemy_miss_anim"))
+	player_node_name.connect("death_anim_done", Callable(self, "on_ally_death_complete"))
+	player_node_name.get_node("anim").connect("animation_finished", Callable(self, "update_hp_number"))
 	add_child(player_node_name)
 	
 	# Enemy
-	enemy_node_name = BattlefieldInfo.combat_ai_unit.combat_node.instance()
+	enemy_node_name = BattlefieldInfo.combat_ai_unit.combat_node.instantiate()
 	enemy_node_name.position = $"Enemy Unit".position
 	
 	# Placeholders
-	enemy_placeholder = BattlefieldInfo.combat_ai_unit.combat_node.instance()
+	enemy_placeholder = BattlefieldInfo.combat_ai_unit.combat_node.instantiate()
 	enemy_placeholder.position = $"Enemy Unit".position
 	var anim_name2 = str(BattlefieldInfo.combat_ai_unit.UnitInventory.current_item_equipped.weapon_string_name, " regular")
 	enemy_placeholder.get_node(anim_name2).visible = true
@@ -383,9 +383,9 @@ func place_combat_art():
 	
 	# Enemy Miss signal
 	if !BattlefieldInfo.combat_ai_unit.UnitMovementStats.is_ally:
-		enemy_node_name.connect("play_player_dodge_anim", self, "play_player_miss_anim")
-	enemy_node_name.connect("death_anim_done", self, "on_enemy_death_complete")
-	enemy_node_name.get_node("anim").connect("animation_finished", self, "update_hp_number")
+		enemy_node_name.connect("play_player_dodge_anim", Callable(self, "play_player_miss_anim"))
+	enemy_node_name.connect("death_anim_done", Callable(self, "on_enemy_death_complete"))
+	enemy_node_name.get_node("anim").connect("animation_finished", Callable(self, "update_hp_number"))
 	add_child(enemy_node_name)
 
 # Set appropriate text
@@ -514,7 +514,7 @@ func set_background(tilename):
 			$"Combat Control/Background".texture = forest
 		"Fortress":
 			$"Combat Control/Background".texture = fortress
-		"Mountain" || "Hill":
+		"Mountain", "Hill":
 			$"Combat Control/Background".texture = mountain
 		"River":
 			$"Combat Control/Background".texture = river
@@ -708,7 +708,7 @@ func on_ally_death_complete():
 	BattlefieldInfo.combat_player_unit.UnitMovementStats.currentTile.occupyingUnit = null
 	
 	# Remove the ally units
-	BattlefieldInfo.current_level.get_node("YSort").remove_child(BattlefieldInfo.combat_player_unit)
+	BattlefieldInfo.current_level.get_node("Node2D").remove_child(BattlefieldInfo.combat_player_unit)
 	
 	# Did Eirika die? Game over ->
 	if BattlefieldInfo.combat_player_unit.UnitStats.name == "Eirika":
@@ -769,7 +769,7 @@ func on_enemy_death_complete():
 	BattlefieldInfo.combat_ai_unit.UnitMovementStats.currentTile.occupyingUnit = null
 	
 	# Remove the node from the YSort
-	BattlefieldInfo.current_level.get_node("YSort").remove_child(BattlefieldInfo.combat_ai_unit)
+	BattlefieldInfo.current_level.get_node("Node2D").remove_child(BattlefieldInfo.combat_ai_unit)
 	
 	# Process XP stuff here
 	process_death_xp()
@@ -902,7 +902,7 @@ func _on_Return_Pause_timeout():
 	
 	# Fade away
 	$Anim.play("Fade")
-	yield($Anim, "animation_finished")
+	await $Anim.animation_finished
 	
 	# Disable arrows
 	$"Combat Control/Combat UI/Enemy/Enemy Up Arrow Combat".visible = false

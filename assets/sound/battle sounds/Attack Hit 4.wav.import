@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Attack Hit 4.wav-c7bf48df3e8abf209c7d9d2d19af4b31.sample"
+type="AudioStreamWAV"
+uid="uid://botlakcn42fta"
+path="res://.godot/imported/Attack Hit 4.wav-c7bf48df3e8abf209c7d9d2d19af4b31.sample"
 
 [deps]
 
 source_file="res://assets/sound/battle sounds/Attack Hit 4.wav"
-dest_files=[ "res://.import/Attack Hit 4.wav-c7bf48df3e8abf209c7d9d2d19af4b31.sample" ]
+dest_files=["res://.godot/imported/Attack Hit 4.wav-c7bf48df3e8abf209c7d9d2d19af4b31.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

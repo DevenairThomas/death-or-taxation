@@ -6,11 +6,11 @@ var array = []
 
 func add_first(value):
 	array.push_front(value)
-	array.sort_custom(CustomSorter, "custom_sort")
+	array.sort_custom(Callable(CustomSorter, "custom_sort"))
 
 func add_last(value):
 	array.push_back(value)
-	array.sort_custom(CustomSorter, "custom_sort")
+	array.sort_custom(Callable(CustomSorter, "custom_sort"))
 
 func pop_front():
 	return array.pop_front()

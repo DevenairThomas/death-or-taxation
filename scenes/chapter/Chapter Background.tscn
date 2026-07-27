@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scenes/chapter/chapter_background.gd" type="Script" id=1]
-[ext_resource path="res://assets/chapter image/Chapter Background.png" type="Texture" id=2]
+[ext_resource path="res://assets/chapter image/Chapter Background.png" type="Texture2D" id=2]
 [ext_resource path="res://assets/sound/transition/Player Phase Start.wav" type="AudioStream" id=3]
 
 [sub_resource type="Animation" id=1]
@@ -13,16 +13,16 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 1 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 0,
 "values": [ Color( 0, 0, 0, 1 ), Color( 1, 1, 1, 1 ) ]
 }
 
-[sub_resource type="DynamicFontData" id=2]
+[sub_resource type="FontFile" id=2]
 font_path = "res://assets/font/Main Font.ttf"
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="FontFile" id=3]
 size = 50
 outline_size = 1
 use_mipmaps = true
@@ -81,7 +81,7 @@ shader = SubResource( 4 )
 shader_param/color = Vector3( 0.71, 0.93, 0.95 )
 shader_param/OCTAVES = 4
 
-[sub_resource type="StreamTexture" id=6]
+[sub_resource type="CompressedTexture2D" id=6]
 flags = 4
 
 [node name="Chapter Background" type="CanvasLayer"]
@@ -95,7 +95,7 @@ anchor_bottom = 1.0
 [node name="Anim" type="AnimationPlayer" parent="Container"]
 "anims/Fade " = SubResource( 1 )
 
-[node name="Background" type="Sprite" parent="Container"]
+[node name="Background" type="Sprite2D" parent="Container"]
 position = Vector2( 119.976, 80.0131 )
 scale = Vector2( 0.124986, 0.148127 )
 texture = ExtResource( 2 )
@@ -104,28 +104,28 @@ texture = ExtResource( 2 )
 stream = ExtResource( 3 )
 
 [node name="Chapter Number" type="Label" parent="Container"]
-margin_top = 39.0
-margin_right = 480.0
-margin_bottom = 89.0
-rect_scale = Vector2( 0.5, 0.5 )
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
+offset_top = 39.0
+offset_right = 480.0
+offset_bottom = 89.0
+scale = Vector2( 0.5, 0.5 )
+theme_override_fonts/font = SubResource( 3 )
+theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Chapter 10"
 align = 1
 valign = 1
 
 [node name="Chapter Name" type="Label" parent="Container"]
-margin_top = 76.0
-margin_right = 686.0
-margin_bottom = 132.0
-rect_scale = Vector2( 0.35, 0.35 )
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
+offset_top = 76.0
+offset_right = 686.0
+offset_bottom = 132.0
+scale = Vector2( 0.35, 0.35 )
+theme_override_fonts/font = SubResource( 3 )
+theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Chapter 1"
 align = 1
 valign = 1
 
-[node name="Fog" type="Sprite" parent="Container"]
+[node name="Fog" type="Sprite2D" parent="Container"]
 modulate = Color( 0.2, 0.14902, 0.14902, 0.454902 )
 material = SubResource( 5 )
 position = Vector2( 120.133, 80.0257 )

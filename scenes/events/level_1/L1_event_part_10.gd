@@ -31,7 +31,7 @@ func _init():
 
 func start():
 	# Cinema Connect
-	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", self, "enable_text_no_array")
+	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", Callable(self, "enable_text_no_array"))
 	
 	# Set up allies
 	seth = BattlefieldInfo.ally_units["Seth"]
@@ -46,10 +46,10 @@ func start():
 	
 	# Turn on
 	BattlefieldInfo.battlefield_container.get_node("Anim").play("Fade")
-	yield(BattlefieldInfo.battlefield_container.get_node("Anim"), "animation_finished")
+	await BattlefieldInfo.battlefield_container.get_node("Anim").animation_finished
 	
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "move_camera")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "move_camera"))
 	
 	# Start Text
 	BattlefieldInfo.message_system.set_position(Messaging_System.TOP)
@@ -82,7 +82,7 @@ func move_camera():
 	var new_position_for_camera = Vector2(0,0)
 	
 	# Move Camera and Remove old camera
-	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", self, "event_complete")
+	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", Callable(self, "event_complete"))
 	BattlefieldInfo.main_game_camera.get_node("Tween").interpolate_property(BattlefieldInfo.main_game_camera, "position", BattlefieldInfo.main_game_camera.position, new_position_for_camera, 1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	BattlefieldInfo.main_game_camera.current = true
 	BattlefieldInfo.main_game_camera.get_node("Tween").start()

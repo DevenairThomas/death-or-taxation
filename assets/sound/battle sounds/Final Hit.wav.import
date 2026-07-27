@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Final Hit.wav-589fed10ba0da94c0d727b966abfbfb6.sample"
+type="AudioStreamWAV"
+uid="uid://b2nrkl8gjnn3i"
+path="res://.godot/imported/Final Hit.wav-589fed10ba0da94c0d727b966abfbfb6.sample"
 
 [deps]
 
 source_file="res://assets/sound/battle sounds/Final Hit.wav"
-dest_files=[ "res://.import/Final Hit.wav-589fed10ba0da94c0d727b966abfbfb6.sample" ]
+dest_files=["res://.godot/imported/Final Hit.wav-589fed10ba0da94c0d727b966abfbfb6.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

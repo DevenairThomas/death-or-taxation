@@ -34,10 +34,10 @@ func _ready():
 	cursor_state = WAIT
 	
 	# Connect to Movement
-	get_parent().get_node("Action Selector Screen").connect("selected_wait", self, "enable_standard")
+	get_parent().get_node("Action Selector Screen").connect("selected_wait", Callable(self, "enable_standard"))
 	
 	# Connec to turn transition
-	BattlefieldInfo.turn_manager.connect("play_transition", self, "disable_standard")
+	BattlefieldInfo.turn_manager.connect("play_transition", Callable(self, "disable_standard"))
 	
 	# Cursor to battlefield
 	BattlefieldInfo.cursor = self
@@ -249,7 +249,7 @@ func acceptButton() -> void:
 				
 				# Move Camera back to original spot first
 				BattlefieldInfo.main_game_camera.position = (BattlefieldInfo.current_Unit_Selected.position + Vector2(-112, -82))
-				BattlefieldInfo.main_game_camera.smoothing_speed = 2
+				BattlefieldInfo.main_game_camera.position_smoothing_speed = 2
 				
 				# Start moving the unit
 				BattlefieldInfo.unit_movement_system.is_moving = true

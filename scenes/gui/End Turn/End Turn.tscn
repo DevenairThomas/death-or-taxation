@@ -16,43 +16,43 @@ script = ExtResource( 1 )
 visible = false
 
 [node name="Top" parent="End Turn" instance=ExtResource( 2 )]
-margin_left = 20.3269
-margin_top = 30.7992
-margin_right = 490.327
-margin_bottom = 152.799
+offset_left = 20.3269
+offset_top = 30.7992
+offset_right = 490.327
+offset_bottom = 152.799
 
 [node name="Status End Turn" parent="End Turn" instance=ExtResource( 3 )]
-margin_left = 22.8625
-margin_top = 50.3498
-margin_right = 66.8625
-margin_bottom = 60.3498
+offset_left = 22.8625
+offset_top = 50.3498
+offset_right = 66.8625
+offset_bottom = 60.3498
 
 [node name="Unit End Turn" parent="End Turn" instance=ExtResource( 4 )]
-margin_left = 22.8969
-margin_top = 41.4124
-margin_right = 66.8969
-margin_bottom = 51.4124
+offset_left = 22.8969
+offset_top = 41.4124
+offset_right = 66.8969
+offset_bottom = 51.4124
 
 [node name="Suspend End Turn" parent="End Turn" instance=ExtResource( 5 )]
-margin_left = 22.6911
-margin_top = 59.3452
-margin_right = 66.6911
-margin_bottom = 69.3453
+offset_left = 22.6911
+offset_top = 59.3452
+offset_right = 66.6911
+offset_bottom = 69.3453
 
 [node name="End Turn" parent="End Turn" instance=ExtResource( 6 )]
-margin_left = 22.6266
-margin_top = 68.2377
-margin_right = 66.6266
-margin_bottom = 78.2377
+offset_left = 22.6266
+offset_top = 68.2377
+offset_right = 66.6266
+offset_bottom = 78.2377
 
 [node name="Hand Selector" parent="End Turn" instance=ExtResource( 7 )]
-margin_left = 15.0
-margin_top = 40.0
-margin_right = 31.0
-margin_bottom = 53.0
+offset_left = 15.0
+offset_top = 40.0
+offset_right = 31.0
+offset_bottom = 53.0
 
 [node name="Bottom" parent="End Turn" instance=ExtResource( 8 )]
-margin_left = 23.4684
-margin_top = 78.1999
-margin_right = 463.468
-margin_bottom = 117.2
+offset_left = 23.4684
+offset_top = 78.1999
+offset_right = 463.468
+offset_bottom = 117.2

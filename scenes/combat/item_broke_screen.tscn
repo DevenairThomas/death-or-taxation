@@ -2,11 +2,11 @@
 
 [ext_resource path="res://scenes/combat/item_broke_screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/sound/misc/item broke.wav" type="AudioStream" id=2]
-[ext_resource path="res://assets/ui/Panels/unitInfoBox.png" type="Texture" id=3]
-[ext_resource path="res://icon.svg" type="Texture" id=4]
-[ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://assets/ui/Panels/unitInfoBox.png" type="Texture2D" id=3]
+[ext_resource path="res://icon.svg" type="Texture2D" id=4]
+[ext_resource path="res://assets/font/Main Font.ttf" type="FontFile" id=5]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 size = 30
 outline_size = 1
 use_mipmaps = true
@@ -23,45 +23,45 @@ script = ExtResource( 1 )
 stream = ExtResource( 2 )
 
 [node name="Item Broke Box" type="TextureRect" parent="."]
-margin_right = 98.0
-margin_bottom = 44.0
+offset_right = 98.0
+offset_bottom = 44.0
 texture = ExtResource( 3 )
 
 [node name="Bg color" type="ColorRect" parent="Item Broke Box"]
 show_behind_parent = true
-margin_left = 6.0
-margin_top = 4.0
-margin_right = 98.0
-margin_bottom = 44.0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 98.0
+offset_bottom = 44.0
 color = Color( 0.905882, 0.784314, 0.678431, 1 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="item icon" type="Sprite" parent="Item Broke Box"]
+[node name="item icon" type="Sprite2D" parent="Item Broke Box"]
 position = Vector2( 23.3526, 24.0694 )
 texture = ExtResource( 4 )
 
 [node name="item name" type="Label" parent="Item Broke Box"]
-margin_left = 42.1818
-margin_top = 13.4755
-margin_right = 211.182
-margin_bottom = 44.4755
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+offset_left = 42.1818
+offset_top = 13.4755
+offset_right = 211.182
+offset_bottom = 44.4755
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "Test Name"
 align = 1
 valign = 1
 
 [node name="is broken" type="Label" parent="Item Broke Box"]
-margin_left = 43.5106
-margin_top = 24.9292
-margin_right = 212.511
-margin_bottom = 55.9292
-rect_scale = Vector2( 0.25, 0.25 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
+offset_left = 43.5106
+offset_top = 24.9292
+offset_right = 212.511
+offset_bottom = 55.9292
+scale = Vector2( 0.25, 0.25 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "broke!"
 align = 1
 valign = 1

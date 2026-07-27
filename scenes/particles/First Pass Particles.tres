@@ -1,6 +1,6 @@
-[gd_resource type="ParticlesMaterial" load_steps=4 format=2]
+[gd_resource type="ParticleProcessMaterial" load_steps=4 format=2]
 
-[sub_resource type="ParticlesMaterial" id=1]
+[sub_resource type="ParticleProcessMaterial" id=1]
 trail_divisor = 5
 emission_shape = 1
 emission_sphere_radius = 1.0

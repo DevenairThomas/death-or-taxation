@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/Fodlan Winds.ogg-d8726d50b7e635d61a33c8639a891319.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://sksr0cr3xhxv"
+path="res://.godot/imported/Fodlan Winds.ogg-d8726d50b7e635d61a33c8639a891319.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/music/Fodlan Winds.ogg"
-dest_files=[ "res://.import/Fodlan Winds.ogg-d8726d50b7e635d61a33c8639a891319.oggstr" ]
+dest_files=["res://.godot/imported/Fodlan Winds.ogg-d8726d50b7e635d61a33c8639a891319.oggvorbisstr"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

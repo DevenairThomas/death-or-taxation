@@ -8,9 +8,9 @@ var item_selected = null
 var item_index = 0
 
 # Node access
-onready var label = $"Item Label"
-onready var item_list_node = $"Item List" 
-onready var item_tree_node = $"Item Tree"
+@onready var label = $"Item Label"
+@onready var item_list_node = $"Item List" 
+@onready var item_tree_node = $"Item Tree"
 
 # Convoy access
 var convoy
@@ -18,8 +18,8 @@ var convoy
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# Disable the Item List Stuff
-	item_list_node.get_v_scroll().mouse_filter = Control.MOUSE_FILTER_IGNORE
-	item_list_node.get_v_scroll().modulate = Color(1,1,1,0)
+	item_list_node.get_v_scroll_bar().mouse_filter = Control.MOUSE_FILTER_IGNORE
+	item_list_node.get_v_scroll_bar().modulate = Color(1,1,1,0)
 	
 	# Disable input
 	disable_input()
@@ -36,7 +36,7 @@ func start(convoy):
 		convoy.item_stats_label.text = str("Item Stats\n", item_selected.get_stats_stringify())
 		
 		# Set the value to 0 for the scroll bar
-		$"Item List".get_v_scroll().value = 0
+		$"Item List".get_v_scroll_bar().value = 0
 	else:
 		convoy.item_text_reset()
 
@@ -116,7 +116,7 @@ func allow_input():
 
 func disable_input():
 	item_list_node.focus_mode = Control.FOCUS_NONE
-	item_list_node.unselect_all()
+	item_list_node.deselect_all()
 	item_list_node.release_focus()
 	item_list_node.set_process_input(false)
 	

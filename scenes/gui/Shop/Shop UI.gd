@@ -47,15 +47,15 @@ var came_from_walkable_map = false
 var item_to_sell = null
 
 # Various Nodes
-onready var shop_list = $"Shop UI/ShopList"
-onready var shop_list_price = $"Shop UI/ShopListPrice"
-onready var hand_selector = $"Hand Selector"
-onready var scroll_bar = $"Shop UI/ShopList".get_v_scroll()
-onready var scroll_bar2 = $"Shop UI/ShopListPrice".get_v_scroll()
-onready var shop_text = $"Shop UI/Shop Keeper Text Info"
-onready var anim = $Anim
-onready var hand_confirm = $"Shop UI/Hand Confirm"
-onready var unit_picker = $"Unit Picker Solo"
+@onready var shop_list = $"Shop UI/ShopList"
+@onready var shop_list_price = $"Shop UI/ShopListPrice"
+@onready var hand_selector = $"Hand Selector"
+@onready var scroll_bar = $"Shop UI/ShopList".get_v_scroll_bar()
+@onready var scroll_bar2 = $"Shop UI/ShopListPrice".get_v_scroll_bar()
+@onready var shop_text = $"Shop UI/Shop Keeper Text Info"
+@onready var anim = $Anim
+@onready var hand_confirm = $"Shop UI/Hand Confirm"
+@onready var unit_picker = $"Unit Picker Solo"
 
 # Shop text strings
 const welcome_msg = "Welcome!\nいらっしゃいませ！"
@@ -88,7 +88,7 @@ func _ready():
 	scroll_bar2.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	# Signal for bar
-	shop_list.get_v_scroll().connect("value_changed", self, "_adjust_hand_value")
+	shop_list.get_v_scroll_bar().connect("value_changed", Callable(self, "_adjust_hand_value"))
 	
 	# Set Hand
 	#hand_selector.rect_position = STARTING_HAND_POSITION
@@ -98,7 +98,7 @@ func sell_item(item_to_be_sold):
 	current_state = SHOP_STATE.OFF
 	
 	# Move the hand away
-	$"Shop UI/Hand Confirm".rect_position = OFF_SCREEN
+	$"Shop UI/Hand Confirm".position = OFF_SCREEN
 	
 	# Set the confirm back to 0
 	confirm_sell_index = 0
@@ -122,7 +122,7 @@ func sell_item(item_to_be_sold):
 	anim.play("Text Anim")
 	# Wait two seconds then back to buy
 	set_process_input(false)
-	yield(get_tree().create_timer(1.5),"timeout")
+	await get_tree().create_timer(1.5).timeout
 	
 	# Back to unit inventory
 	current_state = SHOP_STATE.SELL_SELECT_UNIT
@@ -133,7 +133,7 @@ func sell_item(item_to_be_sold):
 	shop_text.text = sell_message
 	anim.play("Text Anim")
 	# Wait two seconds then back to buy
-	yield(anim,"animation_finished")
+	await anim.animation_finished
 	
 	# Open the Unit Inventory Display
 	$"Unit Inventory Display".populate_list_of_items(current_unit_selected)
@@ -160,9 +160,9 @@ func buy_item(index):
 		unit_picker.start_with_convoy()
 		
 		# Disable the store
-		shop_list.unselect_all()
+		shop_list.deselect_all()
 		shop_list.release_focus()
-		shop_list_price.unselect_all()
+		shop_list_price.deselect_all()
 		# set_process_input(false)
 	else:
 		# Cancel here
@@ -174,11 +174,11 @@ func buy_item(index):
 		anim.play("Text Anim")
 		
 		# Move hand off
-		hand_confirm.rect_position = OFF_SCREEN
+		hand_confirm.position = OFF_SCREEN
 		
 		# Wait two seconds then back to buy
 		set_process_input(false)
-		yield(get_tree().create_timer(2),"timeout")
+		await get_tree().create_timer(2).timeout
 		
 		# Back to browsing
 		back_to_browing()
@@ -203,7 +203,7 @@ func start():
 	$"Shop UI/Shop Music".play()
 	$"Shop UI".visible = true
 	$Anim.play("Fade")
-	yield($Anim, "animation_finished")
+	await $Anim.animation_finished
 	
 	# Play Welcome!
 	$"Shop UI/Shop Greeting JPN".play()
@@ -211,16 +211,16 @@ func start():
 	# Set text anim for greeting
 	shop_text.percent_visible = 0
 	anim.play("Text Anim")
-	yield(get_tree().create_timer(1.5), "timeout")
+	await get_tree().create_timer(1.5).timeout
 	
 	# Show buy//sell option next
 	shop_text.percent_visible = 0
 	shop_text.text = buy_sell
 	anim.play("Text Anim")
-	yield(anim,"animation_finished")
+	await anim.animation_finished
 	
 	# Reset the hand to the yes position
-	hand_selector.rect_position = YES_POSITION
+	hand_selector.position = YES_POSITION
 	
 	# Allow input and disable the shop list for now
 	shop_list.focus_mode = Control.FOCUS_NONE
@@ -231,7 +231,7 @@ func start():
 	
 	# Shop hand
 	$"Shop UI/Hand Confirm".visible = true
-	$"Shop UI/Hand Confirm".rect_position = YES_POSITION
+	$"Shop UI/Hand Confirm".position = YES_POSITION
 
 func allow_list_input():
 	shop_list.focus_mode = Control.FOCUS_ALL
@@ -241,9 +241,9 @@ func allow_list_input():
 
 func exit():
 	# Disallow input
-	shop_list.unselect_all()
+	shop_list.deselect_all()
 	shop_list.release_focus()
-	shop_list_price.unselect_all()
+	shop_list_price.deselect_all()
 	set_process_input(false)
 	
 	#　Play goodbye
@@ -257,15 +257,15 @@ func exit():
 	shop_text.percent_visible = 0
 	shop_text.text = thanks_for_coming
 	anim.play("Text Anim")
-	yield(anim,"animation_finished")
+	await anim.animation_finished
 	
 	# Wait 1 second
-	yield(get_tree().create_timer(1),"timeout")
+	await get_tree().create_timer(1).timeout
 	
 	# Shop music
 	$"Shop UI/Shop Music".stop()
 	anim.play_backwards("Fade")
-	yield(anim, "animation_finished")
+	await anim.animation_finished
 	$"Shop UI".visible = false
 	
 	# Remove the shop text
@@ -297,19 +297,19 @@ func _input(event):
 			if Input.is_action_just_pressed("ui_left"):
 				if buy_sell_index_choice == 1:
 					buy_sell_index_choice = 0
-					hand_confirm.rect_position = YES_POSITION
+					hand_confirm.position = YES_POSITION
 					hand_confirm.get_node("Move").play()
 			elif Input.is_action_just_pressed("ui_right"):
 				if  buy_sell_index_choice == 0:
 					buy_sell_index_choice = 1
-					hand_confirm.rect_position = NO_POSITION
+					hand_confirm.position = NO_POSITION
 					hand_confirm.get_node("Move").play()
 			elif Input.is_action_just_pressed("ui_accept"):
 				hand_confirm.get_node("Accept").play()
 				# Are we on sell?
 				if buy_sell_index_choice == 1:
 					# Send the hand back
-					hand_confirm.rect_position = Vector2(-300,-300)
+					hand_confirm.position = Vector2(-300,-300)
 					
 					# back to the Buy state
 					current_state = SHOP_STATE.SELL_SELECT_UNIT
@@ -321,14 +321,14 @@ func _input(event):
 					anim.play("Text Anim")
 				
 					# Allow Movement again
-					yield(anim, "animation_finished")
+					await anim.animation_finished
 					set_process_input(true)
 					
 					# Start the solo picker
 					select_unit_for_inventory()
 				else:
 					current_state = SHOP_STATE.OFF
-					$"Shop UI/Hand Confirm".rect_position = OFF_SCREEN
+					$"Shop UI/Hand Confirm".position = OFF_SCREEN
 					back_to_browing()
 					$"Shop UI/Shop Select your weapon".play()
 					allow_list_input()
@@ -340,8 +340,8 @@ func _input(event):
 			# Accept button
 			if Input.is_action_just_pressed("ui_accept"):
 				# Remove Focus
-				shop_list.unselect_all()
-				shop_list_price.unselect_all()
+				shop_list.deselect_all()
+				shop_list_price.deselect_all()
 				shop_list.release_focus()
 				
 				# Play are you sure?
@@ -353,10 +353,10 @@ func _input(event):
 				anim.play("Text Anim")
 				
 				# Allow Movement again
-				yield(anim, "animation_finished")
+				await anim.animation_finished
 				
 				# Move hand to where it should be
-				hand_confirm.rect_position = YES_POSITION
+				hand_confirm.position = YES_POSITION
 				set_process_input(true)
 				
 				# Set new state
@@ -367,24 +367,24 @@ func _input(event):
 				current_state = SHOP_STATE.ASK
 				
 				# Disable list
-				shop_list.unselect_all()
-				shop_list_price.unselect_all()
+				shop_list.deselect_all()
+				shop_list_price.deselect_all()
 				shop_list.release_focus()
 				
 				# Show buy//sell option next
 				shop_text.percent_visible = 0
 				shop_text.text = buy_sell
 				anim.play("Text Anim")
-				yield(anim,"animation_finished")
+				await anim.animation_finished
 				
 				# Bring hand back
-				$"Shop UI/Hand Confirm".rect_position = YES_POSITION
+				$"Shop UI/Hand Confirm".position = YES_POSITION
 		SHOP_STATE.SELL_SELECT_UNIT:
 			# Back to ask
 			if Input.is_action_just_pressed("ui_cancel"):
 				# Go back to unit picker
 				# Send the hand back
-				hand_confirm.rect_position = OFF_SCREEN
+				hand_confirm.position = OFF_SCREEN
 				# Back to the sell state
 				current_state = SHOP_STATE.ASK
 				
@@ -396,11 +396,11 @@ func _input(event):
 				shop_text.percent_visible = 0
 				shop_text.text = buy_sell
 				anim.play("Text Anim")
-				yield(anim, "animation_finished")
+				await anim.animation_finished
 				set_process_input(true)
 				
 				# Bring hand back
-				$"Shop UI/Hand Confirm".rect_position = YES_POSITION
+				$"Shop UI/Hand Confirm".position = YES_POSITION
 				
 				# Reset
 				reset()
@@ -409,7 +409,7 @@ func _input(event):
 			if Input.is_action_just_pressed("ui_cancel"):
 				# Go back to unit picker
 				# Send the hand back
-				hand_confirm.rect_position = OFF_SCREEN
+				hand_confirm.position = OFF_SCREEN
 				# Back to the sell state
 				current_state = SHOP_STATE.SELL_SELECT_UNIT
 				
@@ -429,12 +429,12 @@ func _input(event):
 			if Input.is_action_just_pressed("ui_left"):
 				if confirm_buy_index == 1:
 					confirm_buy_index = 0
-					hand_confirm.rect_position = YES_POSITION
+					hand_confirm.position = YES_POSITION
 					hand_confirm.get_node("Move").play()
 			elif Input.is_action_just_pressed("ui_right"):
 				if confirm_buy_index == 0:
 					confirm_buy_index = 1
-					hand_confirm.rect_position = NO_POSITION
+					hand_confirm.position = NO_POSITION
 					hand_confirm.get_node("Move").play()
 			# Accept button
 			if Input.is_action_just_pressed("ui_accept"):
@@ -447,7 +447,7 @@ func _input(event):
 					set_process_input(false)
 					
 					# Send the hand back
-					hand_confirm.rect_position = Vector2(-300,-300)
+					hand_confirm.position = Vector2(-300,-300)
 					# back to the Buy state
 					current_state = SHOP_STATE.OFF
 					# Back to browsing
@@ -462,7 +462,7 @@ func _input(event):
 				# Cancel and go back
 				$"Shop UI/Shop Select your weapon".play()
 				# Send the hand back
-				hand_confirm.rect_position = Vector2(-300,-300)
+				hand_confirm.position = Vector2(-300,-300)
 				# back to the Buy state
 				current_state = SHOP_STATE.BUY
 				# Back to browsing
@@ -472,12 +472,12 @@ func _input(event):
 			if Input.is_action_just_pressed("ui_left"):
 				if confirm_sell_index == 1:
 					confirm_sell_index = 0
-					hand_confirm.rect_position = YES_POSITION
+					hand_confirm.position = YES_POSITION
 					hand_confirm.get_node("Move").play()
 			elif Input.is_action_just_pressed("ui_right"):
 				if confirm_sell_index == 0:
 					confirm_sell_index = 1
-					hand_confirm.rect_position = NO_POSITION
+					hand_confirm.position = NO_POSITION
 					hand_confirm.get_node("Move").play()
 			# Accept button
 			elif Input.is_action_just_pressed("ui_accept"):
@@ -498,7 +498,7 @@ func _input(event):
 					anim.play("Text Anim")
 					
 					# Send the hand back
-					hand_confirm.rect_position = OFF_SCREEN
+					hand_confirm.position = OFF_SCREEN
 					# Back to the sell state
 					current_state = SHOP_STATE.SELL
 					# Go back to picking the weapon
@@ -515,7 +515,7 @@ func _input(event):
 				# Cancel and go back
 				$"Shop UI/Shop Select your weapon".play()
 				# Send the hand back
-				hand_confirm.rect_position = OFF_SCREEN
+				hand_confirm.position = OFF_SCREEN
 				# Back to the sell state
 				current_state = SHOP_STATE.SELL
 				
@@ -531,7 +531,7 @@ func _input(event):
 			# Cancel the purchase
 			if Input.is_action_just_pressed("ui_cancel"):
 				# Move Hand off
-				hand_confirm.rect_position = OFF_SCREEN
+				hand_confirm.position = OFF_SCREEN
 				# Update amount left
 				$"Shop UI/Money".text = str(BattlefieldInfo.money)
 				
@@ -543,7 +543,7 @@ func _input(event):
 				set_process_input(false)
 				
 				# Send the hand back
-				hand_confirm.rect_position = Vector2(-300,-300)
+				hand_confirm.position = Vector2(-300,-300)
 				# back to the Buy state
 				current_state = SHOP_STATE.BUY
 				# Back to browsing
@@ -555,7 +555,7 @@ func select_unit_for_inventory():
 	$"Unit Picker Solo".start_with_convoy()
 	
 	# Move hand off screen
-	$"Shop UI/Hand Confirm".rect_position = OFF_SCREEN
+	$"Shop UI/Hand Confirm".position = OFF_SCREEN
 
 # Back to browsing
 func back_to_browing():
@@ -569,13 +569,13 @@ func back_to_browing():
 	anim.play("Text Anim")
 	
 	# Wait
-	yield(anim, "animation_finished")
+	await anim.animation_finished
 	
 	# Set state back
 	current_state = SHOP_STATE.BUY
 	
 	# Move Hand away
-	hand_confirm.rect_position = OFF_SCREEN
+	hand_confirm.position = OFF_SCREEN
 	
 	# Set focus back on the first list
 	shop_list.grab_focus()
@@ -596,10 +596,10 @@ func _on_ShopList_item_selected(index):
 	
 	# Move hand
 	if Input.is_action_pressed("ui_up"):
-		hand_selector.rect_position -= HAND_Y_INCREASE
+		hand_selector.position -= HAND_Y_INCREASE
 	
 	if Input.is_action_pressed("ui_down"):
-		hand_selector.rect_position += HAND_Y_INCREASE
+		hand_selector.position += HAND_Y_INCREASE
 	
 	# Play cursor sound
 	hand_selector.get_node("Move").play()
@@ -611,9 +611,9 @@ func _adjust_hand_value(value):
 	
 	# Did the Value go up?
 	if previous_scroll_value > value:
-		hand_selector.rect_position += HAND_Y_INCREASE
+		hand_selector.position += HAND_Y_INCREASE
 	else:
-		hand_selector.rect_position -= HAND_Y_INCREASE
+		hand_selector.position -= HAND_Y_INCREASE
 	
 	# Set new previous value
 	previous_scroll_value = value
@@ -647,7 +647,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 				Convoy.get_node("Convoy UI").add_item_to_convoy(BattlefieldInfo.item_database.create_item(ALL_ITEMS_REF.all_items[shop_list.get_item_text(current_index)]))
 				
 				# Move Hand off
-				hand_confirm.rect_position = OFF_SCREEN
+				hand_confirm.position = OFF_SCREEN
 				# Update amount left
 				$"Shop UI/Money".text = str(BattlefieldInfo.money)
 				# Thanks for buying!
@@ -658,7 +658,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 				anim.play("Text Anim")
 				# Wait two seconds then back to buy
 				set_process_input(false)
-				yield(get_tree().create_timer(2),"timeout")
+				await get_tree().create_timer(2).timeout
 				
 				# Back to browsing
 				back_to_browing()
@@ -679,7 +679,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					unit.UnitInventory.add_item(BattlefieldInfo.item_database.create_item(ALL_ITEMS_REF.all_items[shop_list.get_item_text(current_index)]))
 					
 					# Move Hand off
-					hand_confirm.rect_position = OFF_SCREEN
+					hand_confirm.position = OFF_SCREEN
 					# Update amount left
 					$"Shop UI/Money".text = str(BattlefieldInfo.money)
 					# Thanks for buying!
@@ -690,7 +690,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					anim.play("Text Anim")
 					# Wait two seconds then back to buy
 					set_process_input(false)
-					yield(get_tree().create_timer(2),"timeout")
+					await get_tree().create_timer(2).timeout
 					
 					# Back to browsing
 					back_to_browing()
@@ -703,19 +703,19 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					# Play can't do that
 					$"Shop UI/Shop Can't do that".play()
 					# Move Hand off
-					hand_confirm.rect_position = OFF_SCREEN
+					hand_confirm.position = OFF_SCREEN
 					# Show text
 					shop_text.percent_visible = 0
 					shop_text.text = inventory_full
 					anim.play("Text Anim")
 					
-					yield(get_tree().create_timer(2),"timeout")
+					await get_tree().create_timer(2).timeout
 		SHOP_STATE.SELL_SELECT_UNIT:
 			# Convoy -> Implement later
 			if unit == Convoy:
 				# Disable this temporarily
-				shop_list.unselect_all()
-				shop_list_price.unselect_all()
+				shop_list.deselect_all()
+				shop_list_price.deselect_all()
 				shop_list.release_focus()
 				
 				# Exit the unit solo picker
@@ -730,13 +730,13 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					# Play can't do that
 					$"Shop UI/Shop Can't do that".play()
 					# Move Hand off
-					hand_confirm.rect_position = OFF_SCREEN
+					hand_confirm.position = OFF_SCREEN
 					# Show text
 					shop_text.percent_visible = 0
 					shop_text.text = no_items_to_sell
 					anim.play("Text Anim")
 					
-					yield(get_tree().create_timer(2),"timeout")
+					await get_tree().create_timer(2).timeout
 				else:
 					# Save the unit to the variable
 					current_unit_selected = unit
@@ -745,8 +745,8 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					$"Shop UI/Shop Select your weapon".play()
 					
 					# Disable the list
-					shop_list.unselect_all()
-					shop_list_price.unselect_all()
+					shop_list.deselect_all()
+					shop_list_price.deselect_all()
 					shop_list.release_focus()
 					
 					# Set new instruction text
@@ -782,8 +782,8 @@ func _on_Unit_Inventory_Display_item_selected():
 		anim.play("Text Anim")
 		
 		# Wait for ending
-		yield(anim, "animation_finished")
-		yield(get_tree().create_timer(0.5), "timeout")
+		await anim.animation_finished
+		await get_tree().create_timer(0.5).timeout
 		
 		# Set new instruction text
 		shop_text.percent_visible = 0
@@ -791,7 +791,7 @@ func _on_Unit_Inventory_Display_item_selected():
 		anim.play("Text Anim")
 		
 		# Wait for ending
-		yield(anim, "animation_finished")
+		await anim.animation_finished
 		
 		# Allow input
 		$"Unit Inventory Display".allow_input_last_pick()
@@ -811,17 +811,17 @@ func _on_Unit_Inventory_Display_item_selected():
 		anim.play("Text Anim")
 		
 		# Wait for ending
-		yield(anim, "animation_finished")
+		await anim.animation_finished
 		set_process_input(true)
 		
 		# Set new state of the shop
 		current_state = SHOP_STATE.CONFIRM_SELL
 		
 		# Set hand to new location
-		$"Shop UI/Hand Confirm".rect_position = YES_POSITION
+		$"Shop UI/Hand Confirm".position = YES_POSITION
 		
 		
 
-func set_input_timer(input_value, var time = 0.5):
-	yield(get_tree().create_timer(time), "timeout")
+func set_input_timer(input_value, time = 0.5):
+	await get_tree().create_timer(time).timeout
 	set_process_input(input_value)

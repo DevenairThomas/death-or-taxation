@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://engine/tests/script_test_scene.gd" type="Script" id=1]
-[ext_resource path="res://icon.svg" type="Texture" id=2]
+[ext_resource path="res://icon.svg" type="Texture2D" id=2]
 
 [sub_resource type="Animation" id=1]
 resource_name = "test"
@@ -15,6 +15,6 @@ __meta__ = {
 [node name="anim" type="AnimationPlayer" parent="."]
 anims/test = SubResource( 1 )
 
-[node name="Sprite2" type="Sprite" parent="."]
+[node name="Sprite2" type="Sprite2D" parent="."]
 position = Vector2( 120, 80 )
 texture = ExtResource( 2 )

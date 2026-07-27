@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 var  dialogue = ["Vanessa@assets/units/pegasus knight/Vanessa Portrait.png@Hi Eirika! Do you see these forests next to me?",
 	"Eirika@assets/units/eirika/eirika mugshot.png@Yes I do! Forests seem to slow us down on the battlefield!",

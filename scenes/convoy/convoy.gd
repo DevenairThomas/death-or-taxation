@@ -22,16 +22,16 @@ var current_convoy_status
 var icon = preload("res://icon.svg")
 
 # Node access
-onready var sword_list = $"All Lists/Sword"
-onready var lance_list = $"All Lists/Lance"
-onready var axe_list = $"All Lists/Axe"
-onready var bow_list = $"All Lists/Bow"
-onready var tome_list = $"All Lists/Tome"
-onready var heal_list = $"All Lists/Heal"
-onready var consumable_list = $"All Lists/Consumable"
-onready var item_stats_label = $"Item Stats"
-onready var unit_picker = $"Unit Picker Solo"
-onready var unit_inventory = $"Unit Inventory Display"
+@onready var sword_list = $"All Lists/Sword"
+@onready var lance_list = $"All Lists/Lance"
+@onready var axe_list = $"All Lists/Axe"
+@onready var bow_list = $"All Lists/Bow"
+@onready var tome_list = $"All Lists/Tome"
+@onready var heal_list = $"All Lists/Heal"
+@onready var consumable_list = $"All Lists/Consumable"
+@onready var item_stats_label = $"Item Stats"
+@onready var unit_picker = $"Unit Picker Solo"
+@onready var unit_inventory = $"Unit Inventory Display"
 
 # Store all the nodes into this array for controlled access
 var all_lists_array = []
@@ -152,7 +152,7 @@ func start():
 	
 	# Play the animation
 	$AnimationPlayer.play("Fade")
-	yield($"AnimationPlayer", "animation_finished")
+	await $"AnimationPlayer".animation_finished
 	
 	# Allow movement
 	set_process_input(true)
@@ -202,14 +202,14 @@ func next_list(previous_list, next_list):
 func activate_list(list):
 	list.start(self)
 
-func deactivate_list_no_hide(list, var reset_index = true):
+func deactivate_list_no_hide(list, reset_index = true):
 	list.disable_input()
 	
 	# Set new index
 	if (reset_index):
 		current_item_selected_index = 0
 
-func deactivate_list(list, var reset_index = true):
+func deactivate_list(list, reset_index = true):
 	# Stop process
 	list.exit()
 	
@@ -242,7 +242,7 @@ func exit():
 	
 	# Play the animation
 	$AnimationPlayer.play_backwards("Fade")
-	yield($"AnimationPlayer", "animation_finished")
+	await $"AnimationPlayer".animation_finished
 	visible = false
 	
 	# Turn units back on
@@ -250,15 +250,15 @@ func exit():
 
 func test():
 	# Swords
-	sword_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Sword"]).instance())
-	sword_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Sword"]).instance())
-	sword_list.add_item(load(ALL_ITEMS_REF.all_items["Killing Edge"]).instance())
+	sword_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Sword"]).instantiate())
+	sword_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Sword"]).instantiate())
+	sword_list.add_item(load(ALL_ITEMS_REF.all_items["Killing Edge"]).instantiate())
 	
 	# Axe
-	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instance())
-	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instance())
-	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instance())
-	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instance())
+	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instantiate())
+	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instantiate())
+	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instantiate())
+	axe_list.add_item(load(ALL_ITEMS_REF.all_items["Iron Axe"]).instantiate())
 	
 	# Modify the axes a little bit
 	axe_list.item_list[1].uses = 5
@@ -270,13 +270,13 @@ func test():
 	# Nothing, as a test
 	
 	# No Heal but put tomes
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instance())
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Flux Tome"]).instance())
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instance())
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Flux Tome"]).instance())
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Flux Tome"]).instance())
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instance())
-	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instance())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instantiate())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Flux Tome"]).instantiate())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instantiate())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Flux Tome"]).instantiate())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Flux Tome"]).instantiate())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instantiate())
+	tome_list.add_item(load(ALL_ITEMS_REF.all_items["Fire Tome"]).instantiate())
 	
 
 func item_text_reset():
@@ -304,7 +304,7 @@ func process_accept():
 					set_process_input(false)
 					
 					# Wait 1 second
-					yield(get_tree().create_timer(1), "timeout")
+					await get_tree().create_timer(1).timeout
 					set_process_input(true)
 					change_text("Select Item or Deposit")
 					return
@@ -341,7 +341,7 @@ func process_accept():
 				$"All Lists/Axe/Hand Selector/Invalid".play(0)
 				
 				# Wait 0.4 seconds
-				yield(get_tree().create_timer(1), "timeout")
+				await get_tree().create_timer(1).timeout
 				
 				# Set text back
 				unit_picker.set_new_text_instructions("Select a unit to receive this item.")
@@ -459,7 +459,7 @@ func send_item_to_unit(unit_to_receive_item):
 	unit_to_receive_item.UnitInventory.add_item(item_to_transfer)
 	
 	# Sleep 0.5 seconds
-	yield(get_tree().create_timer(0.5), "timeout")
+	await get_tree().create_timer(0.5).timeout
 	
 	# Set convoy label back
 	$"ColorRect/Convoy Label".text = "Convoy"
@@ -526,7 +526,7 @@ func _on_Timer_timeout():
 	
 	# Play fade out
 	$AnimationPlayer.play("Fade")
-	yield($AnimationPlayer,"animation_finished")
+	await $AnimationPlayer.animation_finished
 	
 	# Set new background
 	$Background.texture = all_backgrounds[background_index]
@@ -547,7 +547,7 @@ func _on_Yes_No_Box_Generic_option_selected(yes_no_option):
 						$"All Lists/Axe/Hand Selector/Invalid".play(0)
 						
 						# Wait 1 second
-						yield(get_tree().create_timer(1), "timeout")
+						await get_tree().create_timer(1).timeout
 						
 						# Set text of convoy label
 						change_text("Convoy")
@@ -564,7 +564,7 @@ func _on_Yes_No_Box_Generic_option_selected(yes_no_option):
 						# Refresh the Unit Inventory Display
 						unit_inventory.populate_list_of_items(current_unit_selected)
 						
-						yield(get_tree().create_timer(1), "timeout")
+						await get_tree().create_timer(1).timeout
 						
 						# Set status back
 						current_convoy_status = CONVOY_STATUS.SELECT_ITEM
@@ -594,7 +594,7 @@ func _on_Yes_No_Box_Generic_option_selected(yes_no_option):
 				all_lists_array[current_list_selected_index].delete_item()
 				
 				# Sleep 0.5 seconds
-				yield(get_tree().create_timer(0.5), "timeout")
+				await get_tree().create_timer(0.5).timeout
 				
 				# Back to the select item
 				current_convoy_status = CONVOY_STATUS.SELL_ITEM
@@ -625,7 +625,7 @@ func _on_Yes_No_Box_Generic_option_selected(yes_no_option):
 				unit_inventory.populate_list_of_items(current_unit_selected)
 				
 				# Wait 0.5 second
-				yield(get_tree().create_timer(0.5), "timeout")
+				await get_tree().create_timer(0.5).timeout
 				
 				# Check if the unit's inventory is empty
 				if current_unit_selected.UnitInventory.inventory.size() == 0:
@@ -732,6 +732,6 @@ func load_convoy(json_convoy_data):
 	
 	for item_name in all_items_name:
 		for json_item_name in json_convoy_data[item_name]:
-			var item_object = load(json_item_name["filename"]).instance()
+			var item_object = load(json_item_name["filename"]).instantiate()
 			add_item_to_convoy(item_object)
 			item_object.load_item(json_item_name["item_stats"])

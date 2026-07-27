@@ -28,8 +28,8 @@ func _init():
 	turn = WAIT
 
 func _ready():
-	connect("check_end_turn", self, "check_end_of_turn")
-	connect("game_over", self, "game_over_scene")
+	connect("check_end_turn", Callable(self, "check_end_of_turn"))
+	connect("game_over", Callable(self, "game_over_scene"))
 
 # Ally
 func reset_allys():
@@ -85,7 +85,7 @@ func check_end_of_turn():
 			emit_signal("player_turn_increased", player_turn_number)
 			
 			# Run mid level events
-			if BattlefieldInfo.event_system.mid_level_events.empty():
+			if BattlefieldInfo.event_system.mid_level_events.is_empty():
 				start_ally_transition()
 		ENEMY_TURN:
 			for enemy_unit in BattlefieldInfo.enemy_units.values():
@@ -102,7 +102,7 @@ func check_end_of_turn():
 			emit_signal("enemy_turn_increased", enemy_turn_number)
 			
 			# Start enemy transition
-			if BattlefieldInfo.event_system.mid_level_events.empty():
+			if BattlefieldInfo.event_system.mid_level_events.is_empty():
 				start_enemy_transition()
 		WAIT:
 			pass
@@ -137,7 +137,7 @@ func game_over_scene():
 	BattlefieldInfo.cursor.set_process_input(false)
 	
 	# Free current battlefield scene
-	SceneTransition.change_scene("res://scenes/game_over/Game Over Screen.tscn", 2)
+	SceneTransition.change_scene_to_file("res://scenes/game_over/Game Over Screen.tscn", 2)
 
 func victory_next_level():
 	BattlefieldInfo.level_container.next_level()

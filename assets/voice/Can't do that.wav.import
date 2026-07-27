@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Can't do that.wav-8fd0df15a8110c3ecfecb978d41545f1.sample"
+type="AudioStreamWAV"
+uid="uid://bdkqj31cjyuh6"
+path="res://.godot/imported/Can't do that.wav-8fd0df15a8110c3ecfecb978d41545f1.sample"
 
 [deps]
 
 source_file="res://assets/voice/Can't do that.wav"
-dest_files=[ "res://.import/Can't do that.wav-8fd0df15a8110c3ecfecb978d41545f1.sample" ]
+dest_files=["res://.godot/imported/Can't do that.wav-8fd0df15a8110c3ecfecb978d41545f1.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

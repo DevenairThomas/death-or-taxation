@@ -1,12 +1,12 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://scenes/gui/Item Screen/Yes No Box.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/Inventory/equip discard box.png" type="Texture" id=2]
-[ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=3]
-[ext_resource path="res://assets/font/Weapon Name.tres" type="DynamicFont" id=4]
+[ext_resource path="res://assets/ui/Inventory/equip discard box.png" type="Texture2D" id=2]
+[ext_resource path="res://assets/font/Main Font.ttf" type="FontFile" id=3]
+[ext_resource path="res://assets/font/Weapon Name.tres" type="FontFile" id=4]
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=5]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 size = 20
 use_mipmaps = true
 use_filter = true
@@ -18,39 +18,39 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Box Texture" type="TextureRect" parent="."]
-margin_right = 29.0
-margin_bottom = 43.0
+[node name="Box Texture2D" type="TextureRect" parent="."]
+offset_right = 29.0
+offset_bottom = 43.0
 texture = ExtResource( 2 )
 expand = true
 
-[node name="Yes" type="Label" parent="Box Texture"]
-margin_left = 2.0
-margin_top = 9.0
-margin_right = 84.0
-margin_bottom = 31.0
-rect_scale = Vector2( 0.3, 0.3 )
-custom_fonts/font = SubResource( 1 )
+[node name="Yes" type="Label" parent="Box Texture2D"]
+offset_left = 2.0
+offset_top = 9.0
+offset_right = 84.0
+offset_bottom = 31.0
+scale = Vector2( 0.3, 0.3 )
+theme_override_fonts/font = SubResource( 1 )
 text = "Yes"
 align = 1
 valign = 1
 
-[node name="No" type="Label" parent="Box Texture"]
-margin_left = 2.0
-margin_top = 28.0
-margin_right = 85.0
-margin_bottom = 49.0
-rect_scale = Vector2( 0.3, 0.3 )
-custom_fonts/font = ExtResource( 4 )
+[node name="No" type="Label" parent="Box Texture2D"]
+offset_left = 2.0
+offset_top = 28.0
+offset_right = 85.0
+offset_bottom = 49.0
+scale = Vector2( 0.3, 0.3 )
+theme_override_fonts/font = ExtResource( 4 )
 text = "No"
 align = 1
 valign = 1
 
 [node name="Hand Selector" parent="." instance=ExtResource( 5 )]
-margin_left = -12.8577
-margin_top = 6.53159
-margin_right = 2.14229
-margin_bottom = 18.5316
+offset_left = -12.8577
+offset_top = 6.53159
+offset_right = 2.14229
+offset_bottom = 18.5316
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.35

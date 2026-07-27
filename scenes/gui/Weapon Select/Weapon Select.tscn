@@ -3,9 +3,9 @@
 [ext_resource path="res://scenes/gui/Weapon Select/Weapon Select.gd" type="Script" id=1]
 [ext_resource path="res://scenes/gui/Weapon Select/Item Box.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/gui/Action Selector/Actions/Top.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/ui/Inventory/top inventory.png" type="Texture" id=4]
+[ext_resource path="res://assets/ui/Inventory/top inventory.png" type="Texture2D" id=4]
 [ext_resource path="res://scenes/gui/Action Selector/Actions/Bottom.tscn" type="PackedScene" id=5]
-[ext_resource path="res://icon.svg" type="Texture" id=6]
+[ext_resource path="res://icon.svg" type="Texture2D" id=6]
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=7]
 
 [node name="Weapon Select" type="CanvasLayer"]
@@ -17,33 +17,33 @@ __meta__ = {
 
 [node name="Weapon Select" type="Control" parent="."]
 visible = false
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="Item Box" parent="Weapon Select" instance=ExtResource( 2 )]
 
 [node name="Weapon List" type="Control" parent="Weapon Select"]
 
 [node name="Top" parent="Weapon Select/Weapon List" instance=ExtResource( 3 )]
-margin_left = -106.743
-margin_top = 7.23653
-margin_right = 835.257
-margin_bottom = 210.237
+offset_left = -106.743
+offset_top = 7.23653
+offset_right = 835.257
+offset_bottom = 210.237
 texture = ExtResource( 4 )
 expand = true
 
 [node name="Bottom" parent="Weapon Select/Weapon List" instance=ExtResource( 5 )]
-margin_left = -106.743
-margin_top = 48.4331
-margin_right = 775.257
-margin_bottom = 86.4331
+offset_left = -106.743
+offset_top = 48.4331
+offset_right = 775.257
+offset_bottom = 86.4331
 expand = true
 
 [node name="Unit Mugshot" type="TextureRect" parent="Weapon Select"]
-margin_left = 145.0
-margin_top = 22.0
-margin_right = 219.0
-margin_bottom = 95.0
+offset_left = 145.0
+offset_top = 22.0
+offset_right = 219.0
+offset_bottom = 95.0
 texture = ExtResource( 6 )
 expand = true
 __meta__ = {
@@ -52,10 +52,10 @@ __meta__ = {
 
 [node name="Hand Selector" parent="." instance=ExtResource( 7 )]
 show_behind_parent = true
-margin_left = -90.7582
-margin_top = 32.5644
-margin_right = -74.7582
-margin_bottom = 45.5644
+offset_left = -90.7582
+offset_top = 32.5644
+offset_right = -74.7582
+offset_bottom = 45.5644
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.2

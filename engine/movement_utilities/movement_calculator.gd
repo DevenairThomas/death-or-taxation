@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 # Movement Calculator for units
 # Calculates which tiles you can move, attack and heal
 # Calculates using A* which is the shortest path to the target cell
@@ -63,7 +63,7 @@ func processTile(initialTile, unit_movement, moveSteps, unit):
 	queue.append([moveSteps, initialTile])
 	
 	# Process queue until it is empty
-	while !queue.empty():
+	while !queue.is_empty():
 		
 		# Pop the first tile
 		var tile_to_check = queue.pop_front()
@@ -108,7 +108,7 @@ func processAttackTile(Unit):
 				new_queue.append([moveSteps, adjTile])
 	
 	# BFS Search for attack tiles
-	while !new_queue.empty():
+	while !new_queue.is_empty():
 		var check_tile = new_queue.pop_front()
 		if !Unit.UnitMovementStats.allowedAttackRange.has(check_tile[1]): 
 			Unit.UnitMovementStats.allowedAttackRange.append(check_tile[1])
@@ -140,7 +140,7 @@ func processHealingTile(Unit):
 				new_queue.append([moveSteps, adjTile])
 	
 	# BFS Search for attack tiles
-	while !new_queue.empty():
+	while !new_queue.is_empty():
 		var check_tile = new_queue.pop_front()
 		if !Unit.UnitMovementStats.allowedAttackRange.has(check_tile[1]) && !Unit.UnitMovementStats.allowedHealRange.has(check_tile[1]):
 			Unit.UnitMovementStats.allowedHealRange.append(check_tile[1])

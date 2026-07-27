@@ -37,11 +37,11 @@ func start():
 		enemy.visible = true
 	
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "move_actor")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "move_actor"))
 	
 	# Movement System Connect
-	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", self, "event_complete")
-	BattlefieldInfo.movement_system_cinematic.connect("individual_unit_finished_moving", self, "hide_actor")
+	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", Callable(self, "event_complete"))
+	BattlefieldInfo.movement_system_cinematic.connect("individual_unit_finished_moving", Callable(self, "hide_actor"))
 	
 	# Start Text
 	enable_text(dialogue)

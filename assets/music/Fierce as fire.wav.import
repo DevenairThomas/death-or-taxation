@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Fierce as fire.wav-64fef41d9dedc116164ab4425d21ac16.sample"
+type="AudioStreamWAV"
+uid="uid://270o8t402xys"
+path="res://.godot/imported/Fierce as fire.wav-64fef41d9dedc116164ab4425d21ac16.sample"
 
 [deps]
 
 source_file="res://assets/music/Fierce as fire.wav"
-dest_files=[ "res://.import/Fierce as fire.wav-64fef41d9dedc116164ab4425d21ac16.sample" ]
+dest_files=["res://.godot/imported/Fierce as fire.wav-64fef41d9dedc116164ab4425d21ac16.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=true
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=1

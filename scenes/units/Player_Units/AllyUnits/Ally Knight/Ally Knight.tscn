@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://scenes/units/Player_Units/AllyUnits/Ally Knight/Ally Knight.gd" type="Script" id=1]
-[ext_resource path="res://assets/units/knight/knight ally.png" type="Texture" id=2]
+[ext_resource path="res://assets/units/knight/knight ally.png" type="Texture2D" id=2]
 [ext_resource path="res://assets/sound/unitMovement/Heavy Foot Steps 1.wav" type="AudioStream" id=3]
 [ext_resource path="res://scenes/gui/Damage Preview/Cursor Select.tscn" type="PackedScene" id=4]
 
@@ -11,38 +11,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 70, 15, 22, 17 ), Rect2( 69, 47, 23, 18 ), Rect2( 69, 80, 23, 18 ), Rect2( 69, 114, 23, 17 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:flip_h")
+tracks/1/path = NodePath("Sprite2D:flip_h")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:position")
+tracks/2/path = NodePath("Sprite2D:position")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Vector2( -6, 1 ), Vector2( -6, -1 ), Vector2( -7, 0 ), Vector2( -7, 0 ) ]
 }
@@ -58,7 +58,7 @@ tracks/3/keys = {
 "start_offset": 0.0,
 "stream": ExtResource( 3 )
 } ],
-"times": PoolRealArray( 0 )
+"times": PackedFloat32Array( 0 )
 }
 
 [sub_resource type="Animation" id=2]
@@ -67,38 +67,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 70, 15, 22, 17 ), Rect2( 69, 47, 23, 18 ), Rect2( 69, 80, 23, 18 ), Rect2( 69, 114, 23, 17 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:flip_h")
+tracks/1/path = NodePath("Sprite2D:flip_h")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:position")
+tracks/2/path = NodePath("Sprite2D:position")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Vector2( -6, -2 ), Vector2( -6, -2 ), Vector2( -7, -3 ), Vector2( -7, -2 ) ]
 }
@@ -109,38 +109,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 70, 15, 22, 17 ), Rect2( 69, 47, 23, 18 ), Rect2( 69, 80, 23, 18 ), Rect2( 69, 114, 23, 17 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:flip_h")
+tracks/1/path = NodePath("Sprite2D:flip_h")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:position")
+tracks/2/path = NodePath("Sprite2D:position")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Vector2( -6, -2 ), Vector2( -6, -2 ), Vector2( -7, -3 ), Vector2( -7, -2 ) ]
 }
@@ -150,38 +150,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 8, 50, 16, 15 ), Rect2( 8, 82, 16, 16 ), Rect2( 8, 115, 16, 16 ), Rect2( 8, 82, 16, 16 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Vector2( 0, 0 ), Vector2( 0, -1 ), Vector2( 0, -1 ), Vector2( 0, -1 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
@@ -192,38 +192,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 37, 13, 22, 19 ), Rect2( 37, 46, 22, 19 ), Rect2( 38, 79, 21, 19 ), Rect2( 37, 112, 22, 19 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ Vector2( -5, -4 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
@@ -239,7 +239,7 @@ tracks/3/keys = {
 "start_offset": 0.0,
 "stream": ExtResource( 3 )
 } ],
-"times": PoolRealArray( 0 )
+"times": PackedFloat32Array( 0 )
 }
 
 [sub_resource type="Animation" id=6]
@@ -248,38 +248,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 37, 13, 22, 19 ), Rect2( 37, 46, 22, 19 ), Rect2( 38, 79, 21, 19 ), Rect2( 37, 112, 22, 19 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ Vector2( -5, -4 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
@@ -290,38 +290,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 37, 13, 22, 19 ), Rect2( 37, 46, 22, 19 ), Rect2( 38, 79, 21, 19 ), Rect2( 37, 112, 22, 19 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 1.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 1,
 "values": [ Vector2( -2, -4 ), Vector2( -2, -4 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ true ]
 }
@@ -337,7 +337,7 @@ tracks/3/keys = {
 "start_offset": 0.0,
 "stream": ExtResource( 3 )
 } ],
-"times": PoolRealArray( 0 )
+"times": PackedFloat32Array( 0 )
 }
 
 [sub_resource type="Animation" id=8]
@@ -346,38 +346,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 37, 13, 22, 19 ), Rect2( 37, 46, 22, 19 ), Rect2( 38, 79, 21, 19 ), Rect2( 37, 112, 22, 19 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 1.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 1,
 "values": [ Vector2( -2, -4 ), Vector2( -2, -4 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ true ]
 }
@@ -387,38 +387,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:flip_h")
+tracks/0/path = NodePath("Sprite2D:flip_h")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Vector2( -2, -8 ), Vector2( -3, -11 ), Vector2( -4, -14 ), Vector2( -4, -11 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:region_rect")
+tracks/2/path = NodePath("Sprite2D:region_rect")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 137, 42, 20, 23 ), Rect2( 136, 72, 24, 26 ), Rect2( 136, 102, 27, 29 ), Rect2( 136, 72, 24, 26 ) ]
 }
@@ -428,38 +428,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 106, 15, 23, 17 ), Rect2( 106, 47, 23, 18 ), Rect2( 106, 80, 23, 18 ), Rect2( 106, 114, 23, 17 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ Vector2( -2, -2 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
@@ -475,7 +475,7 @@ tracks/3/keys = {
 "start_offset": 0.0,
 "stream": ExtResource( 3 )
 } ],
-"times": PoolRealArray( 0 )
+"times": PackedFloat32Array( 0 )
 }
 
 [sub_resource type="Animation" id=11]
@@ -483,38 +483,38 @@ length = 2.0
 loop = true
 step = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:region_rect")
+tracks/0/path = NodePath("Sprite2D:region_rect")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1, 1.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5, 1, 1.5 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ Rect2( 106, 15, 23, 17 ), Rect2( 106, 47, 23, 18 ), Rect2( 106, 80, 23, 18 ), Rect2( 106, 114, 23, 17 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
+tracks/1/path = NodePath("Sprite2D:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ Vector2( -2, -2 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Sprite:flip_h")
+tracks/2/path = NodePath("Sprite2D:flip_h")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
+"times": PackedFloat32Array( 0 ),
+"transitions": PackedFloat32Array( 1 ),
 "update": 1,
 "values": [ false ]
 }
@@ -527,7 +527,7 @@ __meta__ = {
 "_edit_vertical_guides_": [ 16.0 ]
 }
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource( 2 )
 centered = false
 region_enabled = true

@@ -1,8 +1,8 @@
 extends Node2D
 
 # Map information
-export var map_height: int # cell size
-export var map_width: int # cell size
+@export var map_height: int # cell size
+@export var map_width: int # cell size
 var all_allies_location = {} # Holds all ally info
 var all_enemies_location = {} # holds all enemy info
 var grid = [] # Holds all cell data
@@ -40,7 +40,7 @@ func _ready():
 	# [height, type, visible, width, Avd, Def, MovementCost, TileType] -> Tile String Names
 	var cellInfoLayer = $"CellInfo"
 	for cellInfo in cellInfoLayer.get_children():
-		var map_cell_info = cell.instance()
+		var map_cell_info = cell.instantiate()
 		map_cell_info.init(Vector2(cellInfo.position.x / Cell.CELL_SIZE, cellInfo.position.y / Cell.CELL_SIZE), \
 		cellInfo.get_meta("Avd"), cellInfo.get_meta("Def"), cellInfo.get_meta("MovementCost"), cellInfo.get_meta(("TileType")))
 		map_cell_info.set_name("map_cell")
@@ -93,7 +93,7 @@ func _ready():
 			grid[BattlefieldInfo.ally_units[ally_name].position.x / Cell.CELL_SIZE][BattlefieldInfo.ally_units[ally_name].position.y / Cell.CELL_SIZE].occupyingUnit = BattlefieldInfo.ally_units[ally_name]
 		else:
 			var path = str("res://scenes/units/Player_Units/AllyUnits/", allyCellInfo.get_meta("InstanceName"),"/",allyCellInfo.get_meta("InstanceName"),".tscn")
-			var new_ally = load(path).instance()
+			var new_ally = load(path).instantiate()
 			new_ally.visible = false
 			BattlefieldInfo.y_sort_player_party.add_child(new_ally)
 			
@@ -165,7 +165,7 @@ func _ready():
 	# Create Enemy Units
 	for enemy in enemyInfoLayer.get_children():
 		var path = str("res://scenes/units/Enemy_Units/", enemy.get_meta("InstanceName"),".tscn")
-		var newEnemy = load(path).instance()
+		var newEnemy = load(path).instantiate()
 		
 		# Set AI Type
 		var patrol_cell_a
@@ -174,7 +174,7 @@ func _ready():
 			patrol_cell_a = grid[enemy.get_meta("A_Tile_X")][enemy.get_meta("A_Tile_Y")]
 			patrol_cell_b = grid[enemy.get_meta("B_Tile_X")][enemy.get_meta("B_Tile_Y")]
 		newEnemy.get_node("AI").set_ai(enemy.get_meta("aiType"), patrol_cell_a, patrol_cell_b) 
-		$YSort.add_child(newEnemy)
+		$Node2D.add_child(newEnemy)
 		
 		# Set Stats
 		newEnemy.position = Vector2(enemy.position.x, enemy.position.y)
@@ -216,7 +216,7 @@ func _ready():
 	
 	# Spawn points
 	for spawn_point in $SpawnPoints.get_children():
-		var spawn_point_cell = cell.instance()
+		var spawn_point_cell = cell.instantiate()
 		spawn_point_cell.init(Vector2(spawn_point.position.x / Cell.CELL_SIZE, spawn_point.position.y / Cell.CELL_SIZE), \
 		0, 0, 100, "Plains")
 		spawn_point_cell.set_name("spawn_point_cell")

@@ -19,10 +19,10 @@ signal all_events_done
 
 func _ready():
 	# Connect to self for signals
-	self.connect("event_done", self, "parse_event")
+	self.connect("event_done", Callable(self, "parse_event"))
 	
 	# Connect to the camera to know when the tween is done
-	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", self, "event_done")
+	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", Callable(self, "event_done"))
 
 func start(all_events_array):
 	for event in all_events_array:

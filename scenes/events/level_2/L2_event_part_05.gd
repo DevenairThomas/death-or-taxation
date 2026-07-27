@@ -47,12 +47,12 @@ func start():
 	
 	# Turn on
 	BattlefieldInfo.battlefield_container.get_node("Anim").play("Fade")
-	yield(BattlefieldInfo.battlefield_container.get_node("Anim"), "animation_finished")
+	await BattlefieldInfo.battlefield_container.get_node("Anim").animation_finished
 	
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "move_actor")
-	BattlefieldInfo.movement_system_cinematic.connect("individual_unit_finished_moving", self, "hide_actor")
-	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", self, "event_complete")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "move_actor"))
+	BattlefieldInfo.movement_system_cinematic.connect("individual_unit_finished_moving", Callable(self, "hide_actor"))
+	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", Callable(self, "event_complete"))
 	
 	# Start Text
 	BattlefieldInfo.message_system.set_position(Messaging_System.TOP)

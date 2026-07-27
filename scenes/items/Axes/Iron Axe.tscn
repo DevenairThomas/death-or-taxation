@@ -2,5 +2,5 @@
 
 [ext_resource path="res://scenes/items/Axes/Iron Axe.gd" type="Script" id=1]
 
-[node name="Iron Axe" type="Sprite"]
+[node name="Iron Axe" type="Sprite2D"]
 script = ExtResource( 1 )

@@ -85,7 +85,7 @@ func print_stats():
 func save():
 	var save_dict = {
 		# Node info
-		"filename" : get_filename(),
+		"filename" : get_scene_file_path(),
 		"parent": get_parent().get_path(),
 		
 		# Item stats

@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Not enough money.wav-6ca91828791625440361a99504fba497.sample"
+type="AudioStreamWAV"
+uid="uid://dhli6svncaikh"
+path="res://.godot/imported/Not enough money.wav-6ca91828791625440361a99504fba497.sample"
 
 [deps]
 
 source_file="res://assets/voice/Not enough money.wav"
-dest_files=[ "res://.import/Not enough money.wav-6ca91828791625440361a99504fba497.sample" ]
+dest_files=["res://.godot/imported/Not enough money.wav-6ca91828791625440361a99504fba497.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

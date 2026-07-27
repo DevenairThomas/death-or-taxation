@@ -15,8 +15,8 @@ func _ready():
 	
 	# Weapons and Inventory
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.SWORD)
-	UnitInventory.add_item(preload("res://scenes/items/Swords/Iron Sword.tscn").instance())
-	UnitInventory.add_item(preload("res://scenes/items/Swords/Killing Edge.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Swords/Iron Sword.tscn").instantiate())
+	UnitInventory.add_item(preload("res://scenes/items/Swords/Killing Edge.tscn").instantiate())
 	
 	# Set combat node
 	combat_node = preload("res://scenes/units/Player_Units/AllyUnits/Ally Thief/Colm Combat.tscn")

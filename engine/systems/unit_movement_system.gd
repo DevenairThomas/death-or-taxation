@@ -52,7 +52,7 @@ func process_movement(delta):
 		unit.UnitMovementStats.movement_queue.pop_front()
 	
 	# Check if we have no more moves left in the queue
-	if unit.UnitMovementStats.movement_queue.empty():
+	if unit.UnitMovementStats.movement_queue.is_empty():
 		# Stop moving
 		is_moving = false
 		
@@ -65,7 +65,7 @@ func process_movement(delta):
 		BattlefieldInfo.movement_calculator.turn_off_all_tiles(unit, BattlefieldInfo.grid)
 		
 		# Set final camera
-		BattlefieldInfo.main_game_camera.smoothing_speed = 8
+		BattlefieldInfo.main_game_camera.position_smoothing_speed = 8
 		BattlefieldInfo.main_game_camera._on_unit_moved(direction, unit.position)
 		
 		# Emit signal to update the cells

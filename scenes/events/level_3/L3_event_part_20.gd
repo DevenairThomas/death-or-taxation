@@ -16,7 +16,7 @@ func _init():
 
 func start():
 	# Register to the dialogue system
-	BattlefieldInfo.message_system.connect("no_more_text", self, "event_complete")
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "event_complete"))
 	
 	BattlefieldInfo.message_system.set_position(Messaging_System.TOP)
 	
@@ -27,7 +27,7 @@ func move_camera():
 	var new_position_for_camera = Vector2(128,240)
 	
 	# Move Camera and Remove old camera
-	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", self, "enable_text_no_array")
+	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", Callable(self, "enable_text_no_array"))
 	BattlefieldInfo.main_game_camera.get_node("Tween").interpolate_property(BattlefieldInfo.main_game_camera, "position", BattlefieldInfo.main_game_camera.position, new_position_for_camera, 1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	BattlefieldInfo.main_game_camera.get_node("Tween").start()
 

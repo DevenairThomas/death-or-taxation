@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Next Turn.wav-515e5bc1539023305d792458dd927bb5.sample"
+type="AudioStreamWAV"
+uid="uid://ds0ackc6ptlcg"
+path="res://.godot/imported/Next Turn.wav-515e5bc1539023305d792458dd927bb5.sample"
 
 [deps]
 
 source_file="res://assets/sound/transition/Next Turn.wav"
-dest_files=[ "res://.import/Next Turn.wav-515e5bc1539023305d792458dd927bb5.sample" ]
+dest_files=["res://.godot/imported/Next Turn.wav-515e5bc1539023305d792458dd927bb5.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=1

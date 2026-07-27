@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Myrrh Transform 2.wav-f91d9f8442ab5522ccdb0aa185a802ad.sample"
+type="AudioStreamWAV"
+uid="uid://cbb785pat57ma"
+path="res://.godot/imported/Myrrh Transform 2.wav-f91d9f8442ab5522ccdb0aa185a802ad.sample"
 
 [deps]
 
 source_file="res://assets/sound/battle sounds/Myrrh Transform 2.wav"
-dest_files=[ "res://.import/Myrrh Transform 2.wav-f91d9f8442ab5522ccdb0aa185a802ad.sample" ]
+dest_files=["res://.godot/imported/Myrrh Transform 2.wav-f91d9f8442ab5522ccdb0aa185a802ad.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

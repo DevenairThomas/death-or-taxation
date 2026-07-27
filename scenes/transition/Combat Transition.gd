@@ -21,7 +21,7 @@ func _ready():
 # Randomize the masks
 func set_new_mask():
 	var new_transition = all_transitions[randi() % all_transitions.size()]
-	$"Combat Trans".material.set_shader_param("mask", new_transition)
+	$"Combat Trans".material.set_shader_parameter("mask", new_transition)
 
 
 func play_transition_forward():
@@ -33,7 +33,7 @@ func play_transition_forward():
 	$anim.play("shard_transition")
 	
 	# Wait until done
-	yield($anim, "animation_finished")
+	await $anim.animation_finished
 	
 	# Signal
 	emit_signal("transition_done")
@@ -43,7 +43,7 @@ func play_fade():
 	$anim.play("fade")
 	
 	# Wait until done
-	yield($anim, "animation_finished")
+	await $anim.animation_finished
 	
 	# Signal
 	emit_signal("fade_done")
@@ -55,4 +55,4 @@ func set_original_state():
 	
 	# Combat Trans
 	$"Combat Trans".visible = true
-	$"Combat Trans".material.set_shader_param("cutoff", 1.0)
+	$"Combat Trans".material.set_shader_parameter("cutoff", 1.0)

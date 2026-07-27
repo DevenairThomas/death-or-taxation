@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Message.wav-d9cc08a8f65c86306579cd7f6c380ae6.sample"
+type="AudioStreamWAV"
+uid="uid://tarug3v31cy2"
+path="res://.godot/imported/Message.wav-d9cc08a8f65c86306579cd7f6c380ae6.sample"
 
 [deps]
 
 source_file="res://assets/sound/message/Message.wav"
-dest_files=[ "res://.import/Message.wav-d9cc08a8f65c86306579cd7f6c380ae6.sample" ]
+dest_files=["res://.godot/imported/Message.wav-d9cc08a8f65c86306579cd7f6c380ae6.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

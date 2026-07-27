@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/Tearing through Heaven.ogg-f31d0388b13136e5bb70ccea18efe6ad.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://pc4bv5xv2x30"
+path="res://.godot/imported/Tearing through Heaven.ogg-f31d0388b13136e5bb70ccea18efe6ad.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/music/Tearing through Heaven.ogg"
-dest_files=[ "res://.import/Tearing through Heaven.ogg-f31d0388b13136e5bb70ccea18efe6ad.oggstr" ]
+dest_files=["res://.godot/imported/Tearing through Heaven.ogg-f31d0388b13136e5bb70ccea18efe6ad.oggvorbisstr"]
 
 [params]
 
 loop=true
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

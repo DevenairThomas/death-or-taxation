@@ -83,7 +83,7 @@ func turn_off():
 	BattlefieldInfo.music_player.get_node("AllyLevel").volume_db = 0
 	input_is_active = false
 	$"Unit Info Container/Anim".play_backwards("Fade")
-	yield($"Unit Info Container/Anim","animation_finished")
+	await $"Unit Info Container/Anim".animation_finished
 	$"Unit Info Container".visible = false
 	
 	BattlefieldInfo.cursor.back_to_move()

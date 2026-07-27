@@ -31,4 +31,4 @@ func set_green_equipped(item):
 		$Background/anim.play("equipped")
 	else:
 		$Background/anim.stop(true)
-		$"Background/Weapon Name".set("custom_colors/font_color", Color(1.0, 1.0, 1.0))
+		$"Background/Weapon Name".set("theme_override_colors/font_color", Color(1.0, 1.0, 1.0))

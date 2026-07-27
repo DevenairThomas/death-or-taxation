@@ -1,7 +1,7 @@
 extends Node2D
 
-onready var music = $"BG Music"
-onready var eirika_walk = $"YSort/Eirika Walk"
+@onready var music = $"BG Music"
+@onready var eirika_walk = $"Node2D/Eirika Walk"
 
 func _ready():
 	music.play(0)

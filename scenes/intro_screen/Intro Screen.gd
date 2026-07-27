@@ -20,7 +20,7 @@ func _ready():
 	current_option = options[current_option_number]
 	
 	# Anim signal
-	$"Anim".connect("animation_finished", self, "allow_selection")
+	$"Anim".connect("animation_finished", Callable(self, "allow_selection"))
 	
 	# No 3 houses
 	$"Intro Background".texture = no_text_background
@@ -35,20 +35,20 @@ func _input(event):
 		GAME_SELECT:
 			if Input.is_action_just_pressed("ui_up"):
 				current_option_number -= 1
-				$"Options/Hand Selector".rect_position.y -= 18
+				$"Options/Hand Selector".position.y -= 18
 				if current_option_number < 0:
 					current_option_number = 0
 					current_option = options[current_option_number]
-					$"Options/Hand Selector".rect_position.y += 18
+					$"Options/Hand Selector".position.y += 18
 				current_option = options[current_option_number]
 				$"Options/Hand Selector/Move".play(0)
 			if Input.is_action_just_pressed("ui_down"):
 				current_option_number += 1
-				$"Options/Hand Selector".rect_position.y += 18
+				$"Options/Hand Selector".position.y += 18
 				if current_option_number > options.size() - 1:
 					current_option_number = options.size() - 1
 					current_option = options[current_option_number]
-					$"Options/Hand Selector".rect_position.y -= 18
+					$"Options/Hand Selector".position.y -= 18
 				current_option = options[current_option_number]
 				$"Options/Hand Selector/Move".play(0)
 			if Input.is_action_just_pressed("ui_accept"):
@@ -75,17 +75,17 @@ func process_selection():
 			# Scene change
 			WorldMapScreen.current_event = Level1_WM_Event_Part10.new()
 			WorldMapScreen.connect_to_scene_changer()
-			SceneTransition.change_scene_to(WorldMapScreen, 0.1)
+			SceneTransition.change_scene_to_packed(WorldMapScreen, 0.1)
 		"Load Game":
 			# Stop song and fade to black
 			$"Anim".play("music fade out")
 			set_process_input(false)
-			yield($Anim,"animation_finished")
+			await $Anim.animation_finished
 			$"Intro Song".stop()
 			
 			# Make screen go dark
 			$Anim.play("Fade ")
-			yield($Anim, "animation_finished")
+			await $Anim.animation_finished
 			
 			# Load the game
 			BattlefieldInfo.save_load_system.is_loading_level = true

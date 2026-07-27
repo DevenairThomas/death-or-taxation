@@ -115,3 +115,33 @@ View→Sim is method calls returning a validity result (never asserts on bad inp
 - ⚠ **D18** — confirm mountain-access unit list.
 - ⚠ Ability trigger taxonomy (`passive_aura | turn_start | on_attack | active_once`) must cover all 6 prototype abilities; verify each maps cleanly before coding the ability system (Milestone 5/6).
 - ⚠ Map JSON `legend`/`tiles` ASCII-grid format is provisional; validate it round-trips through `DataLoader` on the first real map (Milestone 1).
+
+---
+
+## Reference-project engine migration (Godot 3.x → 4.6.1)
+
+Applied to the imported Fire Emblem reference clone under `engine/scenes/assets` on branch `reference_project`. Not game-design decisions — recorded here as the audit trail for the conversion. Date: 2026-07-26/27.
+
+### M1 — Converted via Godot's built-in `--convert-3to4`, then hand-fixed residuals
+Ran `Godot_v4.6.1 --convert-3to4` (683 files) for the mechanical bulk (scene format, `Sprite→Sprite2D`, `KinematicBody2D→CharacterBody2D`, `yield→await`, `connect()` signatures, `instance()→instantiate()`, `Texture→Texture2D`). Everything the converter could not do was fixed by hand.
+
+### M2 — Reconstructed `project.godot` from code analysis
+The original Godot-3 `project.godot` (autoloads/main-scene/input map) was gone from git history. Reconstructed by static analysis of bare-name global usage:
+- **Autoloads:** `Calculators`, `Combat_Calculator` (scripts); `BattlefieldInfo`→`game_system.tscn`, `SceneTransition`, `Convoy`→`convoy_canvas_layer.tscn`, `WorldMapScreen`, `StatusScreen` (scenes). Detected as identifiers used project-wide with no `class_name`/local declaration.
+- **Main scene:** `scenes/intro_screen/Intro Screen.tscn` (entry title screen; transitions to WorldMapScreen).
+- **Input actions:** `start_battle`, `exit_game`, `L button`, `R button`, `highlight_enemy`, `debug`, `show_coord_debug`. Original key bindings were lost, so sensible defaults were assigned (Enter/Escape/Q/E/Tab/F1/F2); rebind in-editor as needed.
+
+### M3 — Missing `FE Icon.jpg` / `icon.png` → `icon.svg`
+Referenced by ~11 scenes as a placeholder texture but never existed on disk (not in git history). Pointed at the existing `res://icon.svg`.
+
+### M4 — Godot-4 API fixes the converter missed
+`File.new()/File.READ|WRITE` → `FileAccess` (save/load, event parser); `ItemList.get_v_scroll()` → `get_v_scroll_bar()`; float `%` (play-time display) → `int()` first; `match` pattern `"A" \|\| "B"` → `"A", "B"`; `const all_items` → `static var` (Godot-4 const collections are immutable but the dict is mutated at runtime).
+
+### M5 — Converter mis-conversions reverted
+The regex converter corrupted several string literals: `.start("1","title",lvl,2)` was reshaped into a bogus `Callable(...).bind(...)` (4 world-map event files); `.format(...)` on a line-continued string became `super.format(...)` (Cell.gd); and asset filenames inside resource paths were renamed (`Light Foot Steps`→`Light3D Foot Steps`, `Miss Sprite`→`Miss Sprite2D`, `Rain Noise Texture`→`Rain Noise Texture2D`). All reverted to originals.
+
+### M6 — Tween node → `TweenCompat` shim (`engine/systems/tween_compat.gd`)
+Godot 4 removed the `Tween` scene node; cutscene/world-map code drives sequencing off its `interpolate_property`/`start`/`tween_completed`/`tween_all_completed` API across 15+ callers. Rather than refactor every caller, a small `Node` shim reproduces exactly that API on top of `create_tween()`. The 5 old `Tween` nodes (camera, music player, world map) were retyped to `Node` + this script; callers are unchanged.
+
+### M7 — ⚠ Known pre-existing issue, NOT engine-related
+Unit subclasses (e.g. `Eirika.gd`) override `_ready()` without `super._ready()`, so `Battlefield_Unit`'s init (which creates `UnitStats`/`UnitInventory`/`UnitMovementStats`) never runs — `UnitStats` is null in the unit's own `_ready`. Present identically in the git-HEAD Godot-3 source (in code commented "just a test"); surfaces now only because the game runs far enough to hit it. Two non-fatal runtime errors at startup; the game boots and runs regardless. Fix (add `super._ready()` to unit subclasses) is game-logic cleanup, deferred.

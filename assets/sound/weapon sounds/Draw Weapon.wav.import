@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Draw Weapon.wav-6199bcb3f707cde55a0d481c2539bf11.sample"
+type="AudioStreamWAV"
+uid="uid://bssh1ngoqpbs2"
+path="res://.godot/imported/Draw Weapon.wav-6199bcb3f707cde55a0d481c2539bf11.sample"
 
 [deps]
 
 source_file="res://assets/sound/weapon sounds/Draw Weapon.wav"
-dest_files=[ "res://.import/Draw Weapon.wav-6199bcb3f707cde55a0d481c2539bf11.sample" ]
+dest_files=["res://.godot/imported/Draw Weapon.wav-6199bcb3f707cde55a0d481c2539bf11.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

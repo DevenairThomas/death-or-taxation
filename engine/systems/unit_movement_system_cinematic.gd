@@ -50,7 +50,7 @@ func process_movement(delta):
 			unit.UnitMovementStats.movement_queue.pop_front()
 		
 		# Check if we have no more moves left in the queue
-		if unit.UnitMovementStats.movement_queue.empty():
+		if unit.UnitMovementStats.movement_queue.is_empty():
 			
 			# Set the new current tile and update the world tiles
 			var h = unit.UnitMovementStats.currentTile 
@@ -70,6 +70,6 @@ func process_movement(delta):
 			unit_to_move_same_time.erase(unit)
 			
 	# All Units have moved, check if empty
-	if unit_to_move_same_time.empty():
+	if unit_to_move_same_time.is_empty():
 		is_moving = false
 		emit_signal("unit_finished_moving_cinema")

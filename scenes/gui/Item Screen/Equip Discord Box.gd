@@ -1,6 +1,6 @@
 extends Control
 
-export var is_active = false
+@export var is_active = false
 
 const ACTION_SIZE_Y = 19
 
@@ -20,25 +20,25 @@ func start(item):
 	current_option_selected = current_options[current_option_number]
 	
 	# Hand original position
-	$"Hand Selector".rect_position = Vector2(-12,6)
+	$"Hand Selector".position = Vector2(-12,6)
 	
 	
 	# Can we equip this item?
 	if item.item_class == Item.ITEM_CLASS.CONSUMABLE:
-		$"Box Texture/Equip".text = "Use"
+		$"Box Texture2D/Equip".text = "Use"
 		if item.can_be_consumed():
 			equip_use_allowed = true
-			$"Box Texture/Equip".set("custom_colors/font_color", Color(1.0, 1.0, 1.0))
+			$"Box Texture2D/Equip".set("theme_override_colors/font_color", Color(1.0, 1.0, 1.0))
 		else:
-			$"Box Texture/Equip".set("custom_colors/font_color", Color(0.64, 0.56, 0.56))
+			$"Box Texture2D/Equip".set("theme_override_colors/font_color", Color(0.64, 0.56, 0.56))
 	else:
-		$"Box Texture/Equip".text = "Equip"
+		$"Box Texture2D/Equip".text = "Equip"
 		# Can we use this item?
 		if item.is_usable_by_current_unit:
 			equip_use_allowed = true
-			$"Box Texture/Equip".set("custom_colors/font_color", Color(1.0, 1.0, 1.0))
+			$"Box Texture2D/Equip".set("theme_override_colors/font_color", Color(1.0, 1.0, 1.0))
 		else:
-			$"Box Texture/Equip".set("custom_colors/font_color", Color(0.64, 0.56, 0.56))
+			$"Box Texture2D/Equip".set("theme_override_colors/font_color", Color(0.64, 0.56, 0.56))
 			
 	$Timer.start(0)
 
@@ -63,7 +63,7 @@ func movement(direction):
 			if current_option_number < 0:
 				current_option_number = 0
 			else:
-				$"Hand Selector".rect_position.y -= ACTION_SIZE_Y
+				$"Hand Selector".position.y -= ACTION_SIZE_Y
 				$"Hand Selector/Move".play(0)
 			current_option_selected = current_options[current_option_number]
 		"down":
@@ -71,7 +71,7 @@ func movement(direction):
 			if current_option_number > current_options.size() - 1:
 				current_option_number = current_options.size() - 1
 			else:
-				$"Hand Selector".rect_position.y += ACTION_SIZE_Y
+				$"Hand Selector".position.y += ACTION_SIZE_Y
 				$"Hand Selector/Move".play(0)
 			current_option_selected = current_options[current_option_number]
 
@@ -107,7 +107,7 @@ func turn_off():
 
 func turn_on():
 	# Turn On
-	$"Box Texture/Equip"
+	$"Box Texture2D/Equip"
 	
 	# Turn on Input
 	is_active = true

@@ -18,7 +18,7 @@ func _ready():
 	
 	# Weapons and Inventory
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.LANCE)
-	UnitInventory.add_item(preload("res://scenes/items/Lance/Iron Lance.tscn").instance())
+	UnitInventory.add_item(preload("res://scenes/items/Lance/Iron Lance.tscn").instantiate())
 	
 	# Set combat node -> Change when animation exist
 	combat_node = preload("res://scenes/units/Player_Units/AllyUnits/Ally Knight/Gilliam Combat.tscn")

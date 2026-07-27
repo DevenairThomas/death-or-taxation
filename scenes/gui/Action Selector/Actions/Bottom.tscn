@@ -1,9 +1,9 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://assets/ui/Action Selector/bottom.png" type="Texture" id=1]
+[ext_resource path="res://assets/ui/Action Selector/bottom.png" type="Texture2D" id=1]
 
 [node name="Bottom" type="TextureRect"]
-margin_right = 440.0
-margin_bottom = 39.0
-rect_scale = Vector2( 0.1, 0.1 )
+offset_right = 440.0
+offset_bottom = 39.0
+scale = Vector2( 0.1, 0.1 )
 texture = ExtResource( 1 )

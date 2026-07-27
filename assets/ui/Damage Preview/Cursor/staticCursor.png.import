@@ -1,8 +1,9 @@
 [remap]
 
 importer="texture"
-type="StreamTexture"
-path="res://.import/staticCursor.png-347a47e3122c058780e215316ad19a7f.stex"
+type="CompressedTexture2D"
+uid="uid://de5wipdp4tete"
+path="res://.godot/imported/staticCursor.png-c723e7d2c0ff2ca77b6f3b1abf959ddd.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,25 +11,30 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/Damage Preview/Cursor/staticCursor.png"
-dest_files=[ "res://.import/staticCursor.png-347a47e3122c058780e215316ad19a7f.stex" ]
+dest_files=["res://.godot/imported/staticCursor.png-c723e7d2c0ff2ca77b6f3b1abf959ddd.ctex"]
 
 [params]
 
 compress/mode=0
+compress/high_quality=false
 compress/lossy_quality=0.7
-compress/hdr_mode=0
-compress/bptc_ldr=0
+compress/uastc_level=0
+compress/rdo_quality_loss=0.0
+compress/hdr_compression=1
 compress/normal_map=0
-flags/repeat=0
-flags/filter=false
-flags/mipmaps=false
-flags/anisotropic=false
-flags/srgb=2
+compress/channel_pack=0
+mipmaps/generate=false
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/channel_remap/red=0
+process/channel_remap/green=1
+process/channel_remap/blue=2
+process/channel_remap/alpha=3
 process/fix_alpha_border=true
 process/premult_alpha=false
-process/HDR_as_SRGB=false
-process/invert_color=false
-stream=false
-size_limit=0
-detect_3d=false
-svg/scale=1.0
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1

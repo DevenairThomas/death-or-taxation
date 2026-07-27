@@ -9,7 +9,7 @@ signal unit_became_done
 # Action -> Can do one action (Attack, Heal, Cast Magic, inventory, etc...)
 # Done -> Cannot do anything anymore
 enum {MOVE, ACTION, TRADE, DONE}
-var current_action_status setget set_current_action, get_current_action
+var current_action_status : get = get_current_action, set = set_current_action
 
 # All Units are set to move
 func _init():

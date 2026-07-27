@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Flux1.wav-c9f4c64237ae256fe61d47a55199dea2.sample"
+type="AudioStreamWAV"
+uid="uid://f1sb0v24cje6"
+path="res://.godot/imported/Flux1.wav-c9f4c64237ae256fe61d47a55199dea2.sample"
 
 [deps]
 
 source_file="res://assets/sound/battle sounds/Flux1.wav"
-dest_files=[ "res://.import/Flux1.wav-c9f4c64237ae256fe61d47a55199dea2.sample" ]
+dest_files=["res://.godot/imported/Flux1.wav-c9f4c64237ae256fe61d47a55199dea2.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

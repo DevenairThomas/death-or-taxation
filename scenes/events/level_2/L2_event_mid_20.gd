@@ -29,8 +29,8 @@ func _init():
 	vez = BattlefieldInfo.enemy_units["Vezarius"]
 	
 	# Register to the turn numbers
-	BattlefieldInfo.turn_manager.connect("enemy_turn_increased", self, "start_mid")
-	BattlefieldInfo.turn_manager.connect("player_turn_increased", self, "play_player_transition")
+	BattlefieldInfo.turn_manager.connect("enemy_turn_increased", Callable(self, "start_mid"))
+	BattlefieldInfo.turn_manager.connect("player_turn_increased", Callable(self, "play_player_transition"))
 	
 	path = "res://scenes/events/level_2/L2_event_mid_20.gd"
 
@@ -50,9 +50,9 @@ func start_mid(turn_number):
 	BattlefieldInfo.event_system.pause_ui()
 	
 	# Signals needed
-	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", self, "start_dialogue")
-	BattlefieldInfo.message_system.connect("no_more_text", self, "spawn_enemies")
-	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", self, "move_actor")
+	BattlefieldInfo.movement_system_cinematic.connect("unit_finished_moving_cinema", Callable(self, "start_dialogue"))
+	BattlefieldInfo.message_system.connect("no_more_text", Callable(self, "spawn_enemies"))
+	BattlefieldInfo.main_game_camera.get_node("Tween").connect("tween_all_completed", Callable(self, "move_actor"))
 	
 	spawn_messenger()
 	move_camera()
@@ -85,9 +85,9 @@ func start_dialogue():
 func spawn_messenger():
 	var messenger = preload("res://scenes/units/Enemy_Units/Enemy Pegasus Knight.tscn")
 	
-	var newEnemy = messenger.instance()
+	var newEnemy = messenger.instantiate()
 	newEnemy.get_node("AI").ai_type = "Passive"
-	BattlefieldInfo.current_level.get_node("YSort").add_child(newEnemy)
+	BattlefieldInfo.current_level.get_node("Node2D").add_child(newEnemy)
 	
 	# Set Stats and position
 	newEnemy.position = Vector2(0,160)
@@ -150,18 +150,18 @@ func spawn_enemies():
 		# Spawn random new enemy based on the number that was randomly generated
 		match random_unit:
 			0:
-				newEnemy = e_soldier.instance()
+				newEnemy = e_soldier.instantiate()
 			1:
-				newEnemy = a_soldier.instance()
+				newEnemy = a_soldier.instantiate()
 			2:
-				newEnemy = b_soldier.instance()
+				newEnemy = b_soldier.instantiate()
 			3:
-				newEnemy = p_solider.instance()
+				newEnemy = p_solider.instantiate()
 		
 		for adjCell in spawn_point.adjCells:
 			if adjCell.occupyingUnit == null:
 				newEnemy.get_node("AI").ai_type = "Aggresive"
-				BattlefieldInfo.current_level.get_node("YSort").add_child(newEnemy)
+				BattlefieldInfo.current_level.get_node("Node2D").add_child(newEnemy)
 				
 				# Set Stats and position
 				newEnemy.position = adjCell.position

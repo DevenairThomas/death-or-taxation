@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 var talk_name = "Colm"
 
@@ -48,7 +48,8 @@ func animation_switch():
 			$Animation.current_animation = str(sprite_dir, " no sound")
 
 func _physics_process(delta):
-	move_and_slide(move_dir.normalized() * speed)
+	set_velocity(move_dir.normalized() * speed)
+	move_and_slide()
 	
 	if position.y <= start_position.y:
 		move_dir = Vector2(0, 1)

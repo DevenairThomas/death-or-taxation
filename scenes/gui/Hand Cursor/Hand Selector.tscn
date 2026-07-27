@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.gd" type="Script" id=1]
-[ext_resource path="res://assets/ui/Damage Preview/Cursor/hand.png" type="Texture" id=2]
+[ext_resource path="res://assets/ui/Damage Preview/Cursor/hand.png" type="Texture2D" id=2]
 [ext_resource path="res://assets/sound/cursor/menu cursor.wav" type="AudioStream" id=3]
 [ext_resource path="res://assets/sound/cursor/accept.wav" type="AudioStream" id=4]
 [ext_resource path="res://assets/sound/cursor/backSound.wav" type="AudioStream" id=5]
@@ -12,29 +12,29 @@
 resource_name = "Slide"
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath(".:rect_position")
+tracks/0/path = NodePath(".:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 0.5 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( 3, 0 ) ]
 }
 
 [node name="Hand Selector" type="Control"]
-margin_right = 16.0
-margin_bottom = 13.0
+offset_right = 16.0
+offset_bottom = 13.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TextureRect" type="TextureRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 texture = ExtResource( 2 )
 
 [node name="Anim" type="AnimationPlayer" parent="TextureRect"]

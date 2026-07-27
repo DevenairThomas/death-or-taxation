@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/bird chirping.wav-91222de01b292ea9e2cd3f264b4e24e3.sample"
+type="AudioStreamWAV"
+uid="uid://djnla8eklsgjq"
+path="res://.godot/imported/bird chirping.wav-91222de01b292ea9e2cd3f264b4e24e3.sample"
 
 [deps]
 
 source_file="res://assets/sound/misc/bird chirping.wav"
-dest_files=[ "res://.import/bird chirping.wav-91222de01b292ea9e2cd3f264b4e24e3.sample" ]
+dest_files=["res://.godot/imported/bird chirping.wav-91222de01b292ea9e2cd3f264b4e24e3.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

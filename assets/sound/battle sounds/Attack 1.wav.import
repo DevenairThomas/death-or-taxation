@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/Attack 1.wav-399d5ea99c81d87a987d468cdba0468e.sample"
+type="AudioStreamWAV"
+uid="uid://bjw4xnu445mmv"
+path="res://.godot/imported/Attack 1.wav-399d5ea99c81d87a987d468cdba0468e.sample"
 
 [deps]
 
 source_file="res://assets/sound/battle sounds/Attack 1.wav"
-dest_files=[ "res://.import/Attack 1.wav-399d5ea99c81d87a987d468cdba0468e.sample" ]
+dest_files=["res://.godot/imported/Attack 1.wav-399d5ea99c81d87a987d468cdba0468e.sample"]
 
 [params]
 
@@ -17,5 +18,7 @@ force/max_rate=false
 force/max_rate_hz=44100
 edit/trim=true
 edit/normalize=true
-edit/loop=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
 compress/mode=0

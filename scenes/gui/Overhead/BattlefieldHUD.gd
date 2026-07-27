@@ -11,18 +11,18 @@ const full_bar_width = 237
 
 func _ready():
 	# Connect the cursor movement signal and turning off
-	get_parent().get_node("Cursor").connect("cursorMoved", self, "update_battlefield_ui")
-	get_parent().get_node("Cursor").connect("turn_off_ui", self, "turn_off_battlefield_ui")
-	get_parent().get_node("Cursor").connect("turn_on_ui", self, "turn_on_battlefield_ui")
+	get_parent().get_node("Cursor").connect("cursorMoved", Callable(self, "update_battlefield_ui"))
+	get_parent().get_node("Cursor").connect("turn_off_ui", Callable(self, "turn_off_battlefield_ui"))
+	get_parent().get_node("Cursor").connect("turn_on_ui", Callable(self, "turn_on_battlefield_ui"))
 	
 	# Connect cursor to the Area
-	get_parent().get_node("GameCamera/Areas/BottomLeft").connect("body_entered", self, "bottom_left")
-	get_parent().get_node("GameCamera/Areas/BottomRight").connect("body_entered", self, "bottom_right")
-	get_parent().get_node("GameCamera/Areas/TopLeft").connect("body_entered", self, "top_left")
-	get_parent().get_node("GameCamera/Areas/TopRight").connect("body_entered", self, "top_right")
+	get_parent().get_node("GameCamera/Areas/BottomLeft").connect("body_entered", Callable(self, "bottom_left"))
+	get_parent().get_node("GameCamera/Areas/BottomRight").connect("body_entered", Callable(self, "bottom_right"))
+	get_parent().get_node("GameCamera/Areas/TopLeft").connect("body_entered", Callable(self, "top_left"))
+	get_parent().get_node("GameCamera/Areas/TopRight").connect("body_entered", Callable(self, "top_right"))
 	
 	# Connect to Action selector
-	get_parent().get_node("Action Selector Screen").connect("selected_wait", self, "turn_on_battlefield_ui")
+	get_parent().get_node("Action Selector Screen").connect("selected_wait", Callable(self, "turn_on_battlefield_ui"))
 	
 	# Initial Quandrant and previous
 	cursor_quadrant = TOP_LEFT
@@ -102,60 +102,60 @@ func move_gui_boxes():
 	match cursor_quadrant:
 		TOP_LEFT:
 			# Unit Info Box
-			$"Battlefield HUD/Unit Info".rect_position.x = 0 
-			$"Battlefield HUD/Unit Info".rect_position.y = 115
+			$"Battlefield HUD/Unit Info".position.x = 0 
+			$"Battlefield HUD/Unit Info".position.y = 115
 			
 			# Terrain Box
 #			$"Battlefield HUD/Terrain Info/FadeAnimT".play("Fade")
-			$"Battlefield HUD/Terrain Info".rect_position.x = 190
-			$"Battlefield HUD/Terrain Info".rect_position.y = 120
+			$"Battlefield HUD/Terrain Info".position.x = 190
+			$"Battlefield HUD/Terrain Info".position.y = 120
 
 			# Victory Box
 #			$"Battlefield HUD/Victory Info/FadeAnimV".play("Fade")
-			$"Battlefield HUD/Victory Info".rect_position.x = 190
-			$"Battlefield HUD/Victory Info".rect_position.y = 5
+			$"Battlefield HUD/Victory Info".position.x = 190
+			$"Battlefield HUD/Victory Info".position.y = 5
 
 		BOTTOM_LEFT:
 			# Unit Info Box
-			$"Battlefield HUD/Unit Info".rect_position.x = 0 
-			$"Battlefield HUD/Unit Info".rect_position.y = 0
+			$"Battlefield HUD/Unit Info".position.x = 0 
+			$"Battlefield HUD/Unit Info".position.y = 0
 
 			# Terrain Box
-			$"Battlefield HUD/Terrain Info".rect_position.x = 190
-			$"Battlefield HUD/Terrain Info".rect_position.y = 120
+			$"Battlefield HUD/Terrain Info".position.x = 190
+			$"Battlefield HUD/Terrain Info".position.y = 120
 
 			# Victory Box
-			$"Battlefield HUD/Victory Info".rect_position.x = 190
-			$"Battlefield HUD/Victory Info".rect_position.y = 5
+			$"Battlefield HUD/Victory Info".position.x = 190
+			$"Battlefield HUD/Victory Info".position.y = 5
 
 
 		TOP_RIGHT:
 			# Unit Info Box
-			$"Battlefield HUD/Unit Info".rect_position.x = 0 
-			$"Battlefield HUD/Unit Info".rect_position.y = 115
+			$"Battlefield HUD/Unit Info".position.x = 0 
+			$"Battlefield HUD/Unit Info".position.y = 115
 
 			# Terrain Box
-			$"Battlefield HUD/Terrain Info".rect_position.x = 190
-			$"Battlefield HUD/Terrain Info".rect_position.y = 120
+			$"Battlefield HUD/Terrain Info".position.x = 190
+			$"Battlefield HUD/Terrain Info".position.y = 120
 
 			# Victory Box
 #			$"Battlefield HUD/Victory Info/FadeAnimV".play("Fade")
-			$"Battlefield HUD/Victory Info".rect_position.x = 5
-			$"Battlefield HUD/Victory Info".rect_position.y = 5
+			$"Battlefield HUD/Victory Info".position.x = 5
+			$"Battlefield HUD/Victory Info".position.y = 5
 
 		BOTTOM_RIGHT:
 			# Unit Info Box
-			$"Battlefield HUD/Unit Info".rect_position.x = 0 
-			$"Battlefield HUD/Unit Info".rect_position.y = 115
+			$"Battlefield HUD/Unit Info".position.x = 0 
+			$"Battlefield HUD/Unit Info".position.y = 115
 
 			# Terrain Box
 #			$"Battlefield HUD/Terrain Info/FadeAnimT".play("Fade")
-			$"Battlefield HUD/Terrain Info".rect_position.x = 190
-			$"Battlefield HUD/Terrain Info".rect_position.y = 5
+			$"Battlefield HUD/Terrain Info".position.x = 190
+			$"Battlefield HUD/Terrain Info".position.y = 5
 
 			# Victory Box
-			$"Battlefield HUD/Victory Info".rect_position.x = 5
-			$"Battlefield HUD/Victory Info".rect_position.y = 5
+			$"Battlefield HUD/Victory Info".position.x = 5
+			$"Battlefield HUD/Victory Info".position.y = 5
 
 # Turn off all UI elements of the battlefield
 func turn_off_battlefield_ui():

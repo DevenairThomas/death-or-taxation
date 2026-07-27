@@ -1,8 +1,8 @@
 extends Node2D
 
 # Map information
-export var map_height: int # cell size
-export var map_width: int # cell size
+@export var map_height: int # cell size
+@export var map_width: int # cell size
 var all_allies_location = {} # Holds all ally info
 var all_enemies_location = {} # holds all enemy info
 var grid = [] # Holds all cell data
@@ -40,7 +40,7 @@ func _ready():
 	# [height, type, visible, width, Avd, Def, MovementCost, TileType] -> Tile String Names
 	var cellInfoLayer = $"CellInfo"
 	for cellInfo in cellInfoLayer.get_children():
-		var map_cell_info = cell.instance()
+		var map_cell_info = cell.instantiate()
 		
 		# Initialize the cell
 		map_cell_info.init(Vector2(cellInfo.position.x / Cell.CELL_SIZE, cellInfo.position.y / Cell.CELL_SIZE), \
@@ -106,11 +106,11 @@ func _ready():
 	# Create Enemy Units
 	for enemy in enemyInfoLayer.get_children():
 		var path = str("res://scenes/units/Enemy_Units/", enemy.get_meta("InstanceName"),".tscn")
-		var newEnemy = load(path).instance()
+		var newEnemy = load(path).instantiate()
 		
 		# Set AI Type
 		newEnemy.get_node("AI").ai_type = enemy.get_meta("aiType")
-		$YSort.add_child(newEnemy)
+		$Node2D.add_child(newEnemy)
 		
 		# Set Stats
 		newEnemy.position = Vector2(enemy.position.x, enemy.position.y)

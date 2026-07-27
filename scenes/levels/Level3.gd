@@ -1,8 +1,8 @@
 extends Node2D
 
 # Map information
-export var map_height: int # cell size
-export var map_width: int # cell size
+@export var map_height: int # cell size
+@export var map_width: int # cell size
 var all_allies_location = {} # Holds all ally info
 var all_enemies_location = {} # holds all enemy info
 var grid = [] # Holds all cell data
@@ -36,7 +36,7 @@ func _ready():
 	# [height, type, visible, width, Avd, Def, MovementCost, TileType] -> Tile String Names
 	var cellInfoLayer = $"CellInfo"
 	for cellInfo in cellInfoLayer.get_children():
-		var map_cell_info = cell.instance()
+		var map_cell_info = cell.instantiate()
 		map_cell_info.init(Vector2(cellInfo.position.x / Cell.CELL_SIZE, cellInfo.position.y / Cell.CELL_SIZE), \
 		cellInfo.get_meta("Avd"), cellInfo.get_meta("Def"), cellInfo.get_meta("MovementCost"), cellInfo.get_meta(("TileType")))
 		map_cell_info.set_name("map_cell")
@@ -76,7 +76,7 @@ func _ready():
 	
 	for allyCellInfo in allyInfoLayer.get_children():
 		var path = str("res://scenes/units/Player_Units/AllyUnits/", allyCellInfo.get_meta("InstanceName"),"/",allyCellInfo.get_meta("InstanceName"),".tscn")
-		var new_ally = load(path).instance()
+		var new_ally = load(path).instantiate()
 		new_ally.visible = false
 		BattlefieldInfo.y_sort_player_party.add_child(new_ally)
 		
@@ -145,8 +145,8 @@ func _ready():
 	# Create Enemy Units
 	for enemy in enemyInfoLayer.get_children():
 		var path = str("res://scenes/units/Enemy_Units/", enemy.get_meta("InstanceName"),".tscn")
-		var newEnemy = load(path).instance()
-		$YSort.add_child(newEnemy)
+		var newEnemy = load(path).instantiate()
+		$Node2D.add_child(newEnemy)
 		
 		# Set AI Type
 		var patrol_cell_a = grid[0][0]

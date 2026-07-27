@@ -33,7 +33,7 @@ func _ready():
 	# Add the players from the y sort to the battle field y sort
 	for player_unit in BattlefieldInfo.y_sort_player_party.get_children():
 		BattlefieldInfo.y_sort_player_party.remove_child(player_unit)
-		BattlefieldInfo.current_level.get_node("YSort").add_child(player_unit)
+		BattlefieldInfo.current_level.get_node("Node2D").add_child(player_unit)
 	
 	# Only auto start if level loaded is not set to loaded
 	if !BattlefieldInfo.save_load_system.is_loading_level:
@@ -47,9 +47,9 @@ func check_loss():
 
 func next_level():
 	# Remove any ally units that are still alive
-	for unit in BattlefieldInfo.current_level.get_node("YSort").get_children():
+	for unit in BattlefieldInfo.current_level.get_node("Node2D").get_children():
 		if unit.UnitMovementStats.is_ally:
-			BattlefieldInfo.current_level.get_node("YSort").remove_child(unit)
+			BattlefieldInfo.current_level.get_node("Node2D").remove_child(unit)
 			BattlefieldInfo.y_sort_player_party.add_child(unit)
 	
 	# stop input
@@ -60,13 +60,13 @@ func next_level():
 	
 	# Fade Away
 	BattlefieldInfo.battlefield_container.get_node("Anim").play_backwards("Fade")
-	yield(BattlefieldInfo.battlefield_container.get_node("Anim"), "animation_finished")
+	await BattlefieldInfo.battlefield_container.get_node("Anim").animation_finished
 	
 	# Move to next level
 	WorldMapScreen.visible = true
 	WorldMapScreen.current_event = Level2_WM_Event_Part10.new()
 	WorldMapScreen.connect_to_scene_changer()
-	SceneTransition.change_scene_to(WorldMapScreen, 0.1)
+	SceneTransition.change_scene_to_packed(WorldMapScreen, 0.1)
 	
 	# Clear the events system
 	BattlefieldInfo.event_system.clear()

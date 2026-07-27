@@ -15,7 +15,7 @@ func _ready():
 	
 	# Lance
 	UnitInventory.usable_weapons.append(Item.WEAPON_TYPE.LANCE)
-	var lance = preload("res://scenes/items/Lance/Iron Lance.tscn").instance()
+	var lance = preload("res://scenes/items/Lance/Iron Lance.tscn").instantiate()
 	UnitInventory.add_item(lance)
 	
 	# Set combat node

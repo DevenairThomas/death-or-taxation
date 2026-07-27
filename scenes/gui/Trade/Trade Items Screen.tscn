@@ -1,21 +1,21 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scenes/gui/Trade/Trade Items Screen.gd" type="Script" id=1]
-[ext_resource path="res://assets/font/Main Font.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://icon.svg" type="Texture" id=3]
-[ext_resource path="res://assets/ui/Inventory/top inventory.png" type="Texture" id=4]
+[ext_resource path="res://assets/font/Main Font.ttf" type="FontFile" id=2]
+[ext_resource path="res://icon.svg" type="Texture2D" id=3]
+[ext_resource path="res://assets/ui/Inventory/top inventory.png" type="Texture2D" id=4]
 [ext_resource path="res://scenes/gui/Item Screen/Item Select Slot.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/ui/Inventory/bottom inventory.png" type="Texture" id=6]
+[ext_resource path="res://assets/ui/Inventory/bottom inventory.png" type="Texture2D" id=6]
 [ext_resource path="res://scenes/gui/Hand Cursor/Hand Selector.tscn" type="PackedScene" id=7]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 size = 20
 outline_color = Color( 0.239216, 0.180392, 0.180392, 1 )
 use_mipmaps = true
 use_filter = true
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="FontFile" id=2]
 size = 20
 outline_color = Color( 0.239216, 0.180392, 0.180392, 1 )
 use_mipmaps = true
@@ -31,23 +31,23 @@ __meta__ = {
 }
 
 [node name="Unit Controlled by Player" type="Control" parent="."]
-margin_right = 240.0
-margin_bottom = 159.0
+offset_right = 240.0
+offset_bottom = 159.0
 
 [node name="Name BG" type="ColorRect" parent="Unit Controlled by Player"]
-margin_right = 54.0
-margin_bottom = 12.0
+offset_right = 54.0
+offset_bottom = 12.0
 color = Color( 1, 0.900818, 0.804688, 1 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Name 1" type="Label" parent="Unit Controlled by Player/Name BG"]
-margin_right = 180.0
-margin_bottom = 40.0
-rect_scale = Vector2( 0.3, 0.3 )
-custom_fonts/font = SubResource( 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
+offset_right = 180.0
+offset_bottom = 40.0
+scale = Vector2( 0.3, 0.3 )
+theme_override_fonts/font = SubResource( 1 )
+theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "NAME"
 align = 1
 valign = 1
@@ -55,20 +55,20 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Player 1" type="Sprite" parent="Unit Controlled by Player"]
+[node name="Player 1" type="Sprite2D" parent="Unit Controlled by Player"]
 position = Vector2( 57, 49 )
 scale = Vector2( 1.125, 1.125 )
 texture = ExtResource( 3 )
 
 [node name="Inventory 1" type="Control" parent="Unit Controlled by Player"]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="Top 1" type="TextureRect" parent="Unit Controlled by Player/Inventory 1"]
-margin_left = 9.0
-margin_top = 81.0
-margin_right = 97.0
-margin_bottom = 96.0
+offset_left = 9.0
+offset_top = 81.0
+offset_right = 97.0
+offset_bottom = 96.0
 texture = ExtResource( 4 )
 expand = true
 
@@ -91,10 +91,10 @@ position = Vector2( 12, 129.433 )
 position = Vector2( 12, 138.195 )
 
 [node name="Bottom 1" type="TextureRect" parent="Unit Controlled by Player/Inventory 1"]
-margin_left = 12.0
-margin_top = 148.0
-margin_right = 97.0
-margin_bottom = 151.0
+offset_left = 12.0
+offset_top = 148.0
+offset_right = 97.0
+offset_bottom = 151.0
 texture = ExtResource( 6 )
 expand = true
 __meta__ = {
@@ -102,47 +102,47 @@ __meta__ = {
 }
 
 [node name="Unit Selected by Player" type="Control" parent="."]
-margin_right = 240.0
-margin_bottom = 160.0
+offset_right = 240.0
+offset_bottom = 160.0
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Name BG 2" type="ColorRect" parent="Unit Selected by Player"]
-margin_left = 186.0
-margin_right = 240.0
-margin_bottom = 12.0
+offset_left = 186.0
+offset_right = 240.0
+offset_bottom = 12.0
 color = Color( 1, 0.900818, 0.804688, 1 )
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Name 2" type="Label" parent="Unit Selected by Player/Name BG 2"]
-margin_right = 180.0
-margin_bottom = 40.0
-rect_scale = Vector2( 0.3, 0.3 )
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
+offset_right = 180.0
+offset_bottom = 40.0
+scale = Vector2( 0.3, 0.3 )
+theme_override_fonts/font = SubResource( 2 )
+theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "NAME"
 align = 1
 valign = 1
 
-[node name="Player 2" type="Sprite" parent="Unit Selected by Player"]
+[node name="Player 2" type="Sprite2D" parent="Unit Selected by Player"]
 position = Vector2( 190, 49.75 )
 scale = Vector2( 1.15625, 1.14844 )
 texture = ExtResource( 3 )
 
 [node name="Inventory 2" type="Control" parent="Unit Selected by Player"]
-margin_left = -50.3689
-margin_top = 2.15604
-margin_right = -10.3689
-margin_bottom = 42.156
+offset_left = -50.3689
+offset_top = 2.15604
+offset_right = -10.3689
+offset_bottom = 42.156
 
 [node name="Top 2" type="TextureRect" parent="Unit Selected by Player/Inventory 2"]
-margin_left = 192.0
-margin_top = 81.0
-margin_right = 280.0
-margin_bottom = 96.0
+offset_left = 192.0
+offset_top = 81.0
+offset_right = 280.0
+offset_bottom = 96.0
 texture = ExtResource( 4 )
 expand = true
 
@@ -165,24 +165,24 @@ position = Vector2( 195, 128.762 )
 position = Vector2( 195, 137.524 )
 
 [node name="Bottom 2" type="TextureRect" parent="Unit Selected by Player/Inventory 2"]
-margin_left = 195.369
-margin_top = 146.957
-margin_right = 280.369
-margin_bottom = 149.957
+offset_left = 195.369
+offset_top = 146.957
+offset_right = 280.369
+offset_bottom = 149.957
 texture = ExtResource( 6 )
 expand = true
 
 [node name="Hand Selector 1" parent="." instance=ExtResource( 7 )]
-margin_left = 4.0
-margin_top = 93.0
-margin_right = 20.0
-margin_bottom = 106.0
+offset_left = 4.0
+offset_top = 93.0
+offset_right = 20.0
+offset_bottom = 106.0
 
 [node name="Hand Selector 2" parent="." instance=ExtResource( 7 )]
-margin_left = 136.0
-margin_top = 93.0
-margin_right = 152.0
-margin_bottom = 106.0
+offset_left = 136.0
+offset_top = 93.0
+offset_right = 152.0
+offset_bottom = 106.0
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.5
