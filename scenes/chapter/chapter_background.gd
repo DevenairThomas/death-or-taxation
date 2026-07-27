@@ -24,7 +24,7 @@ func start(chapter_number, chapter_name, next_chapter_path, delay):
 	await $Container/Anim.animation_finished
 	
 	# Set Camera
-	BattlefieldInfo.main_game_camera.current = true
+	BattlefieldInfo.main_game_camera.enabled = true
 	
 	# Change Scene
 	var unzip_scene = load(next_chapter_path)

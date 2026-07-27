@@ -25,8 +25,8 @@ func build_map():
 func after_text():
 	pass
 
-func after_camera_move(object, key):
+func after_camera_move(_object, _key):
 	pass
 
-func after_eirika_move(object, key):
+func after_eirika_move(_object, _key):
 	pass

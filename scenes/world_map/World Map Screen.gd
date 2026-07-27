@@ -19,6 +19,14 @@ var eirika_off_screen = Vector2(-300, -75)
 var current_event
 
 func _ready():
+	# Persistent autoload: stay hidden until start() shows the map, otherwise the
+	# world-map (sea/terrain) renders on top of whatever scene is active (e.g. the
+	# title screen).
+	visible = false
+	# Camera2D defaults to enabled: without this it becomes the active viewport
+	# camera at startup and scrolls other scenes (e.g. the title's particles)
+	# toward the world-map coordinates. Only start() should activate it.
+	$"World Map Cam".enabled = false
 	$"Eirika/Eirika Tween".connect("tween_completed", Callable(self, "set_eirika_idle"))
 	$Eirika/Animation.play("Idle")
 
@@ -35,7 +43,7 @@ func start():
 	add_child(current_event)
 	
 	# Set Current camera
-	$"World Map Cam".current = true
+	$"World Map Cam".enabled = true
 	
 	# Clear map and build
 	clear_map()
@@ -103,12 +111,12 @@ func move_camera(camera_next_position, movement_seconds = 1):
 	$"World Map Cam/Cam Tween".start()
 
 # Set Eirika Animation back to idle
-func set_eirika_idle(object, key):
+func set_eirika_idle(_object, _key):
 	$Eirika/Animation.play("Idle")
 
 # Stop Main camera
 func stop_main_camera():
-	$"World Map Cam".current = false
+	$"World Map Cam".enabled = false
 
 # Use to cleanup anything from this screen
 func exit():

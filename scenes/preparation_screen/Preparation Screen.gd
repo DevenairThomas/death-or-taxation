@@ -161,7 +161,7 @@ func process_selection():
 			BattlefieldInfo.battlefield_ui.get_node("Battlefield HUD").visible = true
 			
 			# Set Camera
-			BattlefieldInfo.main_game_camera.current = true
+			BattlefieldInfo.main_game_camera.enabled = true
 			
 			# Turn on the blue tiles
 			for blueTile in BattlefieldInfo.swap_points:

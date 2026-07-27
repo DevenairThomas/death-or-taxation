@@ -17,13 +17,14 @@ func _ready():
 	time_start = Time.get_unix_time_from_system()
 	set_process(true)
 
-func _process(delta):
+func _process(_delta):
 	# Time Played
 	time_now = Time.get_unix_time_from_system()
 	current_play_session = time_now - time_start
 	elapsed = (time_now - time_start) + saved_time
 	# int() first: Godot 4 disallows % on floats (elapsed is a float from Time)
 	var total_seconds = int(elapsed)
+	@warning_ignore("integer_division")
 	var minutes = total_seconds / 60
 	var seconds = total_seconds % 60
 	var str_elapsed =  "%02d : %02d" % [minutes, seconds]

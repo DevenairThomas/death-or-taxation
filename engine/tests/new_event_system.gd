@@ -47,7 +47,7 @@ func parse_event(event):
 # Move the camera
 func move_camera(starting_position, ending_position, time_to_move):
 	BattlefieldInfo.main_game_camera.get_node("Tween").interpolate_property(BattlefieldInfo.main_game_camera, "position", starting_position, ending_position, time_to_move, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	BattlefieldInfo.main_game_camera.current = true
+	BattlefieldInfo.main_game_camera.enabled = true
 	BattlefieldInfo.main_game_camera.get_node("Tween").start()
 
 # Move units

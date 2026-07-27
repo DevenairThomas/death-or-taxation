@@ -22,7 +22,7 @@ func _ready():
 	is_active = true
 	
 	# Remove current camera
-	$"/root/Level/GameCamera".current = false
+	$"/root/Level/GameCamera".enabled = false
 	
 	# Remove Extra
 	BattlefieldInfo.level_container.queue_free()

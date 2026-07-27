@@ -24,8 +24,8 @@ func _ready():
 	# Disable input
 	disable_input()
 
-func start(convoy):
-	self.convoy = convoy
+func start(p_convoy):
+	self.convoy = p_convoy
 	visible = true
 	allow_input()
 	

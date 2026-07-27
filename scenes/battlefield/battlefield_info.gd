@@ -231,7 +231,7 @@ func start_level():
 			get_tree().get_root().get_node("Intro Screen").queue_free()
 		
 		# Set main camera
-		main_game_camera.current = true
+		main_game_camera.enabled = true
 		
 		# Set Transition
 		turn_manager.move_camera_to_Eirika()

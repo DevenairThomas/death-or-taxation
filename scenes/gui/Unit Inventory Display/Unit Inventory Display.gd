@@ -30,7 +30,7 @@ func _ready():
 	inventory_list.get_v_scroll_bar().modulate = Color(1,1,1,0)
 
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("ui_accept"):
 		process_accept()
 

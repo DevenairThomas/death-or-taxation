@@ -66,7 +66,7 @@ func _ready():
 	# DEBUG
 	# test()
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("ui_up"):
 		pass
 	elif Input.is_action_just_pressed("ui_down"):
@@ -195,9 +195,9 @@ func add_item_to_convoy(item):
 			Item.WEAPON_TYPE.HEALING:
 				heal_list.add_item(item)
 
-func next_list(previous_list, next_list):
+func next_list(previous_list, to_activate):
 	deactivate_list(previous_list)
-	activate_list(next_list)
+	activate_list(to_activate)
 
 func activate_list(list):
 	list.start(self)

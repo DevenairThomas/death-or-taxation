@@ -25,7 +25,7 @@ func start():
 	$Timer.start(0)
 
 # Input for Hand movement
-func _input(event):
+func _input(_event):
 	if !is_active:
 		return
 		

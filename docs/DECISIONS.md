@@ -148,3 +148,12 @@ Unit subclasses (e.g. `Eirika.gd`) overrode `_ready()` without `super._ready()`,
 
 ### M8 — GDScript warning cleanup + one latent bug
 Cleared the reported warnings without behaviour change: shadowed params renamed (`text_queue`→`new_text_queue`, `battlefield`→`p_battlefield`, `Unit_Movement` param→`move_stats`); unused params/vars underscore-prefixed (`_anim_name`, `_unit`/`_tile`, `_AllTiles`, `_h`); dead `signal unit_became_done` and a no-effect `$EnemyLevel.volume_db` line removed. One real latent bug fixed in `unit_movement_system.gd:86`: `current_animation == "Idle"` (comparison, no effect) → `= "Idle"` (the intended assignment).
+
+### M9 — Title screen made playable
+Three issues stopped the game past the title:
+- **Stray "water" texture, offset lower-right:** the `WorldMapScreen` autoload (a `Node2D` full of sea/terrain sprites) defaulted to `visible = true` and its `World Map Cam` (`Camera2D`) defaulted to enabled, so at startup the world map rendered and its camera scrolled the viewport (displacing the title's `Fog` particles toward a corner). Fix: `WorldMapScreen._ready()` now sets `visible = false` and `$"World Map Cam".enabled = false`; `start()` still turns both on when the map is actually shown.
+- **Couldn't get past the title:** "New Game" called `SceneTransition.change_scene_to_packed(WorldMapScreen, ...)`, but `WorldMapScreen` is a persistent autoload node, not a `PackedScene`, so the underlying `get_tree().change_scene_to_packed(node)` failed. Rewrote that method to retire the outgoing scene (`current_scene.queue_free()`, `current_scene = null`) and emit `scene_changed`, which drives `WorldMapScreen.start()` — the intended "show the persistent world map" behaviour. Verified via a temporary headless input-injection harness: title → keypress → GAME_SELECT → New Game → world map shown, intro freed.
+- **`Camera2D.current` removed in Godot 4:** 12 `<camera>.current = true/false` sites (converter missed them — dynamic `$node`/`BattlefieldInfo.main_game_camera` accesses) → `.enabled`.
+
+### M10 — GDScript warning cleanup (batch 2)
+Unused `_input(event)` params → `_event` (convoy, Unit Picker Solo, Unit Inventory Display, Yes No Box, Yes No Box Generic); unused tween-callback params `object`/`key` → `_object`/`_key` (`set_eirika_idle`, `after_camera_move`, `after_eirika_move`); shadowed params renamed (`next_list`→`to_activate`, `convoy`→`p_convoy`); `Status Screen._process(delta)`→`_delta`; intended integer division annotated with `@warning_ignore("integer_division")`.
