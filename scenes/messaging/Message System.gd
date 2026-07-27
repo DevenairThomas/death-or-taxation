@@ -58,7 +58,7 @@ func _input(event):
 				# Stop the scroll and set it to max visiblity
 				if $"Dialogue Box Texture2D/Dialogue Text/Dialogue Scroll".is_playing():
 					$"Dialogue Box Texture2D/Dialogue Text/Dialogue Scroll".stop(true)
-					$"Dialogue Box Texture2D/Dialogue Text".percent_visible = 1
+					$"Dialogue Box Texture2D/Dialogue Text".visible_ratio = 1
 				
 				# Set to next
 				current_state = next
@@ -124,7 +124,7 @@ func next_line(text_line):
 		char_name.text = text_line[0]
 	
 	# Always  happens
-	$"Dialogue Box Texture2D/Dialogue Text".percent_visible = 0
+	$"Dialogue Box Texture2D/Dialogue Text".visible_ratio = 0
 	$"Dialogue Box Texture2D/Dialogue Text/Dialogue Scroll".play("Scroll")
 	$"Dialogue Box Texture2D/Anim".play("Up and Down")
 

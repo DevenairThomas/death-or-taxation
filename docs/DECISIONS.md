@@ -157,3 +157,12 @@ Three issues stopped the game past the title:
 
 ### M10 — GDScript warning cleanup (batch 2)
 Unused `_input(event)` params → `_event` (convoy, Unit Picker Solo, Unit Inventory Display, Yes No Box, Yes No Box Generic); unused tween-callback params `object`/`key` → `_object`/`_key` (`set_eirika_idle`, `after_camera_move`, `after_eirika_move`); shadowed params renamed (`next_list`→`to_activate`, `convoy`→`p_convoy`); `Status Screen._process(delta)`→`_delta`; intended integer division annotated with `@warning_ignore("integer_division")`.
+
+### M11 — Viewport size, RichTextLabel + JSON API, shader params
+- **Small resolution / misaligned assets:** there was no `[display]` section, so the game ran at the default ~1152×648 while the camera and world are authored for **240×160** (`main_camera.gd` `CAMERA_WIDTH=240`, `CAMERA_HEIGTH=160`; the title `Fog` sits at (120,80), the 240×160 centre). Added `[display]` with `viewport_width/height=240/160`, a 960×640 (4×) window override, and `stretch/mode="viewport"`, `aspect="keep"`. This restores the intended pixel-perfect view and realigns sprites with the map (the camera math now matches the viewport).
+- **`RichTextLabel.percent_visible` removed in Godot 4** → `visible_ratio` (29 sites across Message System + Shop UI, `.gd` and `.tscn` animation tracks/props). This was the cutscene-text crash.
+- **`JSON.new().stringify()` is static in Godot 4** → `JSON.stringify()` (7 sites in save system).
+- **`shader_param/` → `shader_parameter/`** (26 sites) — the deprecated-material warning; the title's procedural "fog" (a cyan fbm-noise `canvas_item` shader on a Sprite2D) now applies its params correctly. Note: that fog is an intentional atmospheric effect, not a stray asset — remove the `Fog` node from `Intro Screen.tscn` if it isn't wanted.
+
+### M12 — GDScript warning cleanup (batch 3)
+Unused `_input(event)`/`_process(delta)` params underscore-prefixed (Cell, battlefield_info, Status Screen, Intro Screen); unused item `special_ability` params (Iron Lance, Unarmed) and `allow_selection(anim_name)`, `unit_movement_system_cinematic` `h` prefixed; shadowed params renamed (`Cell.init(...)` → `p_*`, `combat.start_combat(current_combat_state)` → `initial_combat_state`); dead `signal scene_loaded` removed.

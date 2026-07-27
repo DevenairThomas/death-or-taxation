@@ -86,8 +86,8 @@ void fragment(){
 
 [resource]
 shader = SubResource( 1 )
-shader_param/ash = Color( 0.584314, 0.313726, 0.14902, 1 )
-shader_param/fire = Color( 0.92549, 0.0666667, 0.0666667, 1 )
-shader_param/OCTAVES = 6
-shader_param/start_time = 999999.0
-shader_param/duration = 1.0
+shader_parameter/ash = Color( 0.584314, 0.313726, 0.14902, 1 )
+shader_parameter/fire = Color( 0.92549, 0.0666667, 0.0666667, 1 )
+shader_parameter/OCTAVES = 6
+shader_parameter/start_time = 999999.0
+shader_parameter/duration = 1.0

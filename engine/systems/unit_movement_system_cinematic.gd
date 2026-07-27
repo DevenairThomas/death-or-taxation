@@ -53,7 +53,7 @@ func process_movement(delta):
 		if unit.UnitMovementStats.movement_queue.is_empty():
 			
 			# Set the new current tile and update the world tiles
-			var h = unit.UnitMovementStats.currentTile 
+			var _h = unit.UnitMovementStats.currentTile
 			unit.UnitMovementStats.currentTile = destination_cell
 			unit.UnitMovementStats.currentTile.occupyingUnit = unit
 			

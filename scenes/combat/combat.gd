@@ -278,7 +278,7 @@ func _process(delta):
 				
 
 # Combat Process
-func start_combat(current_combat_state): 
+func start_combat(initial_combat_state):
 	set_process(true)
 	
 	# Process actual numbers
@@ -338,7 +338,7 @@ func start_combat(current_combat_state):
 	await $"Combat Trans".fade_done
 	
 	# Set Next
-	next_combat_state = current_combat_state
+	next_combat_state = initial_combat_state
 	
 	# Check if there is before battle text here
 	if BattlefieldInfo.combat_ai_unit.before_battle_sentence != null:

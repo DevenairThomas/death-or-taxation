@@ -1,7 +1,6 @@
 extends CanvasLayer
 
 signal scene_changed
-signal scene_loaded
 
 @onready var black_transition = $"Scene Changer/Black"
 @onready var animation_player = $"Scene Changer/Animation"

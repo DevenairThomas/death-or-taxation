@@ -15,6 +15,15 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 run/main_scene="res://scenes/intro_screen/Intro Screen.tscn"
 
+[display]
+
+window/size/viewport_width=240
+window/size/viewport_height=160
+window/size/window_width_override=960
+window/size/window_height_override=640
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+
 [autoload]
 
 Calculators="*res://engine/systems/calculators.gd"

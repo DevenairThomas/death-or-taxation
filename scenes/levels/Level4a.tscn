@@ -85,8 +85,8 @@ void fragment() {
 
 [sub_resource type="ShaderMaterial" id=4]
 shader = SubResource( 3 )
-shader_param/color = Vector3( 0.71, 0.93, 0.95 )
-shader_param/OCTAVES = 4
+shader_parameter/color = Vector3( 0.71, 0.93, 0.95 )
+shader_parameter/OCTAVES = 4
 
 [node name="Level4-a" instance=ExtResource( 1 )]
 script = ExtResource( 2 )

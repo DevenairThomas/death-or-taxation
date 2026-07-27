@@ -117,7 +117,7 @@ func sell_item(item_to_be_sold):
 	$"Shop UI/Shop Exit JPN Patronage".play()
 	
 	# Set Text
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	shop_text.text = thank_you
 	anim.play("Text Anim")
 	# Wait two seconds then back to buy
@@ -129,7 +129,7 @@ func sell_item(item_to_be_sold):
 	
 	# Start the Inventory again
 	# Set Text
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	shop_text.text = sell_message
 	anim.play("Text Anim")
 	# Wait two seconds then back to buy
@@ -169,7 +169,7 @@ func buy_item(index):
 		$"Shop UI/Shop Not enough money".play()
 		
 		# Show text
-		shop_text.percent_visible = 0
+		shop_text.visible_ratio = 0
 		shop_text.text = not_enough_money
 		anim.play("Text Anim")
 		
@@ -209,12 +209,12 @@ func start():
 	$"Shop UI/Shop Greeting JPN".play()
 	
 	# Set text anim for greeting
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	anim.play("Text Anim")
 	await get_tree().create_timer(1.5).timeout
 	
 	# Show buy//sell option next
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	shop_text.text = buy_sell
 	anim.play("Text Anim")
 	await anim.animation_finished
@@ -254,7 +254,7 @@ func exit():
 	$"Hand Selector".visible = false
 	
 	# Set goodbye text
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	shop_text.text = thanks_for_coming
 	anim.play("Text Anim")
 	await anim.animation_finished
@@ -269,7 +269,7 @@ func exit():
 	$"Shop UI".visible = false
 	
 	# Remove the shop text
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	shop_text.text = ""
 	
 	# Go to walkable map if we came from there
@@ -316,7 +316,7 @@ func _input(event):
 					
 					# Set new message
 					set_process_input(false)
-					shop_text.percent_visible = 0
+					shop_text.visible_ratio = 0
 					shop_text.text = select_unit_to_sell
 					anim.play("Text Anim")
 				
@@ -348,7 +348,7 @@ func _input(event):
 				$"Shop UI/Shop is that okay".play()
 				# Set new text
 				set_process_input(false)
-				shop_text.percent_visible = 0
+				shop_text.visible_ratio = 0
 				shop_text.text = confirm
 				anim.play("Text Anim")
 				
@@ -372,7 +372,7 @@ func _input(event):
 				shop_list.release_focus()
 				
 				# Show buy//sell option next
-				shop_text.percent_visible = 0
+				shop_text.visible_ratio = 0
 				shop_text.text = buy_sell
 				anim.play("Text Anim")
 				await anim.animation_finished
@@ -393,7 +393,7 @@ func _input(event):
 				
 				# Change text
 				set_process_input(false)
-				shop_text.percent_visible = 0
+				shop_text.visible_ratio = 0
 				shop_text.text = buy_sell
 				anim.play("Text Anim")
 				await anim.animation_finished
@@ -417,7 +417,7 @@ func _input(event):
 				select_unit_for_inventory()
 				
 				# Change text
-				shop_text.percent_visible = 0
+				shop_text.visible_ratio = 0
 				shop_text.text = select_unit_to_sell
 				anim.play("Text Anim")
 				
@@ -493,7 +493,7 @@ func _input(event):
 					confirm_sell_index = 0
 					
 					# New Message
-					shop_text.percent_visible = 0
+					shop_text.visible_ratio = 0
 					shop_text.text = sell_message
 					anim.play("Text Anim")
 					
@@ -520,7 +520,7 @@ func _input(event):
 				current_state = SHOP_STATE.SELL
 				
 				# New Message
-				shop_text.percent_visible = 0
+				shop_text.visible_ratio = 0
 				shop_text.text = sell_message
 				anim.play("Text Anim")
 				
@@ -564,7 +564,7 @@ func back_to_browing():
 	confirm_sell_index = 0
 	
 	# Set text back
-	shop_text.percent_visible = 0
+	shop_text.visible_ratio = 0
 	shop_text.text = browsing
 	anim.play("Text Anim")
 	
@@ -653,7 +653,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 				# Thanks for buying!
 				$"Shop UI/Shop Exit JPN Patronage".play()
 				# Set Text
-				shop_text.percent_visible = 0
+				shop_text.visible_ratio = 0
 				shop_text.text = thank_you
 				anim.play("Text Anim")
 				# Wait two seconds then back to buy
@@ -685,7 +685,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					# Thanks for buying!
 					$"Shop UI/Shop Exit JPN Patronage".play()
 					# Set Text
-					shop_text.percent_visible = 0
+					shop_text.visible_ratio = 0
 					shop_text.text = thank_you
 					anim.play("Text Anim")
 					# Wait two seconds then back to buy
@@ -705,7 +705,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					# Move Hand off
 					hand_confirm.position = OFF_SCREEN
 					# Show text
-					shop_text.percent_visible = 0
+					shop_text.visible_ratio = 0
 					shop_text.text = inventory_full
 					anim.play("Text Anim")
 					
@@ -732,7 +732,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					# Move Hand off
 					hand_confirm.position = OFF_SCREEN
 					# Show text
-					shop_text.percent_visible = 0
+					shop_text.visible_ratio = 0
 					shop_text.text = no_items_to_sell
 					anim.play("Text Anim")
 					
@@ -750,7 +750,7 @@ func _on_Unit_Picker_Solo_unit_picked(unit):
 					shop_list.release_focus()
 					
 					# Set new instruction text
-					shop_text.percent_visible = 0
+					shop_text.visible_ratio = 0
 					shop_text.text = sell_message
 					anim.play("Text Anim")
 					
@@ -777,7 +777,7 @@ func _on_Unit_Inventory_Display_item_selected():
 		$"Shop UI/Shop Can't do that".play()
 		
 		# Show text
-		shop_text.percent_visible = 0
+		shop_text.visible_ratio = 0
 		shop_text.text = cant_buy_that_item
 		anim.play("Text Anim")
 		
@@ -786,7 +786,7 @@ func _on_Unit_Inventory_Display_item_selected():
 		await get_tree().create_timer(0.5).timeout
 		
 		# Set new instruction text
-		shop_text.percent_visible = 0
+		shop_text.visible_ratio = 0
 		shop_text.text = sell_message
 		anim.play("Text Anim")
 		
@@ -806,7 +806,7 @@ func _on_Unit_Inventory_Display_item_selected():
 		$"Shop UI/Shop is that okay".play()
 		
 		# Show text
-		shop_text.percent_visible = 0
+		shop_text.visible_ratio = 0
 		shop_text.text = confirm
 		anim.play("Text Anim")
 		

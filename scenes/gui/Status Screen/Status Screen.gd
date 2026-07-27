@@ -44,7 +44,7 @@ func start():
 	# Allow input
 	set_process_input(true)
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("ui_cancel"):
 		set_process_input(false)
 		

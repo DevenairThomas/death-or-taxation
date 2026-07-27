@@ -273,28 +273,28 @@ func save_player_units(save_game_file):
 		player_array["player_units"].append(unit_data)
 	
 	# Save Data
-	save_game_file.store_line(JSON.new().stringify(player_array))
+	save_game_file.store_line(JSON.stringify(player_array))
 	
 
 func save_current_events(save_game_file):
 	print("Saving current events...")
-	save_game_file.store_line(JSON.new().stringify(BattlefieldInfo.event_system.save()))
+	save_game_file.store_line(JSON.stringify(BattlefieldInfo.event_system.save()))
 	
 
 func save_convoy(save_game_file):
 	print("Saving convoy...")
 	var convoy_save_data = BattlefieldInfo.convoy.save()
-	save_game_file.store_line(JSON.new().stringify(convoy_save_data))
+	save_game_file.store_line(JSON.stringify(convoy_save_data))
 
 func save_money(save_game_file):
 	print("Saving money...")
 	var money = {"money": BattlefieldInfo.money}
-	save_game_file.store_line(JSON.new().stringify(money))
+	save_game_file.store_line(JSON.stringify(money))
 
 func save_current_play_time(save_game_file):
 	print("Saving current play time...")
 	var total_elapsed_time = StatusScreen.current_play_session + StatusScreen.saved_time
-	save_game_file.store_line(JSON.new().stringify(total_elapsed_time))
+	save_game_file.store_line(JSON.stringify(total_elapsed_time))
 
 func save_turn_number(save_game_file):
 	print("Saving current turn manager")
@@ -302,7 +302,7 @@ func save_turn_number(save_game_file):
 		"player_turn" : BattlefieldInfo.turn_manager.player_turn_number,
 		"enemy_turn" : BattlefieldInfo.turn_manager.enemy_turn_number
 	}
-	save_game_file.store_line(JSON.new().stringify(turn_manager_number))
+	save_game_file.store_line(JSON.stringify(turn_manager_number))
 
 func save_current_level(save_game_file):
 	print("Saving current level...")
@@ -311,4 +311,4 @@ func save_current_level(save_game_file):
 		"parent": BattlefieldInfo.level_container.get_parent().get_path(),
 		"enemy_commander_name": BattlefieldInfo.level_container.enemy_commander_name
 	}
-	save_game_file.store_line(JSON.new().stringify(current_level))
+	save_game_file.store_line(JSON.stringify(current_level))

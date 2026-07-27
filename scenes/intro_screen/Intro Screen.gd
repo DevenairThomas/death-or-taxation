@@ -56,10 +56,10 @@ func _input(event):
 				process_selection()
 				
 
-func _process(delta):
+func _process(_delta):
 	pass
 
-func allow_selection(anim_name):
+func allow_selection(_anim_name):
 	current_state = GAME_SELECT
 
 func process_selection():

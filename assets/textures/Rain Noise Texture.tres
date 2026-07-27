@@ -27,5 +27,5 @@ void fragment(){
 
 [resource]
 shader = SubResource( 1 )
-shader_param/intensity = 0.023
-shader_param/noise = ExtResource( 1 )
+shader_parameter/intensity = 0.023
+shader_parameter/noise = ExtResource( 1 )

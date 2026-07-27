@@ -185,7 +185,7 @@ func _process(delta):
 	movement_system_cinematic.process_movement(delta)
 
 # Global Hotkeys
-func _input(event):
+func _input(_event):
 	
 	# Debug for orphan nodes
 	if Input.is_action_just_pressed("debug"):

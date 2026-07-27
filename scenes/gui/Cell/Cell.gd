@@ -34,25 +34,25 @@ var is_spawn_point = false
 var tileName = "DEFAULT"
 
 # Start the scene after it's been done
-func init(cellPosition, avoidanceBonus, defenseBonus, movementCost, tileName) -> void:
-	self.cellPosition = cellPosition 
-	self.avoidanceBonus = avoidanceBonus
-	self.defenseBonus = defenseBonus
-	self.movementCost = movementCost
-	self.tileName = tileName
-	
+func init(p_cellPosition, p_avoidanceBonus, p_defenseBonus, p_movementCost, p_tileName) -> void:
+	self.cellPosition = p_cellPosition
+	self.avoidanceBonus = p_avoidanceBonus
+	self.defenseBonus = p_defenseBonus
+	self.movementCost = p_movementCost
+	self.tileName = p_tileName
+
 	# Position
-	self.position.x = cellPosition.x * CELL_SIZE
-	self.position.y = cellPosition.y * CELL_SIZE
-	
+	self.position.x = p_cellPosition.x * CELL_SIZE
+	self.position.y = p_cellPosition.y * CELL_SIZE
+
 	# Set Vector 2
-	self.cellPosition.x = cellPosition.x
-	self.cellPosition.y = cellPosition.y
-	
+	self.cellPosition.x = p_cellPosition.x
+	self.cellPosition.y = p_cellPosition.y
+
 	# DEBUG
-	$Label.text = str(cellPosition.x, "," , cellPosition.y)
+	$Label.text = str(p_cellPosition.x, "," , p_cellPosition.y)
 	
-func _input(event):
+func _input(_event):
 	# DEBUG
 	if Input.is_action_just_pressed("show_coord_debug"):
 		$Label.visible = !$Label.visible
