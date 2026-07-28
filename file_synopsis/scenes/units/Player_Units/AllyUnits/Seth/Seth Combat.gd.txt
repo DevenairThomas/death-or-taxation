@@ -1,0 +1,29 @@
+FILE: scenes/units/Player_Units/AllyUnits/Seth/Seth Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (Combat_Unit, Node2D).
+Combat-animation controller for Seth's battle scene.
+
+2. WHAT IT DOES
+Overrides the miss-SFX/dodge hook and the two camera-shake helpers for Seth's battle animation.
+Invoked by the combat scene's AnimationPlayer method tracks.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: opponent dodge cue on miss.
+- play_miss_sound(): random "Attack Miss 1..2" from BattlefieldInfo.battle_sounds; emits
+  play_enemy_dodge_anim.
+- shake_camera_crit(): get_parent().get_parent().shake(0.5,50,30) — hard shake on crit, reaching two
+  nodes up to the Combat_Screen/camera.
+- shake_camera_regular(): shake(0.2,50,30) — light shake on normal hit.
+
+4. POSSIBLE IMPROVEMENT
+- All three methods duplicate the base Combat_Unit; the subclass adds nothing — attach Combat Unit.gd
+  directly.
+- get_parent().get_parent().shake(...) hard-couples to tree position; pass a camera ref or emit a
+  shake signal.
+- Same randf_range->int off-by-one; use randi_range.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. No per-unit combat-animation scenes and no crit in DoT (deterministic, no crit/dodge), so
+shake_camera_crit has nothing to trigger it. Only "view plays cues on sim signals" transfers, done
+once in the view and data-driven; no per-character subclass.

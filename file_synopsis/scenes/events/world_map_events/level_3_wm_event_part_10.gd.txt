@@ -1,0 +1,33 @@
+SYNOPSIS: scenes/events/world_map_events/level_3_wm_event_part_10.gd
+
+1. CLASS
+class_name Level3_WM_Event_Part10. extends World_Map_Event (-> Node).
+The overworld event that bridges into Chapter 3/4 ("Scourge of the Sea").
+
+2. WHAT IT DOES
+Same template as the other world-map events, new content: narrates the escape from Fort Merceus by sea toward the capital through dense fog, moves the Eirika token, places markers, and on narration-end transitions to Chapter Background and starts the chapter (map res://scenes/battlefield/chapter_4.tscn, id "4", title "Scourge of the Sea"). Bottom textbox.
+
+Note: chapter id passed is "4" while this is the level_3 world-map file targeting chapter_4.tscn — the id/level/map numbering is inconsistent across the set (Level1->chapter_2, Level2->chapter_3, Level3->chapter_4 id "4", Level4->chapter_5 id "5"), a hardcoding drift hazard.
+
+3. FUNCTIONS
+_init():
+- text_array = 3 narration lines.
+- Connects "Eirika/Eirika Tween" tween_completed -> after_eirika_move, "Message System" no_more_text -> after_text.
+- set_position(Messaging_System.BOTTOM).
+- Appends castle, fort, village waypoints (same shared magic Vector2s).
+run():
+- Sets Eirika token to eirika_initial, awaits 2s, starts narration, WorldMapScreen.move_eirika(eirika_final, 3).
+build_map():
+- Places castle and fort waypoints only (village appended but not placed, same inconsistency as Level 2).
+after_text():
+- Chapter-start gate: await 0.5s -> SceneTransition.change_scene_to_file(Chapter Background,0.1) -> WorldMapScreen.exit() -> await scene_changed -> current_scene.start("4","Scourge of the Sea", level4, 2) -> queue_free().
+Interactions: autoloads WorldMapScreen (node paths), SceneTransition (+scene_changed), Messaging_System.
+
+4. POSSIBLE IMPROVEMENT
+- Same copy-paste, legacy Tween node API, hardcoded node paths, magic values, signals-in-_init issues as Level 1/2.
+- Inconsistent chapter id vs file/map numbering is a real correctness smell; deriving ids from a data table would remove it.
+- village waypoint again appended-but-unplaced.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap. Fourth near-duplicate reinforcing that DoT must express per-mission overworld/cutscene content as /data, not classes. The inconsistent numbering across these four files is precisely the class of bug DoT avoids by centralizing mission definitions (id, title, map, intro) in one data file with tests. Keep only as reference for the mission-handoff payload and the "narrate then transition into deployment/battle" flow.

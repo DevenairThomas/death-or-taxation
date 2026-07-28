@@ -1,0 +1,22 @@
+FILE: scenes/chapter/chapter_background.gd
+
+1. CLASS
+- No class_name. extends CanvasLayer.
+- The "Chapter N: Title" splash card shown when entering a chapter. Not an autoload; a scene node with a Container holding chapter number/name labels, a fog overlay, and an animation.
+
+2. WHAT IT DOES
+- Displays an animated chapter-title card (fade in, hold ~2s), then hides the world map. In this reference build it deliberately STOPS at a "reference build boundary" instead of loading the actual battle map, because the original Tiled .tmx maps cannot be imported into Godot 4.
+
+3. FUNCTIONS
+- start(chapter_number, chapter_name, _next_chapter_path, _delay): Sets the chapter number/name labels, plays the "Fade " animation, awaits it, waits 2 seconds, hides /root/WorldMapScreen, then (per the in-file decision) does NOT load the broken battle scene chain — it overwrites the chapter-name label with a "[ reference build ] battle maps are built fresh in Death or Taxation" boundary message and stops. _next_chapter_path and _delay are accepted but unused (the load is intentionally skipped).
+- set_fog_color(color): Sets the fog overlay modulate.
+- Interactions: get_node("/root/WorldMapScreen") to hide the world map. No signals. The commented chapter-start sound is dead.
+
+4. POSSIBLE IMPROVEMENT
+- The unused params (_next_chapter_path, _delay) reflect the dead battle-load path; once DoT has real maps, wire them or remove.
+- Absolute /root/WorldMapScreen lookup is brittle.
+- 2.0s hold and label strings are magic; make them constants/data.
+- The boundary message is a runtime hack in a view label; a cleaner approach is an explicit "reference build" flag/screen.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE / repurpose as a CUTSCENE-or-TRANSITION card. In DoT this is the natural home for a lightweight "Mission N" / chapter title card between the campaign flow steps (mode-select -> Map1 -> camp -> ...), or a transition into a cutscene. Keep the simple animated title-card idea (gray-box: plain labels, no fog art). REPLACE the reference-build dead-end with an actual hand-off to the DoT battle map once it exists (the whole point of the reference boundary is that DoT builds its grid/battle system fresh rather than converting the Tiled pipeline). Chapter number/name/next-map should come from /data campaign config so adding a map needs no code changes. Pure view; the flow controller supplies the data and triggers the next screen.

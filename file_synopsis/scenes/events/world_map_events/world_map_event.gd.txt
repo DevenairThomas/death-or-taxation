@@ -1,0 +1,30 @@
+SYNOPSIS: scenes/events/world_map_events/world_map_event.gd
+
+1. CLASS
+class_name World_Map_Event. extends Node.
+Abstract base class for all world-map (overworld) events — the beats that play on the overworld screen and gate the start of each chapter/battle.
+
+2. WHAT IT DOES
+Defines the shared state and overridable interface that concrete Level#_WM_Event_Part10 subclasses fill in. Holds a cached reference to the WorldMapScreen autoload, a text_array for narration, and three waypoint arrays (castle/fort/village) describing map markers to place. Provides empty virtual methods (run, build_map, after_text, after_camera_move, after_eirika_move) that subclasses override to script the overworld sequence that ends by transitioning into a chapter.
+
+3. FUNCTIONS
+(@onready var world_map = WorldMapScreen — caches the overworld screen autoload; note subclasses mostly reference WorldMapScreen directly instead of this field.)
+run():
+- Virtual stub. Entry point that kicks off the world-map event (subclasses: position Eirika, start narration, move her along a path).
+build_map():
+- Virtual stub. Subclasses place castle/fort/village waypoint markers from their arrays via WorldMapScreen.place_*_waypoint.
+after_text():
+- Virtual stub. Subclasses use this as the "narration finished" hook that performs the scene transition into the chapter/battle.
+after_camera_move(_object,_key) / after_eirika_move(_object,_key):
+- Virtual stubs matching the Godot-3 Tween "tween_completed(object,key)" callback signature — hooks for when a camera or Eirika-token move finishes.
+Interactions: no logic of its own; exists so the world-map runner can treat all overworld events uniformly and call run()/build_map(). Depends conceptually on autoload WorldMapScreen.
+
+4. POSSIBLE IMPROVEMENT
+- All methods are pass stubs (interface-by-convention). Document the contract or push_error on un-overridden run().
+- The after_*_move signatures (object, key) are legacy Tween-node callbacks; Godot 4 Tween.finished takes no args, so this interface is pre-baked around a deprecated API.
+- world_map field is set via @onready but subclasses ignore it and call WorldMapScreen directly — dead/duplicated indirection.
+- Waypoint arrays are untyped; use typed Array[Vector2].
+- No real decoupling: subclasses reach directly into WorldMapScreen node paths (get_node("Eirika/...")), so this "base" doesn't actually abstract the screen.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap the class; keep the interface as a checklist. This base encodes the responsibilities DoT's mission-select -> cutscene -> deployment flow must cover: narrate, place map markers, move an overworld token, then on-completion transition into the mission. DoT wants these DATA-DRIVEN, so instead of a Node subclass per chapter, the overworld/mission-select should read a /data manifest (per mission: intro text, marker positions, next scene) and a single generic runner executes it. Value retained: the enumerated hooks (run/build_map/after_text/after_move) are a good spec of the step types an overworld event runner must support. The tight coupling to WorldMapScreen node paths is exactly the sim/view leakage DoT forbids and must not be carried over.

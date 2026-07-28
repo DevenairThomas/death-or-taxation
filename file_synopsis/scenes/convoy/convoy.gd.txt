@@ -1,0 +1,36 @@
+FILE: scenes/convoy/convoy.gd
+
+1. CLASS
+- No class_name. extends Node2D.
+- The FE "Convoy" item-storage screen. Registers itself as BattlefieldInfo.convoy (a singleton-like accessor). Not an autoload; it is a scene instanced under the battlefield/preparation context. Owns per-weapon-type item lists (Sword/Lance/Axe/Bow/Tome/Heal/Consumable), a unit picker, a unit-inventory display, and a generic yes/no box.
+
+2. WHAT IT DOES
+- Implements the full Fire Emblem convoy/inventory UI: browse stored items by weapon-type list, pass items to a unit, deposit/withdraw between a unit and the convoy, and sell items in a shop context. Handles GBA-style directional input, hand-selector sounds, animated backgrounds, and save/load of stored items. It is a large state machine over CONVOY_STATUS.
+
+3. FUNCTIONS (grouped)
+- _ready(): Labels each list, disables input, registers BattlefieldInfo.convoy = self.
+- _input(_event): Directional nav between lists (left/right change weapon list, guarded by status), ui_accept -> process_accept, ui_cancel -> process_cancel, "R button" -> swap_btn_current_unit_and_convoy (deposit toggle). Plays hand-move sounds.
+- start(): Initializes lists array, activates first list, sets convoy status SELECT_ITEM, calls Calculators.turn_off_all_units(), fades in, enables input.
+- start_on_sell(): start() then SELL_ITEM status.
+- start_with_unit_selected(unit): Sets current_unit_selected, starts unit-inventory display, then start(). Entry point when a specific unit opened the convoy on the battlefield.
+- add_item_to_convoy(item): Routes an item into the correct weapon-type list (match on item_class/weapon_type from Item enums).
+- next_list / activate_list / deactivate_list(_no_hide) / deactivate_all_lists(_no_hide): List focus management.
+- exit(): Deactivates lists, disables input; if a unit was selected, emits BattlefieldInfo.unit_movement_system "action_selector_screen" (returns to battlefield action menu); fades out, re-enables units via Calculators.turn_on_all_units().
+- test(): Debug seeding of items (dev only).
+- process_accept()/process_cancel(): Big state-machine handlers for SELECT_ITEM/SELECT_UNIT/PASS_ITEM_TO_UNIT/SELL_ITEM/DEPOSIT/CONFIRM_* including inventory-full checks, sounds, yes/no prompts.
+- send_item_to_unit(unit): Transfers an item from the current list into the unit's UnitInventory; sets the giving unit's action status to TRADE and greyscales it.
+- swap_btn_current_unit_and_convoy(): Toggles deposit mode using the Unit Inventory Display.
+- _on_Timer_timeout(): Cycles the animated background image.
+- _on_Yes_No_Box_Generic_option_selected / _on_no_selected_from_generic: Confirm handlers for pass/sell/deposit; sell adds to BattlefieldInfo.money.
+- save() / load_convoy(json): Serialize/restore each weapon list's items to/from a JSON dict.
+- Touches: BattlefieldInfo (convoy, money, unit_movement_system, current_Unit_Selected, preparation_screen), Calculators, Item/Unit_Inventory/Unit_Action_Status classes, ALL_ITEMS_REF.
+
+4. POSSIBLE IMPROVEMENT
+- Enormous UI + logic + persistence in one node; split state machine, view, and serialization.
+- Pervasive $"string/paths" node access — fragile; use typed @onready and signals.
+- Directly mutates BattlefieldInfo.money and unit inventories (view mutating shared state).
+- Many magic waits (create_timer(1)/(0.5)); centralize as named constants.
+- Godot-4: replace connect-by-name string callbacks and yes/no coupling with typed signals/awaits.
+
+5. RELATION TO DEATH OR TAXATION
+- SCRAPPED (per DoT design: no Fire Emblem item economy). DoT has no weapons/consumables/convoy, no per-item inventory, no selling for gold. The two DoT currencies are BATTLE BUDGET (per-mission deployment) and SOULS (between-mission leveling/reviving) — neither is an item store. Do not port. The only transferable lesson is the general pattern of a between-missions management screen; in DoT that role is filled by the CAMP SCREEN (spend souls to level/revive Generals) and the pre-battle DEPLOYMENT screen (spend budget on squads/singles/Generals, max 2 slots), both data-driven, with sim state (souls, levels) owned in /sim and persisted via the single JSON save. The item-list UI widget could at most be repurposed as a generic scrollable pick-list for deployable units.

@@ -1,0 +1,58 @@
+SYNOPSIS: scenes/gui/Weapon Select/Healing Select.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The staff-selection menu: lists a unit's healing items that can currently
+   reach a wounded ally, then hands off to the Healing Preview.
+
+2. WHAT IT DOES
+   Builds a scrollable list of the unit's healing weapons for which at least one
+   reachable, damaged ally exists. Shows a mugshot and per-item stat panel, lets
+   the player pick with a hand cursor, equips the chosen staff, and opens the
+   Healing Preview. Uses BattlefieldInfo, Item (ITEM_CLASS/WEAPON_TYPE),
+   Calculators, GroupNames.
+
+3. FUNCTIONS
+   - start(): Runs get_all_enemies_available (no-op), build_item_list,
+     create_mugshot, update_item_box, turn_on.
+   - _input(event): When active: up/down movement, accept -> process_selection,
+     cancel -> go_back.
+   - get_all_enemies_available(): Empty stub (pass).
+   - build_item_list(): For each inventory weapon that is PHYSICAL/MAGIC and
+     weapon_type HEALING, BFS out to max_range over Cell.adjCells; if it finds an
+     allied-occupied tile within min_range that is below max_health, it
+     instantiates a Weapon Select Slot sub-scene, fills it, positions it, adds it
+     under the Weapon List, records the weapon, and breaks. Places top/bottom
+     frame and hand cursor.
+   - create_mugshot(): Sets the unit portrait texture.
+   - movement(direction): Moves the hand cursor over the slots, clamps, plays move
+     sound, then update_item_box.
+   - update_item_box(): Selects the current option and calls set_item_stats.
+   - go_back(): turn_off then emits unit_movement_system "action_selector_screen".
+   - set_item_stats(item): Writes item_name/uses/might/crit/hit/icon into the
+     stat panel; plays "equipped" green anim if it is the equipped item.
+   - process_selection(): turn_off, sets UnitInventory.current_item_equipped to
+     the chosen staff, and calls sibling "Healing Preview".start(item).
+   - turn_on(): Shows the menu and hand, resets index, starts input-defer Timer.
+   - turn_off(): queue_free()s all nodes in the ITEM_SLOT_GROUP_NAME group
+     (dynamically created slots), hides, deactivates, resets index.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - The reachability BFS is duplicated from Weapon Select / Damage Preview /
+     Healing Preview; extract one shared pure range/target query.
+   - get_all_enemies_available is a dead stub - remove or implement.
+   - Freeing slots by group across the whole tree is a blunt instrument; own the
+     instantiated slots in a local array/container and free those.
+   - Sibling navigation via get_parent().get_node("Healing Preview") couples
+     screens by tree layout; use signals.
+   - set_item_stats is duplicated verbatim with Item Screen; share it.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. Weapon/staff selection presupposes an FE item system with weapon types,
+   uses, might/crit/hit - all cut from DoT. DoT units do not choose a weapon
+   before attacking; their damage comes from the deterministic table by unit type.
+   Healing staves are not in DoT's locked ruleset. The only transferable ideas are
+   the generic list menu and the sim-side "which targets can this unit reach"
+   query, which in DoT must live in /sim as a pure function. Drop this screen for
+   the prototype.

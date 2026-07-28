@@ -1,0 +1,33 @@
+SYNOPSIS — scenes/events/level_2/L2_event_mid_20.gd
+
+1. CLASS
+class_name L2_Event_Mid_20, extends Event_Base.
+Concrete MID-MISSION scripted event — Level 2 turn-7 boss handoff + second reinforcement wave. Turn-signal driven mid_level_event.
+
+2. WHAT IT DOES
+On enemy turn 7, stages the villain swap: spawns a "messenger" pegasus-knight boss ("Diagur"), pans the camera, walks Vezarius off-map and the messenger in, plays a long Vezarius/Diagur dialogue (Vezarius is recalled, Diagur takes command), then spawns another random enemy wave, deletes Vezarius, promotes Diagur ("Remove Me") to enemy_commander, and resumes. The most elaborate mid-mission beat: spawn actor + dialogue + wave-spawn + swap the boss/commander mid-battle.
+
+3. FUNCTIONS
+- signal messenger_spawned (declared, never emitted — dead).
+- var dialogue (Array): the 12-line Vezarius/Diagur exchange.
+- var vez: cached Vezarius. var id_number = 199: spawned-enemy id counter.
+- _init(): caches Vezarius; connects turn_manager.enemy_turn_increased -> start_mid and player_turn_increased -> play_player_transition; sets path.
+- play_player_transition(turn_number): turn_manager.start_ally_transition() — pass-through.
+- start_mid(turn_number): gate — if turn_number <= 4 return (silent, lets Mid_10 own early turns); if turn_number != 7 start_enemy_transition() and return; on turn 7: event_system.pause_ui(); connects movement_system_cinematic.unit_finished_moving_cinema -> start_dialogue, message_system.no_more_text -> spawn_enemies, main_game_camera Tween tween_all_completed -> move_actor; calls spawn_messenger() then move_camera().
+- move_camera(): tweens main_game_camera to Vector2(0,190).
+- move_actor(): if Vezarius not already at his origin tile grid[0][17], paths him there and appends to the move list; also paths the "Remove Me" messenger to grid[0][16]; nulls tiles; is_moving = true.
+- start_dialogue(): box TOP... (actually set BOTTOM) enable_text(dialogue).
+- spawn_messenger(): instantiates Enemy Pegasus Knight, AI "Passive", adds under current_level/Node2D, positions it, fills a full randomized UnitStats block, sets unit_portrait_path to Diagur's portrait, assigns tile grid[0][14], sets death_sentence and before_battle_sentence text arrays, marks is_ally=false, gives identifier "Remove Me", registers in enemy_units.
+- spawn_enemies(): same random-wave spawn as Mid_10 but with a 4th unit type (pegasus) and RNG range (0,3); randomized stat block per unit. Afterward: frees Vezarius (nulls his tile, .free(), erases from enemy_units), sets BattlefieldInfo.enemy_commander = "Remove Me" and level_container.enemy_commander_name accordingly, clears current_Unit_Selected. Commented-out block would have changed the victory objective to ELIMINATE_ALL_ENEMIES. Then erases self from mid_level_events, start_enemy_transition(), queue_free().
+
+Coupling: BattlefieldInfo (turn_manager/Turn_Manager, spawn_points, current_level, enemy_units, enemy_commander, level_container, main_game_camera, movement systems, message_system, event_system, current_Unit_Selected), Calculators (RNG), enemy scenes, Victory_Checker (commented). Turn-signal driven.
+
+4. POSSIBLE IMPROVEMENT
+- spawn_enemies stat block is a near-verbatim third copy (see Mid_10) — extract a data-driven spawn template + helper.
+- Trigger turns (<=4 skip, ==7 act) and coordination with Mid_10 are hard-coded literals split across two files — an ordering trap; should be one data-defined event schedule.
+- Dead signal messenger_spawned; start_dialogue comment says TOP but sets BOTTOM — hand-scripting inconsistencies.
+- Boss/commander/objective swap reaches into many globals imperatively; commented-out victory-condition change suggests incomplete/uncertain scripting.
+- Heavy RNG; deprecated tween pattern; no disconnects; not headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+Concept KEEP selectively, implementation SCRAP. Genuine mission-scripting capabilities worth supporting in DoT DATA: spawn a named actor mid-mission, swap the boss/objective on a turn trigger, attach per-unit death/before-battle lines. All must be data-defined and deterministic. Same two hard blockers as Mid_10: (1) NO RNG — the get_random_number stat/type rolls are illegal in DoT; reinforcements and the boss are fixed data-defined stat blocks. (2) FE stat model (strength/skill/speed/luck/res/crit/dodge, class_power/thief_bonus/boss_bonus XP fields) does not map to DoT's squads(10hp)/singles(25hp)/Generals model and per-kill EXP is explicitly CUT — so the entire UnitStats block and XP fields are replaced, not ported. Also note: the commented objective-swap (change victory condition mid-mission) is a real feature to design as data. Useful residue: mid-mission event schedule keyed by turn, actor spawn, commander/objective reassignment — all data, all deterministic. The dead-Generals-still-appear rule means DoT would never delete a General actor the way Vezarius is .free()'d here.

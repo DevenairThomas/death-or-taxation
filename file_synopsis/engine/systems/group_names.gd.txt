@@ -1,0 +1,20 @@
+FILE: engine/systems/group_names.gd
+
+1. CLASS
+class_name Group_Name. Extends Node. A constants holder for node-group names and key scene paths.
+
+2. WHAT IT DOES
+Centralizes string constants: one Godot node-group name (item slots) and three scene resource paths (game over, chapter background, world map). Referenced elsewhere to avoid scattering magic strings.
+
+3. FUNCTIONS
+None. Only constants:
+- ITEM_SLOT_GROUP_NAME = "item_slot_group_name" (used with add_to_group/get_nodes_in_group for inventory UI slots).
+- GAME_OVER_PATH, CHAPTER_BACKGROUND, WORLD_MAP: scene paths consumed by scene transitions (e.g. SceneTransition/turn_manager loading Game Over, world map screen).
+
+4. POSSIBLE IMPROVEMENT
+- Mixes two concerns (group names vs. scene paths); consider separate constant files or a typed enum-ish structure.
+- Scene paths as strings are fragile to file moves; Godot 4 supports preload/typed PackedScene refs or a central scene registry.
+- Extends Node but has no behavior — could be a plain constants script (RefCounted or a static-only class) rather than a Node.
+
+5. RELATION TO DEATH OR TAXATION
+Keep the idea, relocate content. DoT is data-driven: scene/screen references and group names belong in a /data constants file rather than hardcoded here (adding a screen/map should not require touching code). The economy/soul and battle-budget constants CLAUDE.md mandates (level costs 30/60/100/150/210, revival 18×level, mission awards) should live in exactly this kind of single named-constants data file — this file is a small precedent for that pattern. Harmless, no rules or RNG; port as centralized /data constants.

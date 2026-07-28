@@ -1,0 +1,23 @@
+FILE: scenes/game_over/Game Over Screen.gd
+
+1. CLASS
+- No class_name. extends Control.
+- The Game Over screen. Not an autoload; instanced when the run ends. Owns game-over music, a shader-driven "burn up" image effect, animations, and game-over text.
+
+2. WHAT IT DOES
+- Stops battle music, plays a game-over animation + music, then on any key "burns up" the scene with a shader effect, fades the music out, and transitions back to the Intro (title) screen via SceneTransition. Cleans itself up on scene change.
+
+3. FUNCTIONS
+- _ready(): Stops ally battle music (BattlefieldInfo.music_player.get_node("AllyLevel").stop()), starts game-over music, initializes the burn shader start_time to a huge value (effect not yet started), plays the "Start" animation, awaits it, then connects SceneTransition "scene_changed" -> clean_up, marks is_active, disables the level's GameCamera, and queue_frees BattlefieldInfo.level_container.
+- _input(event): If active and a key is pressed: hides game-over text, sets the burn shader duration + start_time (kicks off the burn-up), plays "Text Fade", waits ~4.2s for the burn, fades music volume off, clears the image modulate, then SceneTransition.change_scene_to_file(intro_screen, 0.1).
+- clean_up(): Stops game-over music, disconnects from SceneTransition.scene_changed, queue_frees self.
+- Interactions: SceneTransition (scene_changed connect/disconnect, change_scene_to_file), BattlefieldInfo (music_player, level_container), absolute node path /root/Level/GameCamera.
+
+4. POSSIBLE IMPROVEMENT
+- Absolute path $"/root/Level/GameCamera" is brittle; reference via BattlefieldInfo or a signal.
+- Reaches into music_player.get_node("AllyLevel") by name; expose a stop-all API on the music player instead.
+- Magic timings (4.2s wait, shader durations) and the 9999999.0 sentinel start_time should be named constants.
+- View node frees BattlefieldInfo.level_container directly — mixes teardown responsibility into the game-over view.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE -> becomes the DoT GAME-OVER screen, specifically for the No-Revive LAST-GENERAL loss. In DoT, game over is a defined condition: under No-Revive mode, losing your last living General is campaign-permanent game over (Standard mode has different failure/retry semantics via revival between missions). Keep the shell (a terminal screen that stops battle music, shows a game-over presentation, and returns to the mode-select/title). SCRAP the FE burn shader and music assets (gray-box, no art). The decision of WHEN game over triggers is sim/campaign logic (No-Revive + zero living Generals), not this view; this screen only presents the result and routes back. Remember DoT tone: even loss framing stays earnest. This is /ui/view; it reads the outcome from sim/save, does not compute it.

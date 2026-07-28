@@ -1,0 +1,43 @@
+SYNOPSIS: scenes/gui/Item Screen/Yes No Box Generic.gd
+
+1. CLASS
+   No class_name, extends Control.
+   A reusable yes/no confirmation popup that reports the choice back through
+   signals rather than acting on it directly.
+
+2. WHAT IT DOES
+   Shows a two-option ("Yes"/"No") menu with a hand cursor and emits a signal
+   carrying the boolean result, letting any caller reuse it for arbitrary
+   confirmations. Unlike the non-generic Yes No Box, it contains no item logic.
+
+3. FUNCTIONS
+   - Signals: option_selected(bool) and no_inputted.
+   - start(): Shows the box, resets to "Yes", parks the hand cursor, starts the
+     0s input-defer Timer.
+   - _input(_event): When active: accept -> process_selection; cancel -> go_back
+     then emit option_selected(false); up/down -> movement.
+   - movement(direction): Moves the hand between Yes/No, clamped, with move sound.
+   - process_selection(): "Yes" -> exit() + emit option_selected(true); "No" ->
+     exit() + emit option_selected(false). (Accept/cancel sound lines are
+     commented out.)
+   - go_back(): Emits no_inputted, deactivates, hides.
+   - exit(): Deactivates and hides.
+   - turn_on(): Makes visible.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - This is the well-designed version (decoupled via signals) - prefer it over
+     the item-coupled Yes No Box and delete the latter.
+   - go_back both emits no_inputted AND the caller's cancel path emits
+     option_selected(false); the two "cancel" signals are redundant - pick one.
+   - Hand offset Vector2(-8,7) and ACTION_SIZE_Y are magic numbers; fine but could
+     be exported.
+   - The 0s Timer input-defer pattern recurs everywhere; centralize it.
+
+5. RELATION TO DEATH OR TAXATION
+   KEEP (as a generic /ui primitive). A signal-based confirm dialog is content-
+   agnostic and directly reusable in DoT for confirmations like end turn, confirm
+   attack, spend souls to level/revive a General, or lock No-Revive mode. It
+   already follows the DoT rule of "view forwards intent via signals, contains no
+   game rules." Keep this one, standardize the input-defer, and make it the single
+   confirmation dialog across the project.

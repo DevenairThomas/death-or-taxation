@@ -1,0 +1,54 @@
+SYNOPSIS: scenes/levels/Level4a.gd
+
+1. CLASS
+extends Node2D. No class_name. Battle-map loader on a level scene root.
+Declares `signal mapInformationLoaded` (declared, never emitted here).
+NOTE: Level4a.gd is byte-for-byte IDENTICAL to Level5.gd — same load pipeline, same logic.
+Only the scene it is attached to (map layout/content) differs.
+
+2. WHAT IT DOES
+Reference-project battle-map loader; the "prep-aware" variant (same as Level5). On _ready()
+it converts a Tiled-derived scene tree ($CellInfo/$Allies/$Enemies layers of get_meta
+markers) into a live grid + enemy units and publishes to the BattlefieldInfo autoload. It
+does NOT freshly spawn allies from metadata — it repositions allies already present in
+BattlefieldInfo.ally_units (carried in from the deployment/prep screen) onto declared Spawn
+tiles, supports Swap tiles for the deployment swap screen, and heals all allies to full.
+
+3. FUNCTIONS
+_ready() — sole function; identical to Level5.gd. In brief:
+  - Registers current_level; sets music volume; reads own meta height/width and
+    Victory_Condition; clears BattlefieldInfo.spawn_points and swap_points.
+  - Builds grid; for each $CellInfo marker instantiates Cell.tscn via
+    init(Vector2(pos/Cell.CELL_SIZE), Avd, Def, MovementCost, TileType); flags cells with
+    Spawn meta (is_spawn_point + BattlefieldInfo.spawn_points) and Swap meta
+    (BattlefieldInfo.swap_points).
+  - Builds 4-directional adjCells adjacency.
+  - Allies: repositions existing BattlefieldInfo.ally_units entries by identifier (position,
+    currentTile, occupyingUnit, visibility, modulate, action state MOVE); ignores allies not
+    already deployed; heals all to max_health.
+  - Enemies: load()s enemy .tscn, sets AI via get_node("AI").ai_type = get_meta("aiType"),
+    copies stat/XP/movement meta, links tile, records in all_enemies_location by Identifier.
+  - Publishes grid/map_height/map_width/enemy_units to BattlefieldInfo; frees layer nodes;
+    calls BattlefieldInfo.main_game_camera._on_Level_mapInformationLoaded().
+See Level5.gd synopsis for the fully expanded per-step description.
+Autoloads/classes touched: BattlefieldInfo, Cell (+CELL_SIZE), Unit_Action_Status,
+UnitStats/UnitMovementStats, enemy "AI" node.
+
+4. POSSIBLE IMPROVEMENT
+- Primary issue: it is a verbatim duplicate of Level5.gd. Delete one and share a single
+  loader script across both level scenes.
+- All other improvements from Level5.gd apply: extract build/spawn helpers, remove the
+  duplicated get_meta enemy-stat block, wire or delete the dead mapInformationLoaded signal,
+  move content out of scene metadata into data, adopt AStarGrid2D, drop Cell-node-as-data.
+
+5. RELATION TO DEATH OR TAXATION
+Identical to Level5.gd's relation: the Tiled/get_meta loading pipeline is SCRAPPED (reference
+only), but the PREP -> BATTLE handoff pattern is strong reference for DoT. A DoT data-driven
+loader must reproduce, minus Tiled: a terrain grid (movement cost + DEFENSE per tile:
+Plains/Forest/Mountain/Road/River/HQ-Zone), AStarGrid2D passability (River solid, per-terrain
+weights, mountain infantry-only), DEPLOY zones (the Spawn/Swap concept — where the player
+places their deployed roster rather than authored ally spawns), enemy placements each with an
+AI flag (guard/aggressive/balanced x simple/medium/smart), and a map objective (rout/defend/
+seize). SCRAP the Avd/avoidance and RNG-combat stat fields (DoT combat is deterministic), the
+marker-node substrate, Cell scene instancing, and the BattlefieldInfo god-object + direct
+camera call. In DoT this logic lives in pure /sim, headless-testable, signaling the view.

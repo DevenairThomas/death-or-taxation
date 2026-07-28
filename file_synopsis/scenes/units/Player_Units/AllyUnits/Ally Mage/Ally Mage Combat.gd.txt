@@ -1,0 +1,44 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Mage/Ally Mage Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (Combat_Unit, Node2D).
+Combat-animation controller for the mage's battle scene. The most fully-featured of the AllyUnits
+combat scripts.
+
+2. WHAT IT DOES
+Overrides nearly the full Combat_Unit hook set to drive the mage's battle animation: attack/hit/
+miss/crit/death SFX, weapon draw/put-away sounds routed through the equipped tome, camera shake on
+hit vs crit, and the death-complete signal. Every function is invoked by the combat scene's
+AnimationPlayer method tracks in sync with the sprite.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: opponent dodge cue on miss.
+- play_miss_sound(): random "Attack Miss 1..2"; emits play_enemy_dodge_anim.
+- play_attack_sound(): random "Attack 1..3" from BattlefieldInfo.battle_sounds.
+- play_hit_sound(): random "Attack Hit 1..3".
+- play_draw_sound(): calls BattlefieldInfo.combat_player_unit.UnitInventory.current_item_equipped
+  .draw_attack_sound() — i.e. the equipped tome item supplies its own draw SFX (per-weapon audio).
+- put_away_attack_sound(): mirror of the above via current_item_equipped.put_away_attack_sound().
+- play_crit_sound(): random "Critical Hit 1".
+- shake_camera_crit(): get_parent().get_parent().shake(0.5,50,30) — reaches two nodes up (the
+  Combat_Screen/camera) to shake hard on crit.
+- shake_camera_regular(): shake(0.2,50,30) — light shake on normal hit.
+- play_death_sound(): plays "Death".
+- death_anim_signal(): emits base death_anim_done so Combat_Screen can proceed.
+
+4. POSSIBLE IMPROVEMENT
+- Almost entirely duplicates the base Combat_Unit (same bodies); it overrides methods with identical
+  code, so most overrides are dead weight — attach Combat Unit.gd directly and keep only genuine
+  differences.
+- get_parent().get_parent().shake(...) is a hard positional coupling to the scene tree; pass a
+  camera reference or emit a "shake" signal the Combat_Screen listens to.
+- Same randf_range->int off-by-one (never hits the top index); use randi_range.
+- Routing SFX through current_item_equipped.draw_attack_sound() is the right instinct (per-weapon
+  data) — generalize it so ALL sounds come from weapon/unit data and delete the subclass.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. No scripted combat-animation scenes, no crit, no miss, no draw/sheathe animation in DoT's
+deterministic model, and camera-shake-on-crit is meaningless without crits. The only transferable
+idea is "view plays cues (sound/shake) in response to sim signals (unit_damaged/unit_destroyed)",
+implemented once in the view layer and parameterized by data — never a per-character subclass. In
+gray-box phase there is no music/SFX at all, so nothing here ships yet.

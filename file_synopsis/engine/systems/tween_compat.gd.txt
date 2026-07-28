@@ -1,0 +1,21 @@
+FILE: engine/systems/tween_compat.gd
+
+1. CLASS
+class_name TweenCompat. Extends Node. A Godot 3 -> 4 compatibility shim reproducing the removed scene-graph Tween node API on top of Godot 4's create_tween().
+
+2. WHAT IT DOES
+Godot 4 removed the old Tween node (interpolate_property/start + tween_completed/tween_all_completed signals). This project's cutscene and world-map code drives sequencing off those signals, so this node re-implements exactly that subset: queue property interpolations, flush them together, and emit the old-style completion signals. It is attached where old get_node("Tween")/$"...Tween" lookups expect a Tween node, keeping legacy code working after the 4.6 conversion.
+
+3. FUNCTIONS
+- interpolate_property(object, property, initial, final, duration, trans_type=TRANS_LINEAR, ease_type=EASE_IN_OUT, delay=0.0): appends a pending interpolation dict; does not run yet. Mirrors the Godot 3 signature.
+- start(): if pending non-empty, kills any running tween, snapshots pending, builds a parallel Godot 4 Tween, and for each step calls tween_property(...).from(...).set_trans().set_ease() (+ delay). On finished (CONNECT_ONE_SHOT) emits tween_completed(object, key) per step then tween_all_completed.
+- is_active() -> bool: whether the underlying tween is still running (old is_active equivalent).
+Emits: tween_completed, tween_all_completed — consumed by cutscene/camera code (e.g. tests/new_event_system.gd connects to the camera's "Tween" tween_all_completed; turn/world-map transitions rely on these).
+
+4. POSSIBLE IMPROVEMENT
+- It is intentionally a shim, so its ceiling is "faithful." Long-term, port callers to native Godot 4 create_tween() and delete this. Keeping legacy signal-driven sequencing perpetuates a Godot-3 idiom.
+- str(property) as the completion key is loose; NodePath typing would be safer.
+- Parallel-only (set_parallel(true)) — if any caller relied on sequential Godot-3 tween chaining this would differ subtly.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap for DoT proper; it is scaffolding for the imported reference project only. DoT is a fresh build with no Godot-3 legacy, so animation/sequencing should use native Godot 4 create_tween() directly in /scenes and /ui. Tweens are pure presentation — they must live in the view layer and never in /sim (no rendering/animation in sim). Useful only as a reference for how the reference project sequenced cutscenes/camera moves; do not carry the shim forward.

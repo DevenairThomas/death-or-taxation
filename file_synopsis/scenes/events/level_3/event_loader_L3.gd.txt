@@ -1,0 +1,26 @@
+SYNOPSIS: scenes/events/level_3/event_loader_L3.gd
+
+1. CLASS
+No class_name. extends Node.
+A scene-attached "loader" node that seeds the event system for a battle level when its scene tree enters. Acts as the per-level bootstrap glue between a battlefield scene and the global event/turn managers.
+
+2. WHAT IT DOES
+On _ready() it registers a hardcoded, ordered list of scripted event objects into the autoload BattlefieldInfo.event_system, resets the turn manager, and appends "mid-level" event objects that fire on specific turns. This is the per-level manifest that decides which cutscene/scripted beats exist for the level and in what order.
+
+Note (bug/mismatch): despite living in the level_3 folder and being named event_loader_L3, it instantiates L2_* classes (L2_Event_Part05, L2_Event_Part1..5, L2_Event_Mid_10/20), NOT the L3_Event_Part10/20/30 classes defined alongside it. Either a copy-paste leftover or evidence that loaders and event-part files are wired by hand and drift easily.
+
+3. FUNCTIONS
+_ready():
+- BattlefieldInfo.event_system.add_event(...) x6 — pushes freshly `.new()`'d event instances into the global event queue. add_event presumably stores them for sequential playback.
+- BattlefieldInfo.turn_manager.reset() — clears turn state at level load.
+- BattlefieldInfo.turn_manager.mid_level_events.append(...) x2 — schedules events keyed to turn progression (the turn_manager drives these later).
+Callers: Godot lifecycle (_ready fires automatically when this node is instanced into a battlefield scene). No signals emitted here; it only mutates two autoload singletons.
+
+4. POSSIBLE IMPROVEMENT
+- Replace the hand-written add_event list with a data file (level id -> array of event resource paths); a generic loader iterates it. Removes the class-name coupling and the L2/L3 mismatch class of bug.
+- The mismatch itself is a concrete bug: a level-3 loader must not load level-2 events; at minimum this should be caught by a test asserting loaded event ids match the level.
+- Prefer Godot 4 typed arrays and @export of the event list so designers edit in-editor instead of in code.
+- No docstrings; every add_event line is a magic ordering dependency with no comment on why the order matters.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap the pattern, keep the concept. DoT wants cutscenes/campaign flow DATA-DRIVEN: a level's beat list belongs in /data (e.g. a scene manifest resource), not in a code node that news-up named classes. This file is the clearest example of the anti-pattern DoT must avoid — a per-level loader hardcoding class references that silently desync from their folder. Keep as reference ONLY for the responsibility it fulfills: "given a mission, produce the ordered list of scripted beats (pre-battle + turn-triggered mid-battle) to run." In DoT that becomes a generic mission-config lookup feeding a data-driven scene player, with mid-battle triggers expressed as data conditions rather than appended objects.

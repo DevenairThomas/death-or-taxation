@@ -1,0 +1,16 @@
+SYNOPSIS: scenes/combat/up_arrow_combat.gd
+
+1. CLASS
+   extends Node2D (no class_name). Decorative widget: the green "up" arrow shown next to a combatant's stats when they have a weapon-triangle ADVANTAGE (weapon_bonus == 1). Mirror of down_arrow_combat.gd.
+
+2. WHAT IT DOES
+   Plays a "move" (bobbing) animation on entering the tree. Visibility toggled by combat.gd.adjust_gui_text_and_hp_box() from Combat_Calculator.*_weapon_bonus.
+
+3. FUNCTIONS
+   _ready(): $anim.play("move"). No signals or logic.
+
+4. POSSIBLE IMPROVEMENT
+   - Replaceable by AnimationPlayer autoplay; script is redundant.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP as-is. Same reasoning as down_arrow_combat.gd — it advertises the FE weapon triangle, which DoT does not use. No reusable logic to port.

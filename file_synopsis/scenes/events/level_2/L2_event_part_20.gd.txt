@@ -1,0 +1,33 @@
+SYNOPSIS — scenes/events/level_2/L2_event_part_20.gd
+
+1. CLASS
+class_name L2_Event_Part2, extends "res://scenes/events/event_base.gd" (Event_Base).
+Concrete scripted cutscene beat — Level 2 (villain Vezarius appears, taunts, and scripted-kills a soldier in a cinematic combat).
+
+2. WHAT IT DOES
+The most capability-heavy L2 beat: swaps music, plays Vezarius's villain dialogue in the top textbox, walks Vezarius to a mark, then triggers a SCRIPTED, guaranteed combat where Vezarius kills the "Dead Soldier" (temporarily forcing 100% hit/crit bonuses), and when the combat screen finishes, pans the camera back to the player area and completes. Shows the event system driving actual combat, not just VN text.
+
+3. FUNCTIONS
+- var dialogue (Array): Vezarius's lines, "Name@portrait@text".
+- var Vezarius / Dead_soldier: cached combatants. var movement_camera (declared, unused).
+- _init(): debug name/part + path.
+- start():
+  * Caches Vezarius (enemy_units) and Dead_soldier (ally_units).
+  * Connects message_system.no_more_text -> move_actor; movement_system_cinematic.unit_finished_moving_cinema -> enable_combat; combat_screen.combat_screen_done -> move_camera.
+  * Stops "Unfufilled" music, plays "AllyLevel".
+  * Box TOP, enable_text(dialogue).
+- move_actor(): paths Vezarius to grid[5][17]; appends to unit_to_move_same_time; is_moving = true. (Note: does NOT null his old tile here.)
+- enable_combat(): override of the base stub. Sets combat_screen.cinematic_branch = true; sets BattlefieldInfo.combat_ai_unit = Vezarius and combat_player_unit = Dead_soldier; calls BattlefieldInfo.start_ai_combat(); sets turn_manager.turn = Turn_Manager.ENEMY_COMBAT_TURN — a forced, deterministic-outcome scripted battle.
+- move_camera(): (after combat screen done) resets Vezarius.UnitStats.bonus_crit/bonus_hit to 0 (undoing the guaranteed-kill fudge — note bonus_hit set twice, bonus_dodge never restored, likely a bug); hides all allies then re-shows Move Me 1/2, Seth, Eirika; tweens main_game_camera to Vector2(48,0); connects tween_all_completed -> event_complete.
+
+Coupling: BattlefieldInfo (enemy/ally_units, combat_ai_unit/combat_player_unit, start_ai_combat, main_game_camera+Tween, music_player), message_system, movement_system_cinematic, movement_calculator, combat_screen (combat_screen_done signal), turn_manager (Turn_Manager). Advanced by Event_System.
+
+4. POSSIBLE IMPROVEMENT
+- The scripted "kill" is achieved by mutating RNG-adjacent stats (bonus_crit/bonus_hit = 100%) then restoring them — a fragile hack around a hit/crit-based combat model, and the restore is incomplete/duplicated (bonus_hit twice, bonus_dodge unrestored).
+- Reaching into combat_screen.cinematic_branch and BattlefieldInfo.combat_* globals to stage a fight is deep coupling; a dedicated "play scripted combat(attacker, defender, forced_result)" API would be cleaner.
+- Unused var movement_camera; magic literals (grid[5][17], Vector2(48,0)).
+- Old tile not nulled in move_actor (inconsistent with sibling beats) — latent occupancy bug.
+- No disconnects; not headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as script; ONE important cross-cutting note. This beat proves an event runner sometimes must trigger combat as part of a scene — a real requirement DoT's scene concept should acknowledge (a data scene step could say "play scripted skirmish between actor A and B"). BUT the mechanism here is exactly what DoT's locked rules forbid: combat is 100% deterministic with NO hit/crit/dodge, so DoT has no bonus_crit/bonus_hit to fudge. In DoT a "scripted kill" is simply a deterministic damage resolution (or a pure cutscene event), never RNG fudging. So keep the concept "scene can invoke combat", scrap the entire hit/crit implementation and the restore-the-fudge bookkeeping. For the gray-box prototype, scripted in-cutscene combat is not needed at all — the VN stub is text-only. Content is FE placeholder.

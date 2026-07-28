@@ -1,0 +1,28 @@
+FILE: scenes/units/Unit_Scripts/Combat Unit.gd
+
+1. CLASS
+class_name Combat_Unit, extends Node2D. Base script for the in-battle combat cutscene "actor" (the zoomed-in duel view that plays when two units fight). It is the parent of "Ally Combat Script.gd" and every Enemy_Units "* Combat.gd" script. Its methods are called from AnimationPlayer animation tracks (call-method keyframes) during the combat sequence.
+
+2. WHAT IT DOES
+Provides the shared audiovisual hooks for a combat animation: playing attack/hit/draw/put-away/miss/crit/death sounds, camera shake, and emitting the death_anim_done signal so the sim/flow knows the animation finished. It is purely presentation glue — it routes to the BattlefieldInfo autoload's sound nodes and the currently-fighting units.
+
+3. FUNCTIONS
+- signal death_anim_done: Fired when the death animation completes so the combat resolver can proceed/clean up.
+- play_attack_sound()/play_hit_sound(): Pick a random 1-3 index and play "Attack N" / "Attack Hit N" from BattlefieldInfo.battle_sounds. (RNG here is cosmetic sound variety only.)
+- play_draw_sound()/put_away_attack_sound(): Delegate to BattlefieldInfo.combat_player_unit.UnitInventory.current_item_equipped.draw_attack_sound()/put_away_attack_sound() — weapon-specific SFX.
+- play_miss_sound(): Plays a random "Attack Miss N" and emits "play_enemy_dodge_anim" (note: this base emits a signal it does not declare — the subclass Ally Combat Script declares play_enemy_dodge_anim).
+- play_crit_sound(): Plays a random "Critical Hit N".
+- shake_camera_crit()/shake_camera_regular(): Call get_parent().get_parent().shake(...) — reaches two nodes up to the combat scene's camera to shake it.
+- play_death_sound(): Plays "Death" from BattlefieldInfo.battle_sounds.
+- death_anim_signal(): Emits death_anim_done (called from an animation track at the end of a death anim).
+- turn_off(): Empty stub.
+
+4. POSSIBLE IMPROVEMENT
+- Emits "play_enemy_dodge_anim" without declaring it (base class) — brittle; declare all signals where used or restructure.
+- get_parent().get_parent().shake() hardwires a two-level ancestry assumption — pass the camera in or use a group/signal.
+- References BattlefieldInfo.combat_player_unit for draw/put-away sounds even in a base shared by enemies (the enemy combat scripts correctly override to combat_ai_unit) — the base default is player-biased and easy to misuse.
+- Nearly all logic is duplicated verbatim across ~7 sibling combat scripts; collapse into this base and let subclasses only override the differences (e.g. bow shoot sound).
+- turn_off() is a dead stub.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP the concept, RESCOPE the code to /scenes only. This is legitimate view-layer combat-cutscene glue and has no game rules, which fits DoT's rule that /scenes renders and forwards but holds zero logic. In DoT the combat "cutscene" is gray-box (ColorRects), so most SFX/shake stays but drives placeholder visuals. Critically: there must be NO miss/dodge/crit path in DoT (combat is deterministic — no hit chance, crit, dodge). So play_miss_sound, play_crit_sound, and the dodge-anim signals are SCRAPPED. Keep attack/hit/death sound + shake + death_anim_done, and drive them from sim signals (unit_damaged, unit_destroyed) rather than from AnimationPlayer method-call tracks reading global "current unit" state. Replace the BattlefieldInfo global-actor lookups with explicit references passed by the view controller.

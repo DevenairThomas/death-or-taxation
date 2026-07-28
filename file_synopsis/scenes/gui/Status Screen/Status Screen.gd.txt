@@ -1,0 +1,25 @@
+FILE: scenes/gui/Status Screen/Status Screen.gd
+
+1. CLASS
+No class_name (referenced globally as StatusScreen, so likely an autoload/singleton). extends CanvasLayer. The mission-overview / objective screen: shows chapter title, both commanders' HP, unit counts, objective, turn number, gold, and a running play-time clock.
+
+2. WHAT IT DOES
+A full-screen summary of the current mission state, opened from the End Turn menu. Displays the two commanders (player = "Eirika", enemy commander) with portraits and HP bars, side unit totals, the victory objective text, current player turn number, and money. It also runs a live play-time timer (MM:SS) every frame.
+
+3. FUNCTIONS
+- _ready(): Disables input; records time_start from Time.get_unix_time_from_system(); enables _process.
+- _process(_delta): Computes elapsed play time (current session + saved_time), formats MM:SS (casts to int since Godot 4 forbids % on floats), writes it to the Time label.
+- start(): set_screen(), plays "Fade" anim, then enables input.
+- _input(_event): ui_cancel -> fade out, then BattlefieldInfo.cursor.back_to_move() + turn_on_ui to return to the map.
+- set_screen(): Pulls from BattlefieldInfo: level_container.chapter_title; Eirika + enemy_commander names/HP (via calculate_health_values); ally_units.size()/enemy_units.size(); victory_text; turn_manager.player_turn_number; money.
+- set_screen_objective_desc(desc): Setter for the objective description label.
+- calculate_health_values(unit, node): Sets "cur / max" HP text, sizes the "Full HP" region_rect proportionally (full_bar_width * current/max), sets portrait texture.
+
+4. POSSIBLE IMPROVEMENT
+- Hardcoded references to BattlefieldInfo.Eirika and enemy_commander bake FE content into the widget; should take generic "player commander / enemy commander" handles or a list.
+- Deep node-path string literals for every label; cache @onready refs.
+- Play-time tracking is an odd responsibility for the status screen; move to a global session/clock service.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP THE CONCEPT, REBUILD GENERICALLY. A mission-status/objective panel (objective text, turn number, unit counts, commander HP) maps cleanly onto DoT's turn-loop HUD and belongs in /ui, rendering sim state only (which this already does — read-only). CHANGE: drop the hardcoded Eirika/enemy_commander and gold ("Money Amt ... G"); DoT battles show BATTLE BUDGET context, not carry-over gold, and souls are NOT shown mid-mission (spent only between missions). Commanders become DoT Generals (persistent, named). The HP-bar-by-region_rect technique is a fine gray-box placeholder. No RNG. This is a good structural reference for DoT's in-battle info screen.

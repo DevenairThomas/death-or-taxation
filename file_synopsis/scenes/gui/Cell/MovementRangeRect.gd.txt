@@ -1,0 +1,48 @@
+SYNOPSIS: scenes/gui/Cell/MovementRangeRect.gd
+
+1. CLASS
+   class_name MovementRangeRect, extends Node2D.
+   A per-tile overlay widget that shows colored range highlights (movement /
+   attack / etc.) on top of a Cell.
+
+2. WHAT IT DOES
+   Each Cell owns a MovementRangeRect child. It manages several colored,
+   animated overlay sprites (Blue, Red, Green, Purple, Marked) that visually
+   indicate ranges: blue = movement range, red = attack range (see Damage
+   Preview / Weapon Select calling turnOn("Red")), others for allies/special
+   marking. Callers toggle a color on or off per tile.
+
+3. FUNCTIONS
+   - _ready(): Starts the "Wave" animation on the nested AnimatedSprite players
+     (Blue/Blue Player, Red/Red Player, Green/Green Player, Purple/Red Player,
+     Marked/Blue Player) so the overlays shimmer.
+   - turnOn(colorName): Makes a color layer visible. Red/Blue/Green are mutually
+     exclusive (only turns on if none of the three are already visible), while
+     Purple always turns on regardless. Called by Damage Preview
+     (turn_on_red_tiles), Healing Preview, and the movement/attack range
+     highlighter across many tiles.
+   - turnOff(colorName): Hides the named color layer. Called by the *_red_tiles
+     cleanup routines when a screen closes.
+   - turnEverythingOff(): Hides Red/Blue/Green/Purple in one call (note: does not
+     touch "Marked").
+
+4. POSSIBLE IMPROVEMENT
+   - The turnOn logic is repetitive string-branching; replace colorName strings
+     with an enum and a dictionary of layer nodes, collapsing the four near-
+     identical branches into one lookup.
+   - The mutual-exclusion rule ("only if no other color visible") is implicit
+     priority logic buried in the widget; it should be a documented layer-
+     precedence, ideally driven by the caller rather than guessed per tile.
+   - Node path "Purple/Red Player" and "Marked/Blue Player" mismatched names are
+     confusing and fragile; rename consistently.
+   - Instancing one animated overlay node per map tile is heavy; a single
+     TileMapLayer / shader-based overlay in Godot 4 would be far cheaper.
+
+5. RELATION TO DEATH OR TAXATION
+   KEEP THE CONCEPT, REBUILD. DoT's rendering spec explicitly wants a blue
+   overlay for movement range and a red overlay for attack range, which is
+   exactly this widget's job. It is a pure view element (forwards no rules), so
+   it fits /scenes cleanly. Rebuild it data/enum-driven and, for performance and
+   gray-box simplicity, prefer a single overlay layer colored per cell (flat
+   ColorRect-style highlight) over per-tile animated sprites. The sim decides
+   which cells are in movement/attack range; this widget only paints them.

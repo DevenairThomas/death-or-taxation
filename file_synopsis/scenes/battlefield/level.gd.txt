@@ -1,0 +1,18 @@
+SYNOPSIS: scenes/battlefield/level.gd
+
+1. CLASS
+   extends Node2D (no class_name). Despite the generic name, this is the TOP-LEVEL battlefield container / chapter root node script — the "Level" root under which the actual chapter level scenes are loaded.
+
+2. WHAT IT DOES
+   Registers itself as BattlefieldInfo.battlefield_container so every subsystem can reach the container. Declares the level music and a chapter_title, and a current_chapter reference slot. That is essentially all it does at construction; the per-chapter setup (victory condition, events, enemy commander) lives in the individual chapter scripts, and the shared "extra functions that might be needed" (check_loss/next_level) live on those chapter scripts, not here.
+
+3. FUNCTIONS
+   _ready(): BattlefieldInfo.battlefield_container = self. Single wiring line — publishes this node as the container the rest of the game (combat.gd's check_loss lookup, chapter next_level fades via battlefield_container "Anim", save/load) reaches through.
+
+4. POSSIBLE IMPROVEMENT
+   - level_music and chapter_title are declared but unused here (the chapter scripts set their own music); dead vars on the root.
+   - The name "level.gd" collides conceptually with the chapter scripts also being "levels"; rename to battlefield_root.gd or similar to match its BattlefieldInfo.battlefield_container role.
+   - current_chapter is declared but never assigned in this file.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE. The concept of a single container node the systems reference is fine as a VIEW root, but in DoT the authoritative container is the BattleSim RefCounted in /sim, not a Node2D published on an autoload. Keep a thin scene root in /scenes that instantiates the sim and forwards signals, but it must hold zero game rules (this file already holds nearly none, which is the right shape). The chapter_title/music belong in /data-driven mission definitions, not hardcoded on the root.

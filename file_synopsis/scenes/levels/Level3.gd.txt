@@ -1,0 +1,73 @@
+SYNOPSIS: scenes/levels/Level3.gd
+
+1. CLASS
+extends Node2D. No class_name. Battle-map loader attached to a level scene root.
+Declares `signal mapInformationLoaded` (declared but never emitted here).
+
+2. WHAT IT DOES
+Reference-project battle-map loader, same family as level2/Level5. On _ready() it turns a
+Tiled-derived scene tree ($CellInfo/$Allies/$Enemies/$Temp layer nodes with get_meta
+metadata) into a live grid + units, then publishes everything to the BattlefieldInfo
+autoload. Distinguishing traits of Level3: it FULLY spawns allies from metadata every load
+(no "already have this ally" persistence branch — unlike level2/Level5), keys
+all_allies_location by unit Name, detects Eirika by name during the ally loop, and reads
+enemy pre-battle / death dialogue (Before_Battle / After_Battle meta) onto the enemy unit.
+No spawn-point or swap-point handling.
+
+3. FUNCTIONS
+_ready() — sole function, full load pipeline:
+  - Sets BattlefieldInfo.current_level = self; sets AllyLevel music volume.
+  - Reads own meta: get_meta("height")/get_meta("width") -> map_height/map_width;
+    get_meta("Victory_Condition") -> BattlefieldInfo.victory_text.
+  - Builds grid as map_width x map_height 2D array filled with 0.
+  - Terrain: for each $CellInfo marker, instantiate Cell.tscn and
+    init(Vector2(pos/Cell.CELL_SIZE), get_meta("Avd"), get_meta("Def"),
+    get_meta("MovementCost"), get_meta("TileType")); store into grid at tile coord.
+  - Adjacency: double-loop appends left/right/up/down neighbors into each Cell.adjCells,
+    bounds-checked against map_width/map_height.
+  - Allies: for each $Allies marker, always load()s the unit .tscn from an InstanceName
+    path, adds under BattlefieldInfo.y_sort_player_party, and copies ~35 meta fields into
+    UnitStats/UnitMovementStats (combat stats, movement penalties, growth chances, XP/class,
+    identifier). Registers in all_allies_location keyed by Name; sets is_ally=true; links
+    currentTile/occupyingUnit. If get_meta("Name")=="Eirika", sets BattlefieldInfo.Eirika.
+  - Enemies: for each $Enemies marker, load()s enemy .tscn; AI via
+    get_node("AI").set_ai(get_meta("aiType"), patrol_cell_a, patrol_cell_b) with patrol
+    cells defaulting to grid[0][0] and overridden by optional A_Tile_X/Y, B_Tile_X/Y meta;
+    copies stats; if Before_Battle meta present, sets enemy.before_battle_sentence and
+    enemy.death_sentence arrays from Before_Battle/After_Battle; sets is_ally=false, links
+    tile, records in all_enemies_location by Identifier.
+  - Publishes to BattlefieldInfo: grid, map_height, map_width, ally_units (=
+    all_allies_location), enemy_units (= all_enemies_location).
+  - Frees $CellInfo/$Allies/$Enemies/$Temp; calls
+    BattlefieldInfo.main_game_camera._on_Level_mapInformationLoaded().
+Autoloads/classes touched: BattlefieldInfo, Cell (+CELL_SIZE), UnitStats/UnitMovementStats,
+enemy "AI" node.
+
+4. POSSIBLE IMPROVEMENT
+- Same monolithic _ready and duplicated get_meta stat blocks as the other loaders; extract
+  shared build/spawn helpers and a metadata->properties table (or UnitStats.from_dict).
+- `signal mapInformationLoaded` is declared but never emitted; the actual hand-off is a
+  direct camera method call — either wire the signal (decoupled) or delete the dead signal.
+- Keys allies by Name here but by Identifier in level2/Level5 — inconsistent keying across
+  loaders is a latent bug; standardize on identifier.
+- Move dialogue (Before_Battle/After_Battle), stats, and terrain out of scene metadata into
+  typed data.
+- Replace adjCells graph with AStarGrid2D; replace Cell scene-node-as-data with a plain
+  data model.
+
+5. RELATION TO DEATH OR TAXATION
+Tiled/get_meta loading pipeline is SCRAPPED (reference only). The reusable reference is the
+construction logic a DoT /data-driven loader must reproduce without Tiled: build width x
+height grid of tiles carrying terrain type + movement cost + DEFENSE (DoT: Plains/Forest/
+Mountain/Road/River/HQ-Zone), establish passability/adjacency (DoT via AStarGrid2D:
+River=solid, per-terrain cost weights, mountain infantry-only), place deploy positions and
+enemy units with a declared AI flag (DoT: guard/aggressive/balanced x simple/medium/smart)
+plus optional patrol anchors, and read map-level objective/victory condition (DoT: rout/
+defend/seize). Level3's per-enemy Before_Battle/After_Battle dialogue is a useful pattern —
+DoT can attach boss VN lines to a General/enemy in data — but remember DoT's rule: dead
+Generals still appear in cutscenes and death-variant scenes are never written (that
+constraint is on player Generals, not enemy taunt lines). SCRAP: Avd/avoidance and all
+RNG-combat stat fields (bonus_crit/bonus_dodge/growth chances) — DoT combat is 100%
+deterministic; the marker-node substrate; per-tile Cell scene instancing; and reaching into
+a BattlefieldInfo god-object + camera. In DoT this logic lives in pure /sim, headless-
+testable, emitting signals to the view.

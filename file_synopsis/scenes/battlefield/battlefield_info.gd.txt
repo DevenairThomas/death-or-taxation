@@ -1,0 +1,30 @@
+SYNOPSIS: scenes/battlefield/battlefield_info.gd
+
+1. CLASS
+   extends Node (no class_name; this IS the project's central autoload singleton, referenced everywhere as "BattlefieldInfo"). Global game-state / service-locator god-object for a battle.
+
+2. WHAT IT DOES
+   Holds essentially all mutable battle state and references to every subsystem in one place: the systems (unit_movement_system, movement_calculator, turn_manager, combat_screen, tile_unit_updater, victory_system, save_load_system, event_system, message_system, cameras, audio players), the current level/container, the map grid + dimensions, the unit dictionaries (ally_units, enemy_units, ally_units_not_in_battle), spawn/swap points, the two units currently in a duel (combat_player_unit / combat_ai_unit), UI screens (cursor, previews, prep screen, convoy), and flags (game_over, victory, money, stop_end_of_turn). It also instantiates most subsystems at startup and provides a couple of orchestration entry points. Everything in scenes/ reaches through this singleton — it is the hub that couples the whole project together.
+
+3. FUNCTIONS
+   _ready(): constructs and add_child()s the core systems: MovementCalculator.new(self), unit_movement_system + cinematic variant (preloaded .gd), turn_manager.tscn, music_player/battle_sounds/weapon_sounds/extra_sound_effects, tile_unit_updater, victory_system (victory_checker.tscn), item_database (ALL_ITEMS_REF.new()), save_load_system. Grabs $Node2D as the player y-sort. This is the composition root.
+   _process(delta): pumps unit_movement_system.process_movement(delta) and the cinematic movement system each frame (movement is a per-frame poll, not tween/await).
+   _input(_event): global hotkeys — "debug" prints orphan nodes, "exit_game" quits.
+   clear(): nulls/zeroes most references and resets turn_manager.player_turn_number/enemy_turn_number to 1 — a soft reset between chapters/loads.
+   start_level(): if save_load_system.is_loading_level, removes the intro screen, enables main camera, moves camera to Eirika (turn_manager.move_camera_to_Eirika), fades in, calls turn_transition.start_level(), plays music; else just turn_transition.start_level().
+   next_ai(enemy_unit): tells one enemy unit's "AI" child node to process_ai(). This is how the enemy phase steps through units.
+   start_ai_combat(): the AI->combat bridge — Combat_Calculator.calculate_damage() then combat_screen.start_combat(Combat_Screen.enemy_first_turn). Directly couples AI, the combat calculator, and the combat screen.
+
+4. POSSIBLE IMPROVEMENT
+   - This is a textbook god-object / service locator: ~60 loosely-typed member vars (mostly untyped), which makes state flow impossible to test and easy to corrupt. Break into a small typed BattleState data object plus explicitly-injected systems.
+   - clear() manually nulling fields is a maintenance hazard (easy to forget one, and it does not mirror the full var list). A fresh state object per battle removes the need.
+   - Untyped vars (grid = [], ally_units = {}, current_Unit_Selected only is typed) hide contracts; add types.
+   - money = 4000 and "Eirika" protagonist coupling are content baked into the singleton.
+   - _process polling for movement is fine but a Tween/await model is more Godot-4 idiomatic and testable.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE / partially SCRAP — this is the anti-pattern DoT's architecture explicitly forbids. DoT mandates a single BattleSim (RefCounted) that owns pure state and a signal surface (unit_damaged, unit_destroyed, turn_changed, mission_complete, skirmish_resolved), with /scenes rendering it and never mutating it. The useful takeaway from this file is the INVENTORY of what a battle needs to track (unit collections keyed by id, grid + dimensions, current-unit selection, turn counters, victory condition, spawn points). Port that data into a pure /sim BattleSim, but:
+   - SCRAP the service-locator role: view nodes (combat_screen, cursor, cameras, audio, UI screens) must NOT live on the sim; sim emits signals, view subscribes.
+   - SCRAP money/convoy/item_database/weapon-durability (no FE economy in-battle; DoT currencies are battle budget + souls, never mixed, handled in /sim economy, not here).
+   - The start_ai_combat() bridge (calculate -> start combat) is conceptually where DoT's AI would call the /sim skirmish resolver and emit skirmish_resolved; keep the flow, move the logic into pure sim.
+   - Enemy-phase stepping via next_ai()/process_ai() maps to DoT's phase-based turn loop (all player units, then all enemy units) but belongs in /sim, not on an autoload holding nodes.

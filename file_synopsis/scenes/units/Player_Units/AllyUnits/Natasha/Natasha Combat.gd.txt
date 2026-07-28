@@ -1,0 +1,24 @@
+FILE: scenes/units/Player_Units/AllyUnits/Natasha/Natasha Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (Combat_Unit, Node2D).
+Combat-animation controller for the cleric's battle scene.
+
+2. WHAT IT DOES
+Overrides only the miss-SFX/dodge hook. Invoked by the combat scene's AnimationPlayer method tracks.
+(A healer rarely enters a "miss" branch, so this override is largely vestigial.)
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: opponent dodge cue on miss.
+- play_miss_sound(): random "Attack Miss 1..2" from BattlefieldInfo.battle_sounds; emits
+  play_enemy_dodge_anim.
+
+4. POSSIBLE IMPROVEMENT
+- Verbatim duplicate of base Combat_Unit.play_miss_sound(); redundant subclass — attach Combat Unit.gd
+  directly.
+- Same randf_range->int off-by-one; use randi_range.
+- Semantically odd on a healer (no miss on healing); indicates the base/override split is too coarse.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. No per-unit combat-animation scenes, no miss mechanic, and healing isn't in the core DoT spec.
+Nothing here transfers beyond the generic "view reacts to sim signals" principle.

@@ -1,0 +1,20 @@
+FILE: engine/systems/unit_movement_system.gd
+
+1. CLASS
+class_name Unit_Movement_System. Extends Node. Per-frame animator that slides the currently selected unit along its precomputed movement_queue, one tile at a time, and hands off to the action menu or AI when done.
+
+2. WHAT IT DOES
+When is_moving, it interpolates the selected unit's position (and the camera) toward the next queued cell using the unit's animation_movement_speed and delta, snapping on arrival, popping the queue, and picking walk animations by direction. On queue empty it finalizes tile occupancy, turns off range highlights, settles the camera, emits unit_finished_moving, and then either advances the AI (unit.get_node("AI").next_step()) or opens the action selector for the player.
+
+3. FUNCTIONS
+- process_movement(delta): the whole system (called from a scene _process). Reads BattlefieldInfo.current_Unit_Selected; computes starting/destination cell from UnitMovementStats.movement_queue; sets the walk animation via unit.get_direction_to_face(); lerps position and pans BattlefieldInfo.main_game_camera; snaps to exact cell when within 0.75px; has a second guard that hard-snaps if it overshoots >=16px (FPS-drop/pause safety). On empty queue: sets currentTile/occupyingUnit, calls BattlefieldInfo.movement_calculator.turn_off_all_tiles, sets camera position_smoothing_speed and _on_unit_moved, emits unit_finished_moving. If unit has an "AI" child -> set action ACTION, Idle anim, AI.next_step(); else -> set action ACTION, set Idle (or "Idle no sound") anim, emit action_selector_screen.
+Signals: unit_finished_moving, action_selector_screen. Touches BattlefieldInfo (current_Unit_Selected, main_game_camera, movement_calculator, grid), Unit_Action_Status, and the unit's Animation/AI child nodes.
+
+4. POSSIBLE IMPROVEMENT
+- Pure view/animation code, but it mutates model state (currentTile, occupyingUnit, UnitActionStatus) and even calls the movement calculator to clear highlights — model and view fused. The authoritative "unit is now at cell X" transition should be a sim commit; the slide should be cosmetic only.
+- Magic thresholds (0.75, 16) and hand-rolled lerp; Godot 4 Tween/path-follow or a normalized progress-along-path would be cleaner and frame-rate independent.
+- The "Idle no sound" animation-name string hack encodes behavior in a name — brittle.
+- Reaches AI via get_node("AI") string lookup and drives AI stepping from an animation system — wrong layer coupling.
+
+5. RELATION TO DEATH OR TAXATION
+Change; this is view-layer. In DoT, the sim decides and commits the move (unit's new cell, occupancy, action state) as pure data; /scenes then animates the sprite from A to B in response to a signal (e.g. unit moved), never mutating sim state. So the position-lerp/camera/animation stays in /scenes, but currentTile/occupyingUnit/action-status changes move into /sim. Decouple AI stepping — the turn/AI sim should sequence AI actions, with the view merely playing the movement it's told to. No RNG involved. Keep the smooth Advance-Wars-style movement feel as a view concern; rebuild the model commit in sim.

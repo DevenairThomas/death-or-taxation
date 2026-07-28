@@ -1,0 +1,34 @@
+FILE: scenes/ai/ai.gd
+
+1. CLASS
+- No class_name. extends Node2D.
+- The per-enemy-unit AI controller (a child node of an enemy Unit). Not an autoload; one instance per AI unit. Driven by an internal $Timer and by BattlefieldInfo turn-manager state. Reads/writes heavily through the BattlefieldInfo singleton and the parent unit (get_parent()).
+
+2. WHAT IT DOES
+- Implements Fire Emblem enemy AI: on the enemy phase, computes the unit's movement/attack range, finds attackable (and healable) targets, scores the most "threatening" target, picks the best tile to attack from (and best weapon), or moves toward Eirika / along a patrol / stands passive if nothing is in range. It then drives movement and hands off to the combat resolution. Behavior branches on ai_type: Aggresive / Passive / Patrol / Heal(stub) / Random(stub).
+
+3. FUNCTIONS (grouped)
+- process_ai(): Resets state and starts the $Timer(0) to run one AI step. Called when it is this unit's turn.
+- set_ai(ai_type, a_tile, b_tile): Configures behavior type and the two patrol tiles.
+- calculate_move_sets(): Asks BattlefieldInfo.movement_calculator to compute possible moves for the parent unit.
+- find_all_enemies_within_range(): BFS over the unit's attack-range tiles honoring weapon MIN/MAX range and reachable movement tiles to collect attackable allies; sets state ATTACK if any.
+- find_all_enemies_that_can_be_healed(): Collects injured friendly units in range (heal AI; note a typo occuypingUnit and a likely ally/enemy logic slip).
+- find_most_threatening_enemy(): Scores each attackable target with a heuristic: +5 for Eirika, +missing-HP%, minus def/res (by attack type), minus (luck+speed)/2, minus (strength+magic)/2; returns the highest. THIS IS THE TARGET-SELECTION HEURISTIC.
+- find_tile_to_move_to(target): BFS to find valid attack tiles, then get_best_tile_to_go_to.
+- get_best_tile_to_go_to(tiles, weapon): Scores tiles by terrain avoid/def bonus + distance*100, equips the highest-might usable weapon, and either finishes in place or paths the unit toward the tile (sets is_moving, moves camera).
+- find_tile_to_move_to_no_enemies(eirika_tile=...): Paths toward Eirika, with "fluid" adjacency randomization (randomize()/shuffle) to spread units out; sets state MOVE.
+- find_tile_to_move_to_no_enemies_no_fluid(tile): Deterministic path toward a given tile (used by patrol).
+- next_step(): After movement, in ATTACK -> sets combat units on BattlefieldInfo and starts AI combat (ENEMY_COMBAT_TURN); in MOVE -> marks unit DONE, greyscales, returns to ENEMY_TURN and emits check_end_turn; HEAL stub.
+- passive()/aggressive()/patrol(): The three behavior scripts choosing between attacking the scored target and moving.
+- _on_Timer_timeout(): The main step: if unarmed -> DONE; else calculate_move_sets + find_all_enemies_within_range, then dispatch on ai_type.
+- Interactions: BattlefieldInfo (movement_calculator, grid, ally_units, unit_movement_system, current_Unit_Selected, main_game_camera, turn_manager, combat_player_unit/ai_unit, start_ai_combat), Calculators, Turn_Manager, Item/Unit stats, Cell.
+
+4. POSSIBLE IMPROVEMENT
+- This is a Node2D doing pure decision logic while also driving camera/movement/tile side effects — impossible to unit-test headlessly. Split the SCORING/decision into a pure function (inputs: unit stats, grid, targets -> chosen target+tile) from the view/animation side effects.
+- Target heuristic mixes FE stats (luck, speed, dodge, strength/magic, def/res) and does NOT use an actual damage-forecast function; scores are ad hoc and include stats DoT does not have.
+- Uses randomize()/shuffle for "fluid" movement — nondeterministic; acceptable for FE flavor but a landmine for a deterministic design.
+- Duplicate BFS blocks (find_all_enemies_within_range vs find_tile_to_move_to); extract a shared reachable-attack-tiles helper.
+- Typos (occuypingUnit, allowedHealkRange, "Aggresive"), stubs presented as branches (Heal/Random), and get_parent()/BattlefieldInfo reach-through everywhere.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE FUNDAMENTALLY, but this is the seed of the DoT AI. DoT AI rules: FE-tier, DORMANT until a player unit enters threat range then PERMANENTLY active; target score = expected_damage - 0.5 x expected_counter + kill bonus, computed with the REAL deterministic damage formula INCLUDING squad HP degradation; optional flags guard/aggressive (and simple/medium/smart). Concretely: (a) MOVE the scoring/decision into /sim as a PURE, headless, deterministic function (RefCounted, no nodes, no camera, no RNG) that any test can call — the "fluid movement" randomize()/shuffle must be REMOVED (no RNG). (b) REPLACE the ad-hoc threat heuristic with the exact DoT formula and call the SAME damage function the forecast uses (forecast must equal resolution). Drop all FE stats (luck/speed/dodge/strength/magic/res) — DoT damage is base_table[attacker][defender] x attacker_hp_percent (squads only) x (1 - terrain_def), floor, min 1. (c) KEEP the behavior-flag idea but map to guard/aggressive (guard ~ hold unless a target is reachable; aggressive ~ advance), plus simple/medium/smart tiers; SCRAP Heal/Random/Patrol and the Eirika-specific +5. (d) The activation model becomes threat-range dormancy that latches active. The view/animation/camera/movement side effects stay in /scenes and are triggered via signals off the sim's chosen action. NO economic/production AI (already absent here, keep it that way).

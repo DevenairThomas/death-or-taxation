@@ -1,0 +1,26 @@
+SYNOPSIS: scenes/battlefield/battlefield_container.gd
+
+FILENAME NOTE: Despite being named battlefield_container.gd, this file's CONTENT is a per-chapter LEVEL script, and it is a byte-for-byte DUPLICATE of the "Chapter 2: Fort Merceus" level (identical to what one would expect chapter_2's Fort Merceus map to use: commander Vezarius, SURVIVE-10-turns). The real container-root script is level.gd. This is almost certainly a leftover/misnamed copy in the reference project.
+
+1. CLASS
+   extends Node2D (no class_name). A single chapter/mission setup script ("Chapter 2: Fort Merceus").
+
+2. WHAT IT DOES
+   On load, configures one mission: positions camera and cursor, resets the turn manager, sets level music, sets the victory condition to Victory_Checker.SURVIVE with turns_left_to_survive = 10, caches the enemy commander ("Vezarius"), queues that chapter's cutscene events (starting events L2_Event_Part05..Part5 and mid-battle events L2_Event_Mid_10/20), moves the player party from the persistent y-sort into the level's Node2D, and kicks off the intro event queue unless loading a save. Also defines the per-mission loss check and the transition to the next level.
+
+3. FUNCTIONS
+   _ready(): registers self as BattlefieldInfo.level_container; sets main_game_camera and cursor positions; turn_manager.reset(); assigns music stream; clears+configures victory_system (SURVIVE, 10 turns); sets BattlefieldInfo.enemy_commander from enemy_units["Vezarius"]; adds all L2 events and mid-events to event_system; sets event_system.current_state = Event_System.starting_events; reparents player units into current_level.Node2D; if not loading, event_system.start_events_queue(); frees a stale "/root/Level/Chapter 2" node if present.
+   check_loss(): returns whether "Seth" is still in BattlefieldInfo.ally_units — an extra lose condition (Seth dying = defeat) consulted by combat.gd.on_ally_death_complete().
+   next_level(): reparents surviving ally units back to the persistent y-sort, disables cursor input, stops music, plays the container fade backwards, then sets WorldMapScreen.current_event and calls SceneTransition.change_scene_to_packed to advance. Couples level flow to WorldMapScreen + SceneTransition.
+
+4. POSSIBLE IMPROVEMENT
+   - It is a duplicate file; the reference project should delete it or rename it — having two scripts (this and chapter_2.gd) both claiming to be chapters invites drift and confusion.
+   - All mission content (commander name, victory type, turn count, event list, camera/cursor coords) is hardcoded imperatively; it should be data. Adding a mission should not require a new script.
+   - Hardcoded node paths ("/root/Level/Chapter 2") and protagonist names ("Seth") are brittle.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE (as a pattern) — this maps directly to a DoT MISSION DEFINITION, which per the design rules MUST be data in /data, not a GDScript per map. The valuable reference here is the shape of a mission: an objective (SURVIVE/turns), an enemy commander, a scripted event/cutscene list, spawn/reparent of the roster, and a next-mission transition. In DoT:
+   - The objective belongs in /sim as an evaluated condition (rout / defend-a-zone-N-turns / seize-HQ-tile). "SURVIVE + turns_left" is exactly DoT's "defend a zone for N turns" objective and is a strong reference for the timer logic — but evaluated headlessly in /sim, not set imperatively on a view node.
+   - Souls award on mission completion lives in /sim economy at next_level equivalent; no in-battle money.
+   - Cutscene events (VN) are kept but authored as data; dead Generals still appear (never death-variant scenes).
+   - SCRAP the "one .gd per map" approach entirely.

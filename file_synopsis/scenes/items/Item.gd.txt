@@ -1,0 +1,62 @@
+SYNOPSIS: scenes/items/Item.gd
+
+1. CLASS
+class_name Item, extends Node2D. Base class for every weapon/staff/tome/consumable
+in the reference (FE-clone) project. Every concrete item script extends this file
+(via `extends "res://scenes/items/Item.gd"`). Because it extends Node2D, items are
+scene-tree nodes (each has a .tscn), NOT pure data.
+
+2. WHAT IT DOES
+Defines the shared data schema and behavior of an FE item:
+- Two enums: WEAPON_TYPE {SWORD, AXE, LANCE, BOW, LIGHT, DARK, ELEMENTAL, HEALING,
+  NO_WEAKNESS} and ITEM_CLASS {PHYSICAL, MAGIC, CONSUMABLE}. These drive the FE
+  weapon-triangle (`strong_against`) and physical-vs-magic defense split.
+- Per-item stat fields: uses/max_uses (durability), might (base damage contribution),
+  weight (affects attack speed / doubling and dodge), hit, crit, min_range/max_range,
+  worth, item_name, item_description, icon, weapon_string_name (animation key),
+  is_usable_by_current_unit.
+- Provides sound hooks, a selling-cost formula, debug stringify/print, and save/load
+  serialization. The `special_ability(...)` hook is intentionally NOT defined here;
+  each subclass supplies its own (see combat_calculator.gd, which calls it).
+
+3. FUNCTIONS
+- draw_attack_sound() / put_away_attack_sound() / use_consumable(): empty virtual
+  hooks; subclasses override to play the correct SFX via the BattlefieldInfo autoload.
+- get_selling_cost() -> int: returns int(worth * 0.85 * uses/max_uses), floored to a
+  minimum of 1. Called by Shop UI.gd and convoy.gd when selling. NOTE: integer division
+  bug — `uses / max_uses` is integer division in GDScript, so it is 1 when uses==max_uses
+  and 0 otherwise, collapsing partial-durability pricing.
+- get_stats_stringify() / print_stats(): debug helpers that concatenate all stats into
+  a string / stdout. Used for inspection panels / debugging.
+- save(): returns a dict of scene filename, parent node path, and all item stats, for
+  the game's serialization system.
+- load_item(stat_data): reverse of save(); writes stats back onto the node, int-casting
+  everything except item_description and item_name.
+- special_ability(unit_holding, unit_attacked): NOT present in the base class. Combat
+  code (combat_calculator.gd get_special_ability) calls it on the equipped item to get a
+  damage MULTIPLIER (default 1); subclasses that omit it would error, so every concrete
+  item defines it.
+
+4. POSSIBLE IMPROVEMENT
+- Fix the `uses / max_uses` integer-division bug in get_selling_cost (use float()).
+- Should be a Resource (or RefCounted + data file), not a Node2D. Making each item a
+  scene node is heavyweight, forces load()+instantiate() everywhere, and prevents
+  headless/pure testing. A `@export`-ed custom Resource per item, or a single data
+  table (JSON/tres), would data-drive stats without 15 near-identical scripts.
+- Declare a base `special_ability()` returning 1 so subclasses are truly optional and
+  never crash the combat call.
+- Enums + magic multipliers (weapon triangle strength, 0.85 sell factor) should be
+  named constants / data, not scattered.
+
+5. RELATION TO DEATH OR TAXATION
+Largely SCRAPPED. DoT has no per-weapon item system: damage is a deterministic
+base_table[attacker_type][defender_type] × atk_hp% × (1 − terrain_def) with min 1, and
+there is NO durability (uses), NO hit/crit/dodge, NO weight, NO weapon triangle. So the
+stat block (uses/might/weight/hit/crit/worth) is out of spec and gone.
+KEEP as reference: (a) the WEAPON_TYPE enum concept — DoT needs a unit-TYPE enum
+(Line Infantry, Riflemen, Cavalry, Cannon Crew, Death Knight, Bound Golem, Arcane
+Sentinel) that keys the damage table; (b) the `special_ability(holder, target)` hook
+idea — in DoT this becomes General abilities (unlocked at L3/L5, defined in /data)
+applied as multiplicative modifiers inside the single shared damage pipeline. The
+save/load dict pattern is reusable for General persistence. Move all of this into
+/sim (RefCounted) + /data, never Node2D.

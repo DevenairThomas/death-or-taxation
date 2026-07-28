@@ -1,0 +1,31 @@
+SYNOPSIS: scenes/events/level_3/L3_event_part_20.gd
+
+1. CLASS
+class_name L3_Event_Part20. extends "res://scenes/events/event_base.gd" (Event_Base -> Node2D).
+A scripted pre-battle beat for Level 3 that combines a camera pan with dialogue.
+
+2. WHAT IT DOES
+Moves the battle camera to a fixed position, then plays a 3-line taunt from the pirate "Rolod" (top-positioned textbox). Demonstrates the "move camera, then talk" event choreography used to focus the player on an enemy before combat.
+
+3. FUNCTIONS
+_init():
+- Sets event_name, event_part, path (debug/serialization metadata).
+start():
+- Connects message_system "no_more_text" -> event_complete (advance to next event when dialogue ends).
+- Sets textbox position to Messaging_System.TOP.
+- Calls move_camera() (NOTE: does not start text directly; text starts after the camera finishes).
+move_camera():
+- Targets Vector2(128,240).
+- Grabs BattlefieldInfo.main_game_camera's child "Tween" node, connects its "tween_all_completed" -> enable_text_no_array, then interpolate_property(...) the camera position over 1s and start()s the tween.
+enable_text_no_array():
+- Called when the camera tween completes; runs message_system.start(dialogue).
+Callers/interactions: start() invoked by the event runner. Depends on autoloads BattlefieldInfo.main_game_camera (with a child node literally named "Tween") and BattlefieldInfo.message_system.
+
+4. POSSIBLE IMPROVEMENT
+- Uses the deprecated Godot 3 Tween API (a "Tween" child node, interpolate_property, TRANS_LINEAR/EASE_IN_OUT, tween_all_completed). Godot 4 idiom is create_tween() with tween_property() and the finished signal; the node-based Tween is removed/legacy and this is a conversion smell.
+- Camera target Vector2(128,240) is a magic number tied to a specific map layout — should be data or a named waypoint.
+- "tween_all_completed" and "no_more_text" connections are never disconnected (leak/double-fire risk); use CONNECT_ONE_SHOT.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap the class; keep the choreography requirement. This proves a DoT scene player must support at least two beat types beyond plain dialogue: a camera-move-to-point step and sequencing (do A, then on-complete do B). DoT's data-driven cutscene format should express these as ordered steps (e.g. {type: camera_pan, target}, {type: dialogue, lines}) rather than bespoke per-event Tween wiring. Camera targets become named map positions in /data. The legacy Tween usage is exactly the kind of Godot-3-ism DoT's fresh code should not reproduce.

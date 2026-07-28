@@ -1,0 +1,31 @@
+SYNOPSIS: scenes/events/world_map_events/level_4_wm_event_part_10.gd
+
+1. CLASS
+class_name Level4_WM_Event_Part10. extends World_Map_Event (-> Node).
+The overworld event that bridges into Chapter 4/5 ("The Great Fortress Line").
+
+2. WHAT IT DOES
+Final entry in the world-map-event set, same template: narrates defeating the pirates/mages, reaching shore, and heading up the main road to the Great Fortress Line, moves the Eirika token, places markers, and on narration-end transitions to Chapter Background and starts the chapter (map res://scenes/battlefield/chapter_5.tscn, id "5", title "The Great Fortress Line"). Bottom textbox.
+
+3. FUNCTIONS
+_init():
+- text_array = 3 narration lines.
+- Connects "Eirika/Eirika Tween" tween_completed -> after_eirika_move, "Message System" no_more_text -> after_text.
+- set_position(Messaging_System.BOTTOM).
+- Appends castle, fort, village waypoints (shared magic Vector2s).
+run():
+- Sets Eirika token to eirika_initial, awaits 2s, starts narration, WorldMapScreen.move_eirika(eirika_final, 3).
+build_map():
+- Places castle and fort waypoints only (village appended, not placed — same inconsistency).
+after_text():
+- Chapter-start gate: await 0.5s -> SceneTransition.change_scene_to_file(Chapter Background,0.1) -> WorldMapScreen.exit() -> await scene_changed -> current_scene.start("5","The Great Fortress Line", level4, 2) -> queue_free(). (local var is named level4 but holds chapter_5.tscn.)
+Interactions: autoloads WorldMapScreen (node paths), SceneTransition (+scene_changed), Messaging_System.
+
+4. POSSIBLE IMPROVEMENT
+- Same duplication, legacy Tween-node API, hardcoded node paths, magic values, signals-in-_init concerns as the other three.
+- Misleading variable name (var level4 = chapter_5.tscn) — naming that lies about content.
+- village appended-but-unplaced again.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap. Completes the four-file duplicate set; nothing here is uniquely worth porting. For DoT this is one more /data mission entry (intro lines, markers, token move, handoff to map path) driven by a single generic runner. Reference value: confirms the campaign is a fixed linear chain of mission-select/cutscene -> battle handoffs, which maps directly onto DoT's Map1 -> camp -> Map2 -> camp -> Map3 flow. In DoT the "start next chapter" handoff routes through the camp screen (souls/level-up/revival/farming) between missions rather than straight overworld-to-battle, so the data model must place a camp step between mission entries.

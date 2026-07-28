@@ -1,0 +1,27 @@
+FILE: engine/tests/new_event_system.gd
+
+1. CLASS
+No class_name. Extends Node2D. A prototype/"TEST" rewrite of the cutscene event system — a data-driven event queue interpreter (only camera-move is actually wired up).
+
+2. WHAT IT DOES
+Represents cutscene beats as data tuples (event arrays) enumerated by an EVENT_NAMES enum, queues them, and processes them one at a time, advancing when the previous beat signals done. Only MOVE_CAMERA is implemented; the rest are stubs. It listens to the camera's Tween completion to know when a camera move finished. This is the intended replacement for the Node-per-event events_system.gd approach.
+
+3. FUNCTIONS
+- _ready(): connects self.event_done -> parse_event, and connects BattlefieldInfo.main_game_camera.get_node("Tween").tween_all_completed -> event_done (so a finished tween drives the next beat). Depends on TweenCompat providing tween_all_completed.
+- start(all_events_array): enqueues each event via add_to_queue.
+- parse_event(event): if queue empty emit all_events_done; else match event[0]: MOVE_CAMERA -> set_debug_info + move_camera(event[2..4]). Only one case handled.
+- move_camera(starting, ending, time): calls camera Tween.interpolate_property + start (via TweenCompat), enables the camera.
+- move_units(array): sets BattlefieldInfo.movement_system_cinematic.is_moving = true (stub-ish; ignores its arg).
+- start_dialogue / start_combat_btn_units / move_cursor / hide_unit / show_unit: empty stubs for planned beat types.
+- event_complete(): emits event_done.
+- add_to_queue(event) / remove_event(event): queue ops (remove pops front).
+- set_debug_info / reset_debug_info: track current_event_name/is_running for debugging.
+Signals: event_done, all_events_done. Enum EVENT_NAMES {MOVE_CAMERA, MOVE_ACTOR, DIALOGUE, COMBAT, MOVE_CURSOR, HIDE_UNIT, SHOW_UNIT}.
+
+4. POSSIBLE IMPROVEMENT
+- Mostly stubs — a design sketch, not finished. parse_event never dequeues in the shown code (it reads event but the queue isn't popped in the MOVE_CAMERA path), and it's driven by an externally-passed event yet also by tween completion; the control flow is half-formed.
+- Tightly bound to BattlefieldInfo camera/Tween/movement_cinematic globals and to the TweenCompat shim.
+- Event tuples are positional arrays (event[2], event[3]...) — opaque; use typed dictionaries/resources.
+
+5. RELATION TO DEATH OR TAXATION
+Keep the direction, this is the better template. DoT wants cutscenes data-driven (beats in /data, zero code to add a scene) and interpreted by a director — exactly this pattern, done properly. Replace positional arrays with /data records; the director is a mostly-pure sequencer emitting signals the /scenes + VN textbox consume. Drop the TweenCompat dependency (use native Godot 4 tweens in the view). Implement the missing beat types (DIALOGUE for the VN textbox, MOVE_ACTOR, COMBAT hook into the deterministic skirmish resolver, cursor/show/hide). Remember: dead Generals still appear in cutscenes, no death-variant scenes. This file is a prototype, not tested code, despite living under tests/. Good conceptual seed for DoT's mission/cutscene flow.

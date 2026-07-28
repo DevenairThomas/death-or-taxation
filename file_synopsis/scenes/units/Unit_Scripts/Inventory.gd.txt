@@ -1,0 +1,24 @@
+FILE: scenes/units/Unit_Scripts/Inventory.gd
+
+1. CLASS
+class_name Unit_Inventory, extends Node2D. Manages one unit's item/weapon inventory. Instanced from Inventory.tscn by Battlefield_Unit._ready() and added as child "Inventory"; item objects are added as its children.
+
+2. WHAT IT DOES
+Stores up to MAX_INVENTORY=6 items, tracks which weapon is currently_equipped, and derives the unit's attack/heal range envelope (MAX/MIN_ATTACK_RANGE, MAX/MIN_HEAL_RANGE) from the equipped-usable items. It knows usable_weapons (the weapon types this class may wield) and auto-equips the best legal weapon on add/remove. Heavily coupled to the Item class enums (Item.WEAPON_TYPE, Item.ITEM_CLASS).
+
+3. FUNCTIONS
+- add_item(item): Rejects if inventory full (prints a placeholder "send to convoy" message, does nothing). Otherwise adds item as child + to the array, sets item.is_usable_by_current_unit by scanning usable_weapons; for a usable healing MAGIC item it widens the heal-range envelope and auto-equips if nothing equipped; for a usable non-consumable non-healing weapon it widens the attack-range envelope and auto-equips; consumables are always marked usable. Called by every unit's _ready (e.g. Enemy Soldier adds an Iron Lance).
+- remove_item(item): Unequips if it was equipped, erases from array, queue_free()s the item, then recomputes attack/heal ranges by rescanning remaining items and re-equips the next valid weapon (attack preferred, then healing), falling back to $Unarmed.
+- remove_do_not_delete_item(item): Same as remove_item but remove_child() instead of queue_free() (keeps the item alive, e.g. for trading/convoy transfer).
+- clear_inventory(): Resets equipped + ranges, frees all children except "Unarmed", clears the array — used when loading units.
+- set_unarmed(): Equips the $Unarmed node.
+
+4. POSSIBLE IMPROVEMENT
+- The range-recompute logic in remove_item / remove_do_not_delete_item is duplicated and buggy: the min-range and usability checks reference the outer `item` (the removed one) instead of `inv_item` inside the loop, so MIN ranges and usability gate on the wrong object. Extract one correct recompute_ranges() helper.
+- The equip-next loop overwrites current_item_equipped on every matching iteration (last match wins, not first) and only guards `!= null`, so ordering is effectively arbitrary.
+- "Full inventory" path just prints and silently drops the item — no return value / signal.
+- Deep coupling to Item enums via long boolean chains; encode item behavior polymorphically on Item instead.
+- Extends Node2D though it renders nothing — should be a logic object.
+
+5. RELATION TO DEATH OR TAXATION
+MOSTLY SCRAP; keep a thin idea. DoT is Advance-Wars skirmish math: damage is a fixed base_table[attacker][defender] lookup, so units do not carry FE weapons whose stats feed a combat formula, and there is no weapon triangle, durability, convoy, or trading (trading was FE flavor; inventory management is not a DoT pillar). The MAX/MIN attack-range derivation is the one genuinely useful piece — DoT units still have an attack range (min/max) for direct vs. ranged, but that range is a property of the unit type in /data, not derived from carried weapons. So: SCRAP the inventory/convoy/equip/heal-item system; KEEP "unit has a min/max attack range" as a data field on the sim unit. Healing likewise should be a unit ability (data-driven), not an equipped item. If any item-like consumables survive, they are pre-battle/between-mission economy (souls), never mid-battle inventory.

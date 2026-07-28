@@ -1,0 +1,49 @@
+SYNOPSIS: scenes/gui/Trade/Trade Screen.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The trade-partner picker: choose which adjacent ally to trade items with,
+   then open the Trade Items Screen.
+
+2. WHAT IT DOES
+   First step of the FE trade flow. Finds all allied units on tiles adjacent to
+   the current unit, shows the selected partner's portrait/name and their item
+   list, lets the player cycle partners with a cursor, and on confirm opens the
+   Trade Items Screen for the chosen unit. Uses BattlefieldInfo.current_Unit_
+   Selected, the unit "Cursor Select" highlight nodes, and the item slot widgets.
+
+3. FUNCTIONS
+   - _ready(): reslot_item_array to cache the six slot nodes.
+   - start(): Shows "Select Unit", clears and repopulates list_of_tradable_units
+     by scanning current tile's adjCells for ally-occupied tiles, moves slots off
+     screen, resets selection, builds the menu for the first partner, starts Timer.
+   - build_menu(unit): Positions the panel, turns off every partner's Cursor
+     Select, reslots, moves slots off screen, sets the partner portrait and name,
+     lays out one item slot per inventory item, places the bottom frame, and
+     turns on the selected partner's Cursor Select highlight. (Shadows the loop
+     var name "unit" with the outer parameter.)
+   - move_off_screen(): Parks the six item slot nodes off screen.
+   - reslot_item_array(): Rebuilds the six "Slot N" node references.
+   - _input(event): When active: accept -> process_selection; cancel -> go_back;
+     up/right -> previous partner; down/left -> next partner (wrapping), each
+     rebuilding the menu.
+   - process_selection(): Opens "Trade Items Screen".start(selected partner) and
+     turns this screen off.
+   - turn_off(): Deactivates, hides "Select Unit", clears all partner cursors.
+   - go_back(): turn_off then emits unit_movement_system "action_selector_screen".
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - Rename the inner loop variable in build_menu (shadows the parameter and is
+     confusing/bug-prone).
+   - Six hard-coded slots again; use a container of instanced rows.
+   - The adjacency scan and "who can I trade with" belongs in a sim/util query,
+     not the widget, so it is testable and reusable.
+   - Cursor-highlight bookkeeping (toggling every unit's Cursor Select) is spread
+     across screens; centralize selection highlighting.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. Same rationale as Trade Items Screen: DoT has no in-battle item trading.
+   The adjacency-scan pattern ("units adjacent to this one") is a generally useful
+   grid query and should exist in /sim for DoT (used by AI threat and any adjacency
+   rules), but this whole trade-partner UI is cut. Remove for the prototype.

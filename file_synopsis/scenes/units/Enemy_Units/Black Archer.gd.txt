@@ -1,0 +1,19 @@
+FILE: scenes/units/Enemy_Units/Black Archer.gd
+
+1. CLASS
+No class_name. extends Battlefield_Unit. Concrete enemy unit definition (bow-user / archer).
+
+2. WHAT IT DOES
+Spawn config for an enemy archer: base setup, idle anim, red-soldier portrait/mugshot, a mixed loadout (Iron Lance + Iron Sword + Iron Bow, but only BOW listed as usable), and the archer combat scene. Notably it does NOT set UnitMovementStats.is_ally=false (unlike its siblings) — a likely omission.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation="Idle"; sets unit_portrait_path and unit_mugshot (mugshot assigned twice) to red soldier portrait; appends Item.WEAPON_TYPE.BOW to usable_weapons; adds preloaded Iron Lance, Iron Sword, and Iron Bow via UnitInventory.add_item(); combat_node = preload("Black Archer Combat.tscn"). Touches Battlefield_Unit, $Animation, UnitInventory, Item enum.
+
+4. POSSIBLE IMPROVEMENT
+- Missing UnitMovementStats.is_ally=false — this enemy may be treated as an ally by movement/AI gating. Bug.
+- unit_mugshot assigned twice (redundant lines).
+- Carries a Lance and Sword it cannot use (only BOW in usable_weapons) — dead inventory, wasted range calc; either make them usable or remove.
+- Content-as-code; move to data.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE to data; keep the ranged archetype. A ranged unit (min>1 attack range, cannot counter at melee) is a meaningful DoT tactics piece — maps to a Crown skirmisher/rifle unit or a ranged mage construct. In DoT this is a /data unit-type with an explicit min/max attack range (the one useful concept from FE inventory), a damage-table row, tier, and faction; the multi-weapon loadout is dropped. Ranged-vs-melee counter behavior matters for DoT's AI target scoring (expected_counter term: a ranged attacker outside the defender's range takes no counter), so preserve range as data the deterministic damage/counter functions read.

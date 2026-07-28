@@ -1,0 +1,31 @@
+SYNOPSIS: scenes/events/world_map_events/level_2_wm_event_part_10.gd
+
+1. CLASS
+class_name Level2_WM_Event_Part10. extends World_Map_Event (-> Node).
+The overworld event that bridges into Chapter 2/3 ("Fort Merceus").
+
+2. WHAT IT DOES
+Near-identical structure to Level1_WM_Event_Part10 with different content: narrates the peace negotiations and Eirika being sent to Fort Merceus during a storm, moves the Eirika token, places markers, and on narration-end transitions to Chapter Background and starts the chapter (map res://scenes/battlefield/chapter_3.tscn, id "2", title "Fort Merceus"). Bottom-positioned textbox. Another world-map-event -> chapter-start gate.
+
+3. FUNCTIONS
+_init():
+- text_array = 4 narration lines (one contains a "\n" manual line break).
+- Connects "Eirika/Eirika Tween" tween_completed -> after_eirika_move and "Message System" no_more_text -> after_text.
+- set_position(Messaging_System.BOTTOM).
+- Appends castle, fort, village waypoints (same magic Vector2s as Level 1; note build_map here only places castle+fort, NOT village).
+run():
+- Sets Eirika token to eirika_initial, awaits 2s, starts narration, WorldMapScreen.move_eirika(eirika_final, 3).
+build_map():
+- Places castle and fort waypoints only (village array populated in _init but never placed — minor inconsistency vs Level 1).
+after_text():
+- Chapter-start gate: await 0.5s -> SceneTransition.change_scene_to_file(Chapter Background,0.1) -> WorldMapScreen.exit() -> await scene_changed -> current_scene.start("2","Fort Merceus", level3, 2) -> queue_free().
+Interactions: same autoloads as Level 1 (WorldMapScreen node paths, SceneTransition + scene_changed, Messaging_System).
+
+4. POSSIBLE IMPROVEMENT
+- Massive copy-paste from Level 1 (only text, positions, target map, chapter id/title differ) — the definitive case for extracting one parameterized/data-driven overworld event instead of a class per level.
+- village waypoint appended but never placed: dead data / silent inconsistency a data schema + test would catch.
+- Same legacy Tween-node API and hardcoded node paths as Level 1.
+- Signals wired in _init; magic Vectors/timings; no docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap. This file plus Level 1/3/4 are four copies of the same logic differing only in content — the single strongest justification for DoT's data-driven cutscene/campaign flow. In DoT the four become four /data mission entries fed to one generic overworld+cutscene runner that plays the VN stub and transitions mission-select -> cutscene -> deployment -> battle. Keep only as reference for the per-mission payload shape: narration lines, marker set, token move params, and the (chapter id, title, map path) handoff. The village-never-placed bug also argues for validating cutscene data in /tests, which DoT's architecture explicitly supports.

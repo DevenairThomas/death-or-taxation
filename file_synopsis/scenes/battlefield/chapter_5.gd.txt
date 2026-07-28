@@ -1,0 +1,29 @@
+SYNOPSIS: scenes/battlefield/chapter_5.gd
+
+FILENAME NOTE: Named chapter_5, but the CONTENT is the Chapter 4 mission ("4\nThe Great Fortress Line", enemy commander "Byzantine", objective Victory_Checker.SEIZE, event L4_Event_Part10, +1500 money, prep screen). Chapter file names are offset from their content numbers. This is the only in-scope chapter using the SEIZE objective.
+
+1. CLASS
+   extends Node2D (no class_name). Per-chapter/mission setup for Chapter 4, using a SEIZE (capture-the-HQ-tile) win condition and the preparation phase.
+
+2. WHAT IT DOES
+   Configures the Chapter 4 mission (camera/cursor at origin, music, SEIZE victory, enemy commander, single L4 event), adds 1500 money, reparents the party, and runs the prep phase. Provides next_level(), start_battle(), preperation_mode(). Structurally near-identical to chapter_4.gd but with victory_condition_state = Victory_Checker.SEIZE and no explicit save-guard around adding money/prep.
+
+3. FUNCTIONS
+   _ready(): registers as level_container; sets camera (0,0) and cursor (0,0); sets music; victory_system.clear() -> victory_condition_state = Victory_Checker.SEIZE; caches enemy_commander["Byzantine"]; clears event_system, adds L4_Event_Part10; if not loading, money += 1500; reparents player party into the level; calls preperation_mode(); makes allies visible; clears container modulate; attempts to free a stale chapter node (note: the guard uses a malformed path "root/Level/Chapter 4" missing the leading slash, so the free likely never fires).
+   next_level(): reparents surviving allies back to the y-sort. (Unlike the other chapters, this stub does NOT stop music, fade, or trigger a SceneTransition — it appears incomplete, consistent with this being the last currently-authored playable chapter / where the reference project stops.)
+   start_battle(): start events queue + play music.
+   preperation_mode(): same as chapter_4 — opens preparation_screen, shows cursor + HUD, sets turn_manager.turn = WAIT, sets all ally units to MOVE for placement.
+
+4. POSSIBLE IMPROVEMENT
+   - next_level() is an incomplete stub (no transition) — a TODO presented as a function; either finish or remove.
+   - `has_node("root/Level/Chapter 4")` is a malformed absolute path (missing leading "/"), a latent bug.
+   - Same Callable-misuse in preperation_mode() as chapter_4 (`Callable(chapter_title, victory_text).bind(...)`).
+   - Duplicated prep/next_level boilerplate across chapter_4 and chapter_5 begs a shared base class or, better, data-driven missions.
+   - SEIZE win condition here has no visible tile/HQ wiring in this script — it relies entirely on Victory_Checker's internals.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE — becomes a data-defined mission. This is the key reference for DoT's THIRD prototype objective: SEIZE == DoT's "seize-HQ-tile" win condition. Port the SEIZE evaluation into /sim's objective evaluator (a unit standing on the designated HQ tile ends the mission), emitting mission_complete via BattleSim signals; it must run headless and be unit-tested. As with the other chapters:
+   - Battle budget (money) is per-mission, no carry-over; the += 1500 accumulation pattern is forbidden in DoT.
+   - Souls awarded only on completion, spent only between missions.
+   - Keep the prep/deploy flow as view; deployment/budget rules in /sim.
+   - SCRAP the per-map .gd approach; the incomplete next_level here shows why hand-written chapter scripts rot.

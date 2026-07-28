@@ -1,0 +1,19 @@
+FILE: scenes/camera/movement_camera.gd
+
+1. CLASS
+- No class_name. extends Camera2D.
+- A secondary/auxiliary battlefield camera (a minimal companion to MainCamera). Not an autoload; a scene node. Does not register itself on BattlefieldInfo.
+
+2. WHAT IT DOES
+- On load, simply clamps its own scroll limits to the map size. It is a bare-bones camera whose only job is to bound itself to the loaded map dimensions (likely used for a specific view such as unit-movement framing).
+
+3. FUNCTIONS
+- _ready(): Sets limit_bottom = BattlefieldInfo.map_height * Cell.CELL_SIZE and limit_right = BattlefieldInfo.map_width * Cell.CELL_SIZE. Depends on BattlefieldInfo.map_width/map_height and Cell.CELL_SIZE. No signals, no other logic.
+
+4. POSSIBLE IMPROVEMENT
+- Reads BattlefieldInfo.map_* in _ready(), which assumes the map is already loaded — racy; should react to a map-loaded signal (as MainCamera does via _on_Level_mapInformationLoaded) instead of assuming order.
+- No top/left limits set (only bottom/right); may allow negative scroll.
+- Overlaps heavily with MainCamera; consider a shared base or a single parameterized camera.
+
+5. RELATION TO DEATH OR TAXATION
+- KEEP but likely MERGE. Trivial view-layer helper; a DoT battlefield probably needs only one clamped camera (MainCamera-style). Fold this bounding logic into the single DoT battle camera and drive limits from a map-loaded signal rather than reading a global at _ready time. Pure view; no sim implications.

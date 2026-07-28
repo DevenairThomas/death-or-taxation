@@ -1,0 +1,24 @@
+SYNOPSIS — scenes/events/level_2/level_2_spawn.gd
+
+1. CLASS
+No class_name. extends Spawn_Event (which itself extends Event_Base and connects to turn_manager.enemy_turn_increased).
+An unfinished/stub Level-2 reinforcement-spawner using the alternate Spawn_Event base rather than the mid_level_event pattern.
+
+2. WHAT IT DOES
+Almost nothing yet — a skeleton. It overrides Spawn_Event.process_spawning_event to react to enemy turns, with empty branches for "spawn on even turns" and "move Vezarius back on turn 2". All the real logic is `pass`. It represents an abandoned/alternative approach to what L2_Event_Mid_10/20 ended up implementing directly.
+
+3. FUNCTIONS
+- var spawn_points = BattlefieldInfo.spawn_points: cached at load (note: captured as a field initializer, so it binds whatever value exists when the script instance is created).
+- process_spawning_event(turn_number): override of Spawn_Event's virtual, invoked via the enemy_turn_increased signal connected in Spawn_Event._ready. On even turn_number, loops over spawn_points but only `pass` (no spawn). On turn_number == 2, `pass` (would move Vezarius back). Effectively a no-op.
+- done_spawning_enemies(): self.queue_free() — a teardown hook (shadows/duplicates Spawn_Event.done_spawning_enemies, which does the same).
+
+Coupling: Spawn_Event (base) -> turn_manager.enemy_turn_increased signal; BattlefieldInfo.spawn_points. No dialogue, no message_system, no camera.
+
+4. POSSIBLE IMPROVEMENT
+- It is a TODO-stub presented as a file — empty loop bodies and a redundant override that just re-freezes the base behavior. Either implement or delete (dead code per the DoT conventions this repo now follows).
+- Duplicates Spawn_Event.done_spawning_enemies verbatim — pointless override.
+- Two competing spawn mechanisms exist in L2 (this Spawn_Event subclass vs. the mid_level_event L2_Event_Mid_* scripts); the reinforcement logic actually lives in the latter, leaving this one orphaned/confusing.
+- Field-initializer capture of BattlefieldInfo.spawn_points is fragile (evaluation-order dependent).
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP entirely. This is dead scaffolding for turn-based reinforcement spawning that was superseded by the inline mid-event scripts — a maintenance smell, not a design to keep. Its only value is as evidence that the reference project itself struggled with two parallel event/spawn abstractions (Spawn_Event vs mid_level_event), which is precisely the ambiguity DoT resolves by having ONE data-driven mission-event schedule (turn-triggered spawns/scenes defined in map data, run by one generic runner). The "spawn on turn N / even turns" intent maps directly to data-defined, deterministic (no-RNG) reinforcement entries in a mission file. Nothing here is portable code.

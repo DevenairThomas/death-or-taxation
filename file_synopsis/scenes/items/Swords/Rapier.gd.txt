@@ -1,0 +1,34 @@
+SYNOPSIS: scenes/items/Swords/Rapier.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete weapon
+script for Rapier.tscn — the classic FE "lord's unsellable starter blade."
+
+2. WHAT IT DOES
+_ready() sets uses/max_uses 30, might 7, weight 5, hit 95, crit 10, range 1-1, strong_against
+AXE, icon rapier.png, weapon_string_name "sword". Distinctive stat: worth = -10000, a
+sentinel making the sell value effectively negative so the weapon cannot be sold (FE story
+weapons are non-sellable). Not in Item_Dict.all_items (content not registered by default).
+
+3. FUNCTIONS
+- _ready(): assigns stats; the negative worth is the notable line.
+- special_ability(_holder, _target): returns 1 (no bonus). In real FE the Rapier is
+  effective vs cavalry/armor; that effectiveness is NOT implemented here (unlike Iron Bow,
+  which does implement its anti-flier bonus). So this is an unfinished/placeholder ability.
+- draw_attack_sound() / put_away_attack_sound(): standard draw/put-away SFX from
+  BattlefieldInfo.weapon_sounds.
+
+4. POSSIBLE IMPROVEMENT
+- worth = -10000 is a magic sentinel for "unsellable"; use an explicit `sellable: bool`
+  flag instead, and guard get_selling_cost accordingly.
+- Effectiveness vs cav/armor should live in special_ability (as Iron Bow does) or be
+  dropped; currently the item's flavor promises a bonus the code doesn't deliver.
+- Convert to data/Resource like the other weapons.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED as an item. Two transferable ideas: (1) "unsellable/locked" is analogous to DoT's
+locked, non-tradeable Generals — but DoT has no shop-sell economy for units (currency is
+souls spent between missions), so the mechanic doesn't map directly. (2) Type-effectiveness
+(Rapier vs cavalry) is exactly what DoT expresses through the base damage TABLE keyed by
+unit type — deterministic, in /data, not as a per-weapon multiplier. Delete the item;
+"anti-cavalry" becomes a table row, not a weapon.

@@ -1,0 +1,56 @@
+SYNOPSIS: scenes/walkable/Eirika Walk.gd
+
+1. CLASS
+extends CharacterBody2D. class_name Eirka_Walk (note the misspelling "Eirka"). The
+player-controlled avatar in the walkable camp/overworld map. Defines enum STATUS {CHAT, UI,
+WALK} and exports sprite_dir/move_dir/SPEED.
+
+2. WHAT IT DOES
+This is the player character controller for the free-roam camp scene: it reads directional
+input, moves Eirika around with Godot 4 physics, animates her facing direction, clamps her to
+the map bounds, and lets her talk to NPCs she's standing next to. A small state machine
+(WALK/CHAT/UI) gates input so movement stops during dialogue or menus. It is the interactive
+counterpart to the passive NPC walk scripts.
+
+3. FUNCTIONS
+_ready() — plays "Idle" animation; connects to BattlefieldInfo.message_system's "no_more_text"
+  signal -> _back_to_walk (so control returns to WALK when dialogue ends).
+set_sprite_direction() — maps move_dir Vector2 to a sprite_dir string
+  (Left/Right/Up/Down/Idle) via match.
+animation_switch() — selects the animation to play based on sprite_dir, using the
+  "<dir> no sound" variant for movement and plain "Idle" when still (avoids re-triggering).
+_input(event) — resets move_dir/SPEED each event; debug action prints position. In STATUS.WALK
+  it reads ui_left/right/up/down into move_dir, doubles SPEED while "L button" held (run), and
+  on ui_accept, if a current_chat_unit is set, calls that unit's start_dialogue(), switches to
+  STATUS.CHAT, and awaits a 0.2s timer. In CHAT/UI states input is ignored (movement frozen).
+_physics_process(delta) — sets velocity = move_dir.normalized() * SPEED, move_and_slide(),
+  then set_sprite_direction()/animation_switch()/clamp_eirika().
+clamp_eirika() — clamps position.x/y to [0, Test_Walk_Map.MAP_LIMIT.x/.y], keeping her on-map.
+_on_Area2D_body_entered(body) — if the entered body has_method("start_dialogue"), records it as
+  current_chat_unit (the NPC she can talk to).
+_on_Area2D_body_exited(body) — clears current_chat_unit.
+_back_to_walk() — sets current_status = STATUS.WALK (dialogue-end callback).
+Autoloads/classes touched: BattlefieldInfo (message_system signal), Test_Walk_Map (MAP_LIMIT),
+NPC bodies exposing start_dialogue().
+
+4. POSSIBLE IMPROVEMENT
+- Movement input is read in _input() but resets move_dir every event, which is fragile for
+  held-key movement; polling in _physics_process (Input.get_vector) is the Godot 4 idiom and
+  smoother.
+- class_name is misspelled "Eirka_Walk"; the whole class is protagonist-specific though the
+  logic is generic — a reusable PlayerWalker with a configurable name would be cleaner.
+- Depends on Test_Walk_Map.MAP_LIMIT global const for clamping (see that file's note); bounds
+  should be injected/per-map.
+- exit handler clears current_chat_unit unconditionally (ignores which body left) — bug if two
+  NPCs overlap trigger areas.
+- Reaches into BattlefieldInfo.message_system directly; a local signal wiring would decouple.
+
+5. RELATION TO DEATH OR TAXATION
+Camp/overworld player controller, not tactical-grid logic — outside the grid-builder mandate.
+For DoT this real-time CharacterBody2D free-roam is likely SCRAP for the prototype: DoT's
+between-missions layer is a camp/prep screen (soul spending, level/revive Generals, VN
+dialogue) that can be menu/VN-driven without a walking avatar, and DoT is gray-box with no art.
+The reusable idea is only the interaction pattern (proximity -> "talk" -> hand control to a
+dialogue/VN system -> return control on end) which DoT's VN textbox flow can mirror via
+signals. If DoT ever adds a walkable camp, rebuild generically (no protagonist-hardcoded class,
+data-driven bounds, Input.get_vector, signal-decoupled dialogue). Nothing here feeds /sim.

@@ -1,0 +1,29 @@
+SYNOPSIS: scenes/items/Lance/Silver Lance.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete weapon
+script for Silver Lance.tscn.
+
+2. WHAT IT DOES
+A premium high-might lance. _ready() sets uses/max_uses 20 (low durability — silver-tier
+FE weapons wear fast), might 14 (high), weight 10, hit 75, crit 0, range 1-1, worth 1200,
+weapon_type LANCE, strong_against SWORD, icon silverLance.png, weapon_string_name "lance".
+Listed in Item_Dict.all_items. The high-power / low-uses / expensive archetype.
+
+3. FUNCTIONS
+- _ready(): assigns stats; note low max_uses 20 and high might 14.
+- special_ability(_holder, _target): returns 1 (no bonus); damage-multiplier hook, params
+  ignored.
+- draw_attack_sound() / put_away_attack_sound(): standard draw/put-away SFX from
+  BattlefieldInfo.weapon_sounds.
+
+4. POSSIBLE IMPROVEMENT
+- Data belongs in a Resource/data table.
+- The design axis here (power traded for durability + cost) is entirely a numeric tuning
+  knob; better represented as data rows than as bespoke scripts.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED. The Silver Lance's whole identity — durability (20 uses) and shop cost (1200) —
+sits on two axes DoT removed: there is NO weapon durability and the between-mission economy
+uses souls, not weapon gold. Higher raw power maps to a stronger unit-TYPE row in the
+deterministic table, applied with hp% and terrain. No literal reuse.

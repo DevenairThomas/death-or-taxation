@@ -1,0 +1,20 @@
+FILE: scenes/units/Unit_Scripts/Ally Combat Script.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (i.e. it is a Combat_Unit subclass). The combat-cutscene actor script for a PLAYER/ally unit in the zoomed-in duel view.
+
+2. WHAT IT DOES
+Specializes the shared Combat_Unit combat-animation glue for the ally side. It declares the play_enemy_dodge_anim signal (the base class emits it but does not declare it) and overrides the miss/death hooks. Almost all combat SFX/shake behavior is inherited unchanged from Combat Unit.gd.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: Emitted so the OPPOSING (enemy) actor plays its dodge animation when this ally's attack misses.
+- play_miss_sound(): Plays a random "Attack Miss N" from BattlefieldInfo.battle_sounds and emits play_enemy_dodge_anim. Overrides the base (which is otherwise identical) mainly so the correctly-declared signal exists on this node.
+- death_anim_signal(): Emits death_anim_done (inherited signal) — called from an animation track when the ally's death animation ends, so combat resolution can continue.
+
+4. POSSIBLE IMPROVEMENT
+- This file exists almost entirely to declare a signal the base already emits — fix the signal ownership in Combat Unit.gd and most of this becomes redundant.
+- play_miss_sound and death_anim_signal are near-verbatim copies of the base; only the ally-vs-enemy dodge direction differs. A single parameterized base (who-dodges) removes the whole ally/enemy script split.
+- No docstrings; relies on animation-track method calls, which are invisible from the code.
+
+5. RELATION TO DEATH OR TAXATION
+LARGELY SCRAP as written; keep only a trimmed view actor. The entire miss/dodge branch is invalid in DoT — combat is deterministic with no dodge/miss, so play_miss_sound and play_enemy_dodge_anim are removed. What remains is a legitimate /scenes view actor: an ally-side placeholder (ColorRect gray-box) that plays attack/hit/death SFX and fires death_anim_done, driven by sim signals (unit_damaged/unit_destroyed) rather than by "current unit" globals and AnimationPlayer call tracks. Given DoT's tiers, the "ally" combat actor should render Squads/Singles/Generals differently, and Generals get named/quoted treatment (before_battle/death sentences), but this is all cosmetic and rule-free per the /scenes contract.

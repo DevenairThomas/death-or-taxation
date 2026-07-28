@@ -1,0 +1,24 @@
+FILE: engine/save_system/save_load_system.gd
+
+1. CLASS
+class_name SaveLoadSystem. Extends Node. Serializes/deserializes an in-progress battle to a single JSON-lines .save file and rebuilds the live scene from it.
+
+2. WHAT IT DOES
+On save it writes money, current level scene path, turn numbers, all player/enemy unit node data, remaining events, elapsed play time, and the convoy. On load it re-instantiates the level scene, clears and rebuilds every unit (including inventory, stats, movement stats, action status, battle quotes, and AI child), reattaches them to the grid and to BattlefieldInfo dictionaries, restores events/time/convoy, then resumes gameplay or enters prep mode.
+
+3. FUNCTIONS
+- save_game(): opens res://save/save_game_file.save (WRITE) and calls the per-section save_* helpers in order, then emits saving_complete.
+- load_game(): guards on file existence; reads each JSON line into saved_data[]; then, section by section, restores BattlefieldInfo.money, instantiates the level and adds it under a saved parent path, sets level_container.enemy_commander_name, clears event_system, restores turn_manager numbers, frees and rebuilds ally_units/enemy_units, rebinds each unit's currentTile/occupyingUnit on BattlefieldInfo.grid, rebuilds inventory via item load(), sets UnitStats/UnitMovementStats/UnitActionStatus (greyscale if DONE), restores battle quotes, recreates the AI node via ai_object.set_ai(type, cellA, cellB), re-points BattlefieldInfo.Eirika and enemy_commander, reloads starting/mid events, StatusScreen.saved_time, and convoy.load_convoy(); finally starts the event queue or preperation_mode() and emits loading_complete.
+- save_player_units(save_game_file): iterates current_level Node2D children and y_sort_player_party children, skips non-instanced or save()-less nodes, calls each unit's own save() and aggregates.
+- save_current_events / save_convoy / save_money / save_current_play_time / save_turn_number / save_current_level: each JSON-stringifies its slice (event_system.save(), convoy.save(), money, StatusScreen play time, turn numbers, level scene path+parent+commander) as one stored line.
+Touches: BattlefieldInfo (money, grid, ally_units, enemy_units, Eirika, enemy_commander, level_container, current_level, event_system, turn_manager, convoy, y_sort_player_party), StatusScreen, Unit_Action_Status, Cell.CELL_SIZE, and each unit/item/event/AI node's own save/load contract. Signals: loading_complete, saving_complete.
+
+4. POSSIBLE IMPROVEMENT
+- Extremely coupled to concrete BattlefieldInfo layout and hardcoded identifiers ("Eirika"); load order is positional (saved_data[0..6]) and brittle — key the sections by name.
+- No error handling on JSON.parse / FileAccess.open failures; a malformed line silently produces null data.
+- Mixed responsibilities: scene reconstruction, grid rebinding, and AI wiring are all inline; extract per-entity restorers.
+- float->int coercion scattered through the loader (typeof == TYPE_FLOAT checks) signals the schema should store typed data or use var_to_bytes/Resource serialization instead of hand-rolled JSON.
+- Commented-out AI-restore block left in place; dead code.
+
+5. RELATION TO DEATH OR TAXATION
+Change substantially. DoT still needs persistence, but of two very different kinds that must not cross: SOULS + General roster/levels (persistent, between-missions) vs. per-mission BATTLE BUDGET/deployment (transient). This monolith conflates a live-battle snapshot with meta progression. In the DoT architecture, sim state is pure data (RefCounted graphs) that can be serialized straight from /sim without walking scene nodes at all — save the sim model, let /scenes rebuild the view from signals. Drop the scene-node-centric save() contract and the hardcoded protagonist name (units come from /data). Keep the idea of a resumable mission and a persistent meta-save; rebuild it around the sim/view split so saving never needs get_node.

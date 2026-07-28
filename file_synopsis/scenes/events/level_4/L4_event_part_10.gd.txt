@@ -1,0 +1,27 @@
+SYNOPSIS: scenes/events/level_4/L4_event_part_10.gd
+
+1. CLASS
+class_name L4_Event_Part10. extends "res://scenes/events/event_base.gd" (Event_Base -> Node2D).
+A single scripted pre-battle dialogue beat for Level 4.
+
+2. WHAT IT DOES
+Plays a 5-line Eirika/Seth conversation (bottom textbox) that sets up the Level 4 map: reaching the capital, the Great Fortress Line, and the objective to capture the support village. Pure dialogue, no camera work. Structurally identical to L3_Event_Part10 with different content.
+
+3. FUNCTIONS
+_init():
+- Sets event_name (mislabeled "Level 3 Before Battle Event" — copy-paste metadata bug in a level_4 file), event_part, path.
+start():
+- Connects message_system "no_more_text" -> event_complete (advance when dialogue ends).
+- Sets textbox position to Messaging_System.BOTTOM.
+- enable_text(dialogue) -> BattlefieldInfo.message_system.start(dialogue).
+Interactions: started by the level's event runner; depends on autoload BattlefieldInfo.message_system and its "no_more_text" signal.
+
+4. POSSIBLE IMPROVEMENT
+- Same packed "Name@portrait@text" strings as the L3 parts; use a structured line type.
+- "no_more_text" connected without CONNECT_ONE_SHOT / no disconnect — double-fire risk if reused.
+- event_name mislabels the level; metadata should be derived, not hand-typed.
+- Content (5 story lines) hardcoded in a script; belongs in data.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap as code, keep as a plain-dialogue beat template. Same role as L3_Event_Part10: it's the simplest DoT VN beat (bottom box, speakers, portraits, advance to end). In DoT this whole file collapses to a data entry consumed by one generic scene player, with portraits as colored-rect placeholders. The repeated copy-paste across L3/L4 parts (and the recurring mislabeled event_name) is itself the argument for DoT's data-driven approach: identical structure, only content differs, so content should not live in code.

@@ -1,0 +1,54 @@
+SYNOPSIS: scenes/gui/Cell/Cell.gd
+
+1. CLASS
+   class_name Cell, extends Node2D.
+   A single grid tile node. Holds terrain data, pathfinding bookkeeping, and
+   which unit is standing on it. This is the fundamental battlefield map unit.
+
+2. WHAT IT DOES
+   Represents one 16x16 map tile. Stores terrain bonuses (avoidance, defense),
+   movement cost, occupying unit, a spawn-point flag, and A*/BFS pathfinding
+   fields (hCost/gCost/fCost, adjCells, parentTile, isVisited). Positions itself
+   in world space based on grid coordinates and shows a debug coordinate label.
+   Referenced pervasively: BattlefieldInfo.grid is a 2D array of these Cells;
+   the Damage Preview, Weapon Select, Healing Select and Trade screens all walk
+   Cell.adjCells and read Cell.occupyingUnit to find targets in range.
+
+3. FUNCTIONS
+   - init(p_cellPosition, p_avoidanceBonus, p_defenseBonus, p_movementCost,
+     p_tileName): Manual constructor (called by the map builder after
+     instantiation). Copies terrain data into the cell, computes world position
+     from grid coords * CELL_SIZE, and writes the coordinate into $Label for
+     debug. Note it sets cellPosition twice (redundant lines 38-39 and 49-50).
+   - _input(_event): Toggles the debug coordinate $Label visibility on the
+     "show_coord_debug" action. Every Cell instance listens to input
+     independently (potentially hundreds of nodes each polling input).
+   - get_fCost() -> int: Recomputes fCost = hCost + gCost and returns it;
+     used by pathfinding cost comparison.
+   - getPosition() -> Vector2: Returns grid coordinate (cellPosition), not world
+     position.
+   - toString() -> String: Debug dump of tile data.
+
+4. POSSIBLE IMPROVEMENT
+   - This class mixes three concerns: pure terrain/grid data, pathfinding scratch
+     state, and a Node2D view. In Godot 4 idiom the pathfinding state should not
+     live on the tile node (it prevents reuse across concurrent searches and
+     makes the data untestable headless). Split terrain data into a plain
+     RefCounted/Resource and keep A* scratch in the search algorithm.
+   - Per-cell _input() is wasteful; a single map-level input handler should toggle
+     all debug labels via a group.
+   - Remove the duplicated cellPosition assignment; use AStarGrid2D (Godot 4) or
+     a dedicated pathfinder rather than hand-rolled BFS fields on the node.
+   - CELL_SIZE, movementCost etc. are fine as constants but terrain bonus values
+     should come from a data file, not be passed positionally.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE / SPLIT. DoT needs a grid abstraction, but the locked architecture
+   demands sim/view separation: the terrain data (defenseBonus -> DoT's
+   terrain_def used in the damage formula, movementCost, occupyingUnit) belongs
+   in /sim as a pure RefCounted grid cell with zero Node dependency so it runs
+   headless and is testable. The Node2D rendering + debug label belongs in
+   /scenes. DoT terrain contributes (1 - terrain_def) to the deterministic damage
+   formula, so the defense value MUST be a clean data field the sim reads, not a
+   view property. Avoidance is FE dodge math and is CUT (no RNG in DoT). Keep the
+   grid-coordinate/adjacency concept; scrap the mixed responsibilities.

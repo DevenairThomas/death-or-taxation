@@ -1,0 +1,32 @@
+SYNOPSIS — scenes/events/level_2/L2_event_mid_10.gd
+
+1. CLASS
+class_name L2_Event_Mid_10, extends Event_Base.
+Concrete MID-MISSION scripted event (not an intro beat) — Level 2 turn-triggered reinforcement wave. Registered as a mid_level_event, listening to turn signals rather than being popped from the intro queue.
+
+2. WHAT IT DOES
+On enemy turn 4, interrupts play: pauses UI, pans the camera to Vezarius, walks him back to his origin, plays his "we need reinforcements" dialogue, then procedurally spawns a wave of random enemy units (soldier/archer/bandit) with randomized stats at all map spawn points, then removes itself and resumes the enemy turn. On every other turn it just passes the turn transition through. This is the "scripted reinforcements on turn N" pattern.
+
+3. FUNCTIONS
+- var dialogue (Array): Vezarius's two lines.
+- var vez: cached Vezarius. var id_number = 99: counter for unique spawned-enemy identifiers.
+- _init(): caches Vezarius; connects turn_manager.enemy_turn_increased -> start_mid and turn_manager.player_turn_increased -> play_player_transition; sets path. (Note: does real work in _init, unlike intro beats whose work is in start().)
+- play_player_transition(turn_number): calls turn_manager.start_ally_transition() — passes the player turn through untouched.
+- start_mid(turn_number): the trigger gate. If turn_number != 4, just calls turn_manager.start_enemy_transition() and returns (no-op that turn). On turn 4: event_system.pause_ui(); connects movement_system_cinematic.individual_unit_finished_moving -> start_dialogue, message_system.no_more_text -> spawn_enemies, main_game_camera Tween tween_all_completed -> move_actor; calls move_camera().
+- move_camera(): tweens main_game_camera to Vector2(0,190).
+- move_actor(): paths Vezarius back to grid[0][272/16] (=grid[0][17], a coordinate written as pixel/16 arithmetic), nulls his tile, appends to unit_to_move_same_time, is_moving = true.
+- start_dialogue(unit): box TOP, enable_text(dialogue).
+- spawn_enemies(): preloads three enemy .tscn scenes; for each BattlefieldInfo.spawn_point, picks a random unit via Calculators.get_random_number(0,2), instantiates it, and for each free adjacent cell sets its AI to "Aggresive", adds it under current_level/Node2D, positions it, and fills a large UnitStats block with RANDOMIZED stats (strength/skill/speed/luck/def/res/level/health via Calculators.get_random_number), assigns tile occupancy, marks is_ally=false, gives it a unique identifier ("Enemy <id>"), and registers it in BattlefieldInfo.enemy_units. Finally erases self from event_system.mid_level_events, calls turn_manager.start_enemy_transition(), queue_free()s.
+
+Coupling: BattlefieldInfo (turn_manager/Turn_Manager, spawn_points, current_level, enemy_units, main_game_camera, movement systems, message_system, event_system), Calculators (RNG + stat helpers), enemy unit scenes. Driven by turn signals, not the intro Event_System queue.
+
+4. POSSIBLE IMPROVEMENT
+- Massive inline stat block is content-in-code and is duplicated almost verbatim in L2_Event_Mid_20.spawn_enemies — should be a data-defined enemy template + a shared spawn helper.
+- Turn gate `if turn_number != 4` hard-codes the trigger turn as a literal; should be data.
+- grid[0][272 / 16] uses raw pixel math as an index — obscure; use a named tile.
+- Doing signal wiring in _init (before the node is arguably ready) diverges from the intro beats' start() convention — inconsistent lifecycle.
+- Uses RNG heavily for spawn selection and stats.
+- No disconnects; not headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+Concept KEEP (with heavy changes), implementation SCRAP. "Trigger a scripted event/reinforcement wave when a turn counter hits N" is a legitimate mission-scripting need DoT will want — and it should be DATA: a mission data file lists turn-triggered events (spawn these units at these tiles on turn N, or play scene X). Two hard rules force rewrites: (1) DoT combat has NO RNG, so the Calculators.get_random_number stat/unit randomization is out — reinforcement units come from fixed data-defined stat blocks, not random rolls. (2) Enemy stats/AI here are FE-model (strength/skill/speed/luck/res/crit/dodge) which do not exist in DoT's Advance-Wars-style squads/singles model; the stat block is entirely replaced. Useful residue: the turn-gated interrupt-pause-do-event-resume control flow, and the idea that a mid-mission event is registered to turn signals separately from intro scenes. Map to: data-defined "mission events" keyed by turn, run by a generic mission-event runner; deterministic spawns only.

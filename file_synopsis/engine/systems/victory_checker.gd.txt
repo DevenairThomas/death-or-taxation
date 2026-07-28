@@ -1,0 +1,23 @@
+FILE: engine/systems/victory_checker.gd
+
+1. CLASS
+class_name Victory_Checker. Extends Node. Mission win-condition evaluator supporting several objective types.
+
+2. WHAT IT DOES
+Holds the active objective type and its parameters, and when asked evaluates whether the player has satisfied it, setting BattlefieldInfo.victory. Supports eliminate-all, survive-N-turns, escort-to-tile, and assassinate; seize is unimplemented.
+
+3. FUNCTIONS
+- check_victory_status(): early-returns if BattlefieldInfo.victory already true (avoid double-processing). match victory_condition_state: ELIMINATE_ALL_ENEMIES -> victory if BattlefieldInfo.enemy_units empty; SURVIVE -> victory if turns_left_to_survive == turn_manager.player_turn_number; ESCORT -> victory if unit_to_escort.UnitMovementStats.currentTile == tile_to_escort; ASSASSINATE -> victory if enemy_units no longer has unit_to_assassinate; SEIZE -> pass (TODO, comment suggests reusing escort). Called by turn_manager.check_end_of_turn.
+- clear(): resets turns_left_to_survive, unit_to_assassinate, unit_to_escort, tile_to_escort. Called on level reset/load.
+Enum: ELIMINATE_ALL_ENEMIES, SURVIVE, ESCORT, ASSASSINATE, SEIZE. Touches BattlefieldInfo.victory, enemy_units, turn_manager.
+
+5. relation note continues below.
+
+4. POSSIBLE IMPROVEMENT
+- Sets a global boolean (BattlefieldInfo.victory) as its output instead of returning a result — makes it non-pure and awkward to test; return an enum/bool and let the caller act.
+- Only win conditions; no lose/defeat conditions here (game_over is handled ad hoc in turn_manager). Objective evaluation for both outcomes should be unified.
+- SURVIVE uses == on turn number (must land exactly); a >= comparison is safer against missed polls. SEIZE is an unimplemented stub with a design question left in a comment.
+- Objective parameters are loose fields set externally; a per-objective data record would be cleaner and data-driven.
+
+5. RELATION TO DEATH OR TAXATION
+Keep, rebuild as pure /sim. Mission objective evaluation is core and maps cleanly to a headless-testable RefCounted that takes sim state and returns win/lose/ongoing — DoT wants mission_complete as a sim->view signal, so the checker should feed that signal rather than poke a global bool. Objective definitions (type + params + secondary bonus objectives) belong in /data per map (adding a map/objective = zero code changes); note DoT's mission award structure (base 100 + up to 50 secondary) implies objectives carry scoring metadata the checker should evaluate. Critically, DoT adds a defeat condition this file lacks: under No-Revive mode, losing the last General is campaign game-over — build lose-conditions alongside win-conditions here. No RNG. Strong reuse candidate once made pure and data-driven.

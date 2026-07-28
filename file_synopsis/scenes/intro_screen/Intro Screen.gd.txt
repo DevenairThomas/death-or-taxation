@@ -1,0 +1,26 @@
+FILE: scenes/intro_screen/Intro Screen.gd
+
+1. CLASS
+- No class_name. extends Control.
+- The title/intro screen with a New Game / Load Game / Options menu. Not an autoload; it is the entry scene (named "Intro Screen" in the tree; other code queue_frees it by that name). Owns intro music, an animation player, a background, and a hand selector over the options.
+
+2. WHAT IT DOES
+- Shows the title, waits for any key to reveal the options, lets the player navigate the menu, and either starts a New Game (loads the first world-map event and transitions to the WorldMapScreen) or loads a saved game.
+
+3. FUNCTIONS
+- _ready(): Plays intro music, sets state INTRO, initializes current_option, connects the anim "animation_finished" -> allow_selection, sets the no-text background.
+- _input(event): INTRO state -> any key press plays "Options Fade In" and moves to WAIT. GAME_SELECT state -> up/down move the option + hand selector (clamped) with move sounds; accept -> process_selection.
+- _process(_delta): Empty stub.
+- allow_selection(_anim_name): Anim-finished callback -> state = GAME_SELECT.
+- process_selection(): "New Game" -> fades music out, resets BattlefieldInfo.turn_manager processing + game_over=false, sets WorldMapScreen.current_event = Level1_WM_Event_Part10.new(), calls WorldMapScreen.connect_to_scene_changer(), and SceneTransition.change_scene_to_packed(WorldMapScreen, 0.1). "Load Game" -> fades music/screen to black, sets save_load_system.is_loading_level=true and calls load_game(). "Options Screen" -> unhandled.
+- Interactions: SceneTransition (change_scene_to_packed), WorldMapScreen (current_event, connect_to_scene_changer), BattlefieldInfo (turn_manager, game_over, save_load_system). Emits no custom signals.
+
+4. POSSIBLE IMPROVEMENT
+- Hand-selector movement duplicates clamp logic up and down; extract a move(delta) helper; the +=/-=18 pixel offsets are magic numbers.
+- "Options Screen" is a listed option with no implementation (dead menu entry).
+- Hard-codes the first chapter (Level1_WM_Event_Part10) and FE title assets in a menu file; should be data-driven / campaign-config.
+- _process empty stub should be removed.
+- Directly reaches into turn_manager/game_over globals to reset run state — belongs in a new-game/sim init routine.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE -> becomes the DoT MODE-SELECT screen (title -> choose Standard vs No-Revive). Keep the shell (title, key-to-continue, a small vertical menu with a selector, music-off/transition on choose). REPLACE the New/Load/Options menu with DoT's flow: New Campaign asks the player to pick MODE = Standard or No-Revive, and No-Revive must show a warning (it is chosen at campaign start and LOCKED: General death is permanent and losing the last General is game over). The chosen mode flag is written to the single JSON save at campaign start. "Load Game" maps to loading that save (campaign progress, souls, General levels/alive-state, mode). "New Game" then routes into the first mission via DoT screen flow (mode-select -> Map1) instead of an FE world-map event. Drop the Level1_WM_Event hard-coding and FE title art (gray-box). This is a /ui view; the mode flag and new-campaign init are sim/save concerns it should delegate to, not own.

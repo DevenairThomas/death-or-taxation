@@ -1,0 +1,31 @@
+SYNOPSIS — scenes/events/level_2/L2_event_part_40.gd
+
+1. CLASS
+class_name L2_Event_Part4, extends "res://scenes/events/event_base.gd" (Event_Base).
+Concrete scripted cutscene beat — Level 2 (Eirika insists on fighting; the player squad marches into position).
+
+2. WHAT IT DOES
+Plays the "Eirika joins the fight" beat: shows the Seth/Eirika resolve dialogue, then reveals and cinematically walks the whole player squad (Natasha, Ewan, Neimi, Gilliam, Vanessa, Colm) to their L2 deployment tiles, then pans the camera to the battle area and completes. This is L2's structural twin of L1_Event_Part_30 (the squad-march-to-marks beat), differing only in target coordinates and camera position.
+
+3. FUNCTIONS
+- var dialogue (Array): the Seth/Eirika exchange, "Name@portrait@text".
+- var ewan/natasha/neimi/gilliam/vanessa/colm: cached units.
+- _init(): debug name/part (note event_name says "Before Battle Event", part "3" — mislabeled) + path.
+- start():
+  * Connects message_system.no_more_text -> move_actors; movement_system_cinematic.unit_finished_moving_cinema -> move_camera.
+  * Caches the six ally units.
+  * enable_text(dialogue) (no set_position).
+- move_actors(): makes all allies visible; builds AI paths for all six to specific grid tiles (movement_calculator.get_path_to_destination_AI); nulls each unit's tile; appends all six to unit_to_move_same_time; is_moving = true.
+- move_camera(): tweens main_game_camera to Vector2(0,190) via the child "Tween"; connects tween_all_completed -> event_complete.
+
+Coupling: BattlefieldInfo, message_system, movement_system_cinematic, movement_calculator, main_game_camera+Tween. Advanced by Event_System.
+
+4. POSSIBLE IMPROVEMENT
+- Six-unit reference + path/null/append blocks are copy-paste; should be a loop over a [(unit, tile)] data table.
+- Near-duplicate of L1_Event_Part_30.move_actor — the "march squad to marks" routine is reimplemented per level; extract once (ideally data-driven).
+- Deprecated child-Tween interpolate_property; magic grid coords and Vector2(0,190).
+- Mislabeled debug metadata (copy-paste from an earlier part).
+- No disconnects; not headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as script; same lesson as L1_Part_30. Deployment marches duplicated across two levels underline that positions belong in map data and the intro is a data VN scene. DoT's runner requirement: a scene may reveal units and (optionally) move them to deployment tiles before ceding to gameplay — but for the gray-box prototype units simply start at data-defined deployment tiles; the cinematic march and camera pans are unnecessary. Keep the sequencing/handoff idea, scrap the per-unit imperative staging and placeholder FE content.

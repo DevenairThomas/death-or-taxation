@@ -1,0 +1,28 @@
+FILE: engine/systems/calculators.gd
+
+1. CLASS
+No class_name. Extends Node (used as an autoload/global "Calculators" of misc math + helper utilities). Grab-bag of global functions.
+
+2. WHAT IT DOES
+Holds small shared helpers: tile distance, rebinding a unit to a tile, a string-length guard, a random number generator, and bulk show/hide of all units.
+
+3. FUNCTIONS
+- get_distance_between_two_tiles(tile_a, tile_b): Manhattan distance in tiles = (|dx|+|dy|)/16 using pixel positions (16 = tile size). Used for range/adjacency checks elsewhere.
+- update_unit_tile_info(unit, tile): clears the unit's old currentTile.occupyingUnit, points currentTile at BattlefieldInfo.grid[cellPosition], and sets occupyingUnit — the canonical "unit now stands here" mutation. Touches BattlefieldInfo.grid.
+- is_string_longer_than_max_constant(string_to_test): compares length to Messaging_System.MAX_LETTERS (UI textbox constraint).
+- get_random_number(lower_bound, upper_bound): randi() % upper_bound + lower_bound — RNG helper.
+- turn_on_all_units() / turn_off_all_units(): iterate BattlefieldInfo.ally_units and enemy_units and set node.visible (view toggling, used around cutscenes/transitions).
+
+4. POSSIBLE IMPROVEMENT
+- Grab-bag autoload; split into a pure math util (distance) vs. view util (visibility) vs. world-state mutation (update_unit_tile_info). The distance helper hardcodes the magic number 16 — make it a named tile-size constant/data field.
+- get_distance uses pixel coordinates; operating on grid coordinates would remove the /16 and the tile-size assumption.
+- turn_on/off_all_units mutate node.visible directly — view concern reaching through a global.
+- Everything depends on BattlefieldInfo/Messaging_System globals; pass dependencies instead.
+
+5. RELATION TO DEATH OR TAXATION
+Split: keep the pure bits, scrap the RNG, move view bits out.
+- get_distance_between_two_tiles -> pure /sim grid function on integer coords (used by range, AI threat, adjacency). Keep, headless-testable.
+- update_unit_tile_info -> belongs in the /sim grid model (occupancy is sim state).
+- get_random_number -> SCRAP for anything combat-related. DoT combat is 100% deterministic, NO RNG; a general randi helper is a foot-gun that invites RNG creep. Only permissible use would be cosmetic/UI, which should live in /scenes, not shared sim utils.
+- turn_on/off_all_units and the string-length UI check -> /scenes and /ui respectively.
+- The hardcoded 16 tile size should be a /data constant.

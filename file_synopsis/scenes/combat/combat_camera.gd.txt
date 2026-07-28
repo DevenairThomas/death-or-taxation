@@ -1,0 +1,19 @@
+SYNOPSIS: scenes/combat/combat_camera.gd
+
+1. CLASS
+   extends Camera2D (no class_name). A reusable screen-shake camera. Pure view/juice.
+
+2. WHAT IT DOES
+   Implements a decaying camera-shake effect (offset jitter that fades to zero over a duration), used to add impact to combat hits.
+
+3. FUNCTIONS
+   _process(delta): if _timer is 0, returns immediately (idle). Otherwise, on a fixed period accumulates elapsed time and, per shake step, computes an intensity that lerps from _amplitude down to 0 as remaining time decreases, generates a pseudo-random x/y offset (randf_range(-1,1)) smoothed against the previous offset, and applies it via set_offset, tracking _last_offset so it can be subtracted out cleanly. When _timer expires it removes the last offset (recenters). Noise approach credited to an external blog.
+   shake(duration, frequency, amplitude): public trigger. Initializes _duration/_timer/_period_in_ms/_amplitude and seeds previous x/y, resetting any prior offset. Called by combat/impact code to start a shake.
+
+4. POSSIBLE IMPROVEMENT
+   - _period_in_ms is misnamed: it stores seconds (1.0/frequency), not milliseconds.
+   - The randf_range noise is decorative visual RNG (NOT gameplay RNG) — harmless, but could be swapped for deterministic FastNoiseLite or a Godot 4 Tween on offset for smoother, testable shake.
+   - Could be a small reusable component with an exported default amplitude/frequency rather than magic call-site numbers.
+
+5. RELATION TO DEATH OR TAXATION
+   KEEP (optional juice, low priority). Pure view-layer polish with zero game rules. The randf here is cosmetic screen-shake, NOT combat RNG, so it does NOT violate the deterministic-combat rule. In gray-box phase it is entirely optional; if kept, port as-is (a Camera2D helper) or replace with a Godot 4 Tween-based shake. Not part of /sim and must never influence damage or outcomes.

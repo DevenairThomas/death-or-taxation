@@ -1,0 +1,35 @@
+SYNOPSIS — scenes/events/level_1/L1_event_part_10.gd
+
+1. CLASS
+class_name L1_Event_Part_10, extends Event_Base.
+Concrete scripted cutscene beat — Level 1 opening scene (Seth + Eirika arrive and talk). One .gd per beat.
+
+2. WHAT IT DOES
+Plays Level 1's first cutscene: fades the battlefield in, hides all enemies except the bandit leader "Marcus", walks Eirika and Seth onto their marks via cinematic movement, then shows their opening dialogue in the top VN textbox, then pans the camera back and completes. Dialogue is stored inline (English strings plus commented-out Japanese originals) in the "Speaker@portrait_path@line" format the message system parses.
+
+3. FUNCTIONS
+- var dialogue (Array): the scripted lines, encoded "Name@assets/.../mugshot.png@text".
+- _init(): sets event_name/event_part debug strings (note: text mislabels it "Level 2").
+- start(): the beat entry point (called by Event_System).
+  * Connects movement_system_cinematic.unit_finished_moving_cinema -> enable_text_no_array (dialogue starts only after actors arrive).
+  * Grabs Seth/Eirika from BattlefieldInfo.ally_units, makes them visible; hides all BattlefieldInfo.enemy_units, then re-shows "Marcus".
+  * Plays the "Fade" animation on BattlefieldInfo.battlefield_container's "Anim" node and awaits animation_finished.
+  * Connects message_system.no_more_text -> move_camera (camera pans after dialogue ends).
+  * Sets message box to Messaging_System.TOP.
+  * Calls move_actor() to begin the walk-on.
+- enable_text_no_array(): override of the base stub; calls BattlefieldInfo.message_system.start(dialogue). Fired by the cinematic-movement-finished signal.
+- move_actor(): builds AI paths for Eirika (grid[4][13]) and Seth (grid[4][14]) via BattlefieldInfo.movement_calculator.get_path_to_destination_AI; nulls their currentTile.occupyingUnit; appends both to movement_system_cinematic.unit_to_move_same_time; sets is_moving = true.
+- move_camera(): tweens BattlefieldInfo.main_game_camera to Vector2(0,0) over 1s via the camera's child "Tween" node; connects tween_all_completed -> event_complete (base method emitting event_done, which advances the queue).
+
+5-way system coupling: BattlefieldInfo (god object), movement_system_cinematic, message_system (Messaging_System), main_game_camera+Tween, battlefield_container Anim. Called/advanced by Event_System.
+
+4. POSSIBLE IMPROVEMENT
+- Uses the deprecated Godot-3 Tween.interpolate_property API on a child Tween node; Godot 4 uses create_tween()/tween_property. This is conversion debris.
+- Magic grid coordinates (4,13 / 4,14) and camera Vector2(0,0) are unnamed literals.
+- Signals are connected inside start() every time the event runs with no disconnect, risking double-connections if reused; one-shot CONNECT_ONE_SHOT or explicit disconnect would be safer.
+- _init debug label is wrong ("Level 2..."), showing the hazard of hand-maintained per-script metadata.
+- String-encoded dialogue ("Name@path@text") is fragile parsing; a structured line resource would be safer/testable.
+- Entirely dependent on BattlefieldInfo singleton and live scene nodes — untestable headless.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as a per-beat script; MINE for requirements. This file is the canonical example of what DoT forbids: content (speaker, portrait, lines) and staging (walk actors to tiles, fade, camera pan, sequencing) welded into GDScript, one script per beat. In DoT every one of these must be a row in a /data scene file, played by the generic VN stub. What to carry over as runner requirements: (a) show text with speaker + portrait placeholder, (b) advance a scene through ordered steps chained on completion callbacks, (c) optional stage directions (move actor to tile, move camera, fade). But the DoT gray-box VN stub is deliberately minimal — bottom textbox, colored-rect portrait, click/space to advance — so the fade animation, mugshot PNGs, cinematic unit walk-ons, and camera tweens are all beyond the stub's required scope and would be optional/scrapped for the prototype. The dialogue-content itself (FE fan-fiction) is placeholder and replaced wholesale by DoT's lich/founding-fathers writing.

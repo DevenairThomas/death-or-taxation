@@ -1,0 +1,64 @@
+SYNOPSIS: scenes/gui/Trade/Trade Items Screen.gd
+
+1. CLASS
+   No class_name, extends Control.
+   The two-unit item-swap screen: shows both units' inventories side by side and
+   moves/swaps items between them.
+
+2. WHAT IT DOES
+   FE "trade" UI. Displays the current unit (left) and a selected adjacent ally
+   (right), each with up to six item slots and a portrait/name. A stateful two-
+   cursor flow lets the player pick a first item, then a destination slot, and
+   moves or swaps the items between the two inventories. After trading it marks
+   the unit's action as done (greyscale, TRADE status) and rebuilds. Uses
+   BattlefieldInfo.current_Unit_Selected, Unit_Action_Status, and the item slot
+   sub-widgets.
+
+3. FUNCTIONS
+   - start(unit): Sets the partner unit and portraits/names, resets state to
+     NO_ITEM_SELECTED / LEFT / slot 0, clears item refs, parks both hand cursors,
+     builds the inventory menu, selects the first left item, shows, starts Timer.
+   - set_unit_portrait_and_name(): Fills both portraits (left flipped) and name
+     labels from current_Unit_Selected and second_unit.
+   - build_inventory_menu(): reslot_arrays, then fills player-1 slots from the
+     current unit's inventory and player-2 slots from second_unit's inventory,
+     blanking leftover slots with empty_slot() and padding the logical arrays with
+     $Empty_Item sentinels.
+   - _input(event): Large state machine. In NO_ITEM_SELECTED, left/right switches
+     inventory columns, up/down scrolls within a column (tracking first_item),
+     accept selects, cancel exits. In ONE_ITEM_SELECTED, up/down scrolls the
+     destination (tracking second_item), accept commits, cancel deselects. Also a
+     "debug" action prints the two items.
+   - process_selection(): In NO_ITEM_SELECTED, latches first_item and moves to
+     ONE_ITEM_SELECTED with a second hand cursor. In ONE_ITEM_SELECTED, performs
+     the actual inventory mutation: if destination is $Empty_Item it moves the
+     item across; otherwise it swaps both items between the two inventories via
+     remove_do_not_delete_item/add_item, then set_done.
+   - reslot_arrays(): Rebuilds the six UI-slot node references for each unit and
+     clears the logical item arrays.
+   - set_done(): Sets the unit's action status to Unit_Action_Status.TRADE, turns
+     on greyscale, sets Idle animation, and rebuilds the screen (trade can
+     continue but movement is locked).
+   - go_back(): Hides, deactivates, returns to the parent Trade Screen.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - The _input state machine is enormous and highly repetitive (left/right column
+     branches duplicate up/down clamp logic four times); a small "grid cursor"
+     helper over a 2-column x 6-row model would cut it dramatically. Note the
+     cancel branch in ONE_ITEM_SELECTED sets first_item from item_slots_player_2
+     in both if/else arms (lines 234/236) - a latent bug.
+   - Six slots per unit are hard-coded by node path; use containers + instanced
+     slots.
+   - Inventory mutation (move/swap) lives in the widget; it belongs on an
+     inventory/controller model, with the UI only signaling intent.
+   - $Empty_Item sentinel comparisons are fragile; model empty explicitly.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. Trading items between adjacent units is pure FE inventory logistics.
+   DoT has no in-battle item inventory and no per-unit items to exchange; units
+   are Squads/Singles/Generals defined by tier and the damage table, and the only
+   economies are per-mission battle budget (deployment) and persistent souls
+   (between missions) - neither is traded on the field. Nothing here maps to DoT;
+   remove entirely. (If future co-op ability sharing is ever designed it would be
+   a between-missions, data-driven, deterministic feature - not this.)

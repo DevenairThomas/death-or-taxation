@@ -1,0 +1,24 @@
+SYNOPSIS — scenes/events/level_1/event_loader_L1.gd
+
+1. CLASS
+No class_name. extends Node.
+Level-1 bootstrap / event-registration node. A throwaway loader placed in the Level 1 scene tree.
+
+2. WHAT IT DOES
+On scene load, registers Level 1's opening cutscene beats, in order, into the global Event_System queue, then marks that this is a fresh (not loaded-from-save) level start, then deletes itself. This is the per-level "manifest" that says which scripted event scripts compose Level 1's intro sequence.
+
+3. FUNCTIONS
+- _ready():
+  * BattlefieldInfo.event_system.add_event(L1_Event_Part_10.new()), then _20, then _30 — appends three concrete Event_Base subclasses (by direct class reference and .new()) to the Event_System queue in play order.
+  * BattlefieldInfo.save_load_system.is_loading_level = false — flags that the campaign is genuinely starting on this level rather than resuming a later one (comment notes L1 is the only valid start level).
+  * self.queue_free() — removes the loader after registration.
+  No signals; it is a one-shot registrar. Event_System.start_events_queue (elsewhere) later pops and start()s each queued event, advancing on each event's event_done.
+
+4. POSSIBLE IMPROVEMENT
+- The set of Level-1 events is hard-coded by class name here — adding/reordering a beat means editing code. Should be data: a list/array resource of scene ids the runner iterates.
+- Directly references concrete classes (L1_Event_Part_10 etc.), tightly coupling the loader to every script. A data manifest of paths/ids would decouple it.
+- Mixing two unrelated concerns (event registration and the save/load is_loading_level flag) in one _ready — the flag belongs in level-setup, not the event loader.
+- Godot-4 idiom: could be a single loop over an exported Array of PackedScenes/Resources instead of three literal .new() calls.
+
+5. RELATION TO DEATH OR TAXATION
+Concept KEEP, form SCRAP. DoT needs exactly this "which scene(s) play before this map" manifest — but per the design it must be DATA, not a .gd that news up subclasses. In DoT the map's data file names its pre-battle scene id(s); the generic VN player loads that scene from /data and plays it, requiring zero code per map. So this loader collapses into a field on the map data ("intro_scene": "l1_intro") plus generic loader logic that is written once, not per level. The self-freeing one-shot registrar pattern is otherwise fine and could survive as the mechanism the generic loader uses. is_loading_level / save_load coupling is out of scope for the gray-box prototype.

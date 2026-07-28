@@ -1,0 +1,38 @@
+SYNOPSIS: scenes/walkable/Vanessa Walk.gd
+
+1. CLASS
+extends CharacterBody2D. No class_name. An idle NPC party-member avatar in the walkable camp
+map (Vanessa, a pegasus knight).
+
+2. WHAT IT DOES
+Vanessa stands idle in the camp and delivers a scripted VN dialogue when talked to. Her lines
+are a TERRAIN tutorial: forests slow ground units but grant bonus avoidance and defense when
+fighting from them, while flying units (pegasus knights) ignore forest movement penalties but
+gain no terrain defense bonus while airborne. Content is a hardcoded `dialogue` array in
+"Name@portrait_path@text" format. No movement or patrol.
+
+3. FUNCTIONS
+_ready() — plays "Idle" animation.
+start_dialogue() — invoked by Eirka_Walk on interact; calls
+  BattlefieldInfo.message_system.start(dialogue) to display Vanessa's 9-line conversation.
+Autoloads/classes touched: BattlefieldInfo.message_system; called by the Eirka_Walk avatar.
+
+4. POSSIBLE IMPROVEMENT
+- Hardcoded dialogue + portrait paths belong in /data.
+- Identical structure to Naomi/Seth Walk — replace all three with one data-driven TalkNPC.
+- No class_name; needs the shared idle-talk-NPC base.
+
+5. RELATION TO DEATH OR TAXATION
+Camp NPC flavor, not tactical-grid logic — SCRAP the per-character implementation. BUT the
+CONTENT is directly relevant reference: this dialogue documents the reference project's terrain
+model (forest = movement penalty + avoidance + defense bonus; flying ignores movement penalty,
+gets no defense) which is exactly the axis DoT formalizes. DoT terrain carries movement cost +
+DEFENSE value per tile (Plains def0/cost1, Forest def0.2/cost2, Mountain def0.4/cost3 infantry-
+only, Road def-0.1/cost1, River impassable except bridges, HQ/Zone def0.3/cost1), and terrain
+defense feeds the damage formula as (1 - defender_terrain_defense). KEY DIFFERENCE: DoT combat
+is 100% deterministic — the "bonus avoidance" Vanessa describes is CUT (no dodge/RNG). So the
+forest-defense and flying-ignores-cost concepts carry over into DoT's /data terrain and /sim
+grid (mountain infantry-only mirrors "flyers ignore forest"); the avoidance half does not. Store
+this tutorial as /data content in DoT's register, delivered by a shared VN component. This
+dialogue is a useful cross-check when authoring DoT's terrain table. Nothing here is /sim code
+to keep, but the terrain semantics it describes are load-bearing reference.

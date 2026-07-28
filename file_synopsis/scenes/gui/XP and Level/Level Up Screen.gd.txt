@@ -1,0 +1,28 @@
+FILE: scenes/gui/XP and Level/Level Up Screen.gd
+
+1. CLASS
+No class_name. extends Node2D. The FE-style level-up presentation panel: the "LEVEL UP!" logo, the stat-sheet with green up-arrows, and the RNG'd per-stat growth roll that actually raises the unit's stats.
+
+2. WHAT IT DOES
+When a unit gains a level (from combat XP), this plays the level-up logo/sound, brings up a panel, and reveals each increased stat one at a time with an arrow and a "stat up" sound. Crucially it also DECIDES the growths using RANDOM growth-chance rolls per stat (randf_range vs each stat's growth chance), applies +1 per rolled stat (capped at Unit_Stats.MAX_STAT / MAX_POSSIBLE_HEALTH), and guarantees at least +1 HP if nothing rolled. On finish it greyscales the unit (turn done) and emits done_leveling_up (or opens the item-broke screen).
+
+3. FUNCTIONS
+- _ready(): randomize(); connects the panel anim animation_finished -> process_stat_upgrade; set_process(false).
+- _process(delta): A staged reveal driven by break_time gating (0.2s between reveals). In priority order it applies level, then HP, Str/Mag, Skill, Speed, Luck, Def, Res, Con — each guarded by the stat cap — updating the label, showing the arrow, playing the sound, then returning to wait for the next tick. When all applied, set_process(false) + start Return timer.
+- start(): Zeroes all *_up vars, get_stat_upgrades() (rolls growths), starts "Show Pause", fills the panel labels (class, level, HP, luck, Str-or-Mag with matching panel texture, def/skill/res/spd/con) and mugshot.
+- dissolve_level_up_logo(): Sets shader params to dissolve the logo.
+- play_sound_and_graphic(): Plays logo fade-in + level-up sound + dissolve, starts "Bring Panel Up".
+- get_stat_upgrades(): level_up=1; rolls each stat via hit_occured(stat.<x>_chance); sums number_of_upgrades; if zero, forces max_health_up=1.
+- hit_occured(chance): RNG — returns false if chance<=0, true if >=100, else int(randf_range(0,100)) <= chance.
+- _on_Return_timeout(): Hides panel/arrows, plays Idle, sets action DONE, greyscales unit, then either opens Item Broke Screen or emits done_leveling_up.
+- _on_Show_Pause_timeout()/_on_Bring_Panel_Up_timeout()/process_stat_upgrade(anim_name): timer/anim glue to sequence the reveal.
+Signal: done_leveling_up.
+
+4. POSSIBLE IMPROVEMENT
+- The _process staged reveal is a giant repetitive if-ladder of near-identical blocks; data-drive it as a queue of {label, arrow, value} to reveal.
+- Growth logic (RNG) and presentation are fused; separating the (rolled) result from the animation would allow testing and remove randomness from the view.
+- Reaches into BattlefieldInfo.combat_player_unit and deep get_parent().get_parent().get_parent().broke_item chain — very brittle coupling.
+- Magic node paths throughout.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP OUTRIGHT (multiple hard design violations). This violates two locked DoT rules: (a) it uses RNG (randomize/randf_range growth rolls) — DoT combat and progression are 100% deterministic, NO RNG anywhere; (b) it's an IN-BATTLE, per-kill-XP level-up — DoT has NO per-kill EXP and no mid-mission progression; Generals level only BETWEEN missions by spending SOULS. So the mechanic is entirely out of spec. What is REPURPOSED is only the idea of a level-up celebration screen, moved to the between-mission CAMP screen: spend souls to raise a General from level N to N+1 (costs 30/60/100/150/210, hard cap level 5), showing the deterministic stat change — no rolls, no chance, no arrows-by-luck. The FE growth-chance stats do not exist in DoT. Rebuild fresh in /ui.

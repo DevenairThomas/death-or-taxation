@@ -1,0 +1,35 @@
+FILE: scenes/units/Player_Units/AllyUnits/Eirika/Eirika.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the lord unit
+Eirika (a main protagonist / lord-type character).
+
+2. WHAT IT DOES
+Fills the Battlefield_Unit base fields for Eirika on spawn: name, portrait/mugshot, sword
+proficiency + Iron Sword and Rapier (lord signature weapon), combat-animation scene, and a death
+quote. As a lord, Eirika is the closest analogue in this folder to a persistent/named hero.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation = "Idle"; UnitStats.name = "Eirika";
+  preload eirika mugshot PNG into BOTH unit_portrait_path and unit_mugshot; append SWORD to
+  UnitInventory.usable_weapons and add_item(Iron Sword) + add_item(Rapier); combat_node = "Eirika
+  Combat.tscn"; death_sentence uses the RICHER format
+  "Eirika@assets/.../eirika mugshot.png@Father, everyone..." — i.e. Name@mugshotPath@Line, which the
+  death/VN dialogue parser splits to show a portrait beside the quote. (Siblings use the plainer
+  "Name:\n\ntext" form — Eirika is the one using the mugshot-embedded schema.)
+
+4. POSSIBLE IMPROVEMENT
+- Content-in-code; convert to a unit/character data resource.
+- The death_sentence schema is inconsistent with every sibling (@-delimited vs "Name:\n\n"); pick
+  one and store fields structurally (name, mugshot, line) rather than packing them into a string.
+- Rapier is an effective-vs weapon (FE lord signature) — its effectiveness is table data, note for
+  the DoT mapping.
+
+5. RELATION TO DEATH OR TAXATION
+Best CHANGE target of the folder: a lord/protagonist maps directly to a DoT GENERAL — persistent,
+named, level 1-5, grown with souls, revived at 18xlevel souls, permadeath under No-Revive. But even
+a General is a DATA entry (stats, growth, portrait, death quote, signature ability), not a
+Battlefield_Unit subclass. Keep the CONCEPT of a named persistent hero with a signature weapon and a
+permadeath quote; scrap the per-character script. The @-delimited portrait+line death quote is a
+useful pattern for DoT's VN death moment (and dead Generals still appear in cutscenes) — model it as
+a structured field on the General data record.

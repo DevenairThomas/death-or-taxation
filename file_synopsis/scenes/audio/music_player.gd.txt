@@ -1,0 +1,22 @@
+FILE: scenes/audio/music_player.gd
+
+1. CLASS
+- class_name Music_Player. extends Node.
+- A thin music-playback wrapper. Referenced elsewhere as BattlefieldInfo.music_player (e.g. Game Over Screen calls music_player.get_node("AllyLevel").stop()). Expects named AudioStreamPlayer children (e.g. "AllyLevel", "EnemyLevel"). Effectively a small singleton-like audio service in the battlefield.
+
+2. WHAT IT DOES
+- Holds constant paths to a handful of music tracks and exposes minimal play/stop helpers that operate on child AudioStreamPlayer nodes addressed by name.
+
+3. FUNCTIONS
+- play_song(song_name, starting_position) -> void: get_node(song_name).play(starting_position). Plays a child player by node name from a given position.
+- stop_song(song_name) -> void: get_node(song_name).stop(). Stops a named child player.
+- Constants: four res:// paths (Fodlan Winds, Chasing Daybreak, Unfufilled, Tearing through Heaven). Interactions: children are AudioStreamPlayer nodes; callers pass node names as strings.
+
+4. POSSIBLE IMPROVEMENT
+- The path constants are declared but not used by the functions (functions address children by node name, not by path) — disconnected/dead config.
+- Addressing players by string node name is fragile and untyped; a dict of {track_id: AudioStreamPlayer} or an enum would be safer.
+- No fade/crossfade support, no "stop all" (callers reach into children directly, e.g. Game Over does music_player.get_node("AllyLevel").stop()); add a small API.
+- The tracks are copyrighted FE/Three Houses music — must not ship.
+
+5. RELATION TO DEATH OR TAXATION
+- SCRAP the content, KEEP the concept (deferred). DoT is in gray-box phase: "no music, no exceptions" until the skirmish loop is proven fun, and the referenced tracks are third-party FE music that cannot be used. A minimal audio service like this may return later, and if so it lives in /scenes (view layer) as a small typed music manager driven by /data track references. For now, do not port the tracks or wire music. No sim relevance (audio never touches deterministic combat).

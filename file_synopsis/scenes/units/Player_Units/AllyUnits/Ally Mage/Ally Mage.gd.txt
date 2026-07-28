@@ -1,0 +1,28 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Mage/Ally Mage.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the mage unit
+(character Ewan).
+
+2. WHAT IT DOES
+Populates the Battlefield_Unit base fields for the mage on spawn: name, portrait/mugshot, ELEMENTAL
+(tome) weapon proficiency + a Fire tome, the combat-animation scene, and a death quote.
+
+3. FUNCTIONS
+- _ready(): super._ready(); then $Animation.current_animation = "Idle"; UnitStats.name = "Ewan";
+  preload portrait -> unit_portrait_path, reused as unit_mugshot; append ELEMENTAL to
+  UnitInventory.usable_weapons and add_item(Fire.tscn); combat_node = "Ally Mage Combat.tscn";
+  death_sentence one-line quote. Portrait/mugshot are read by StatusScreen and dialogue; combat_node
+  is instantiated by the Combat_Screen; the tome item carries its own magic-attack SFX (see combat
+  script). Pure configuration, no logic.
+
+4. POSSIBLE IMPROVEMENT
+- Content-in-code; convert to a data resource keyed by unit id.
+- The ELEMENTAL weapon type + tome inventory pattern is identical in shape to sword/lance/bow units;
+  a single data-driven "starting inventory" list removes all these near-duplicate scripts.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE. A generic mage = DoT SQUAD/SINGLE tier defined in /data. Magic vs physical becomes another
+attacker/defender pairing in the deterministic base_table (terrain defense still applies, no spell
+RNG). Scrap the per-unit script; keep the unit-type-as-data concept. A named mage hero would instead
+be a GENERAL data entry.

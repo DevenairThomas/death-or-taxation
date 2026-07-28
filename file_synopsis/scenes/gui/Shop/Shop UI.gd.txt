@@ -1,0 +1,28 @@
+FILE: scenes/gui/Shop/Shop UI.gd
+
+1. CLASS
+class_name Shop_UI. extends CanvasLayer. A large stateful menu screen: the FE armory/item-shop where the player buys and sells weapons/items using gold, routing items to a chosen unit or the Convoy.
+
+2. WHAT IT DOES
+Implements a full buy/sell flow driven by a SHOP_STATE state machine (ASK, BUY, SELL, CONFIRM_BUY, CONFIRM_SELL, SELECT_UNIT, SELL_SELECT_UNIT, OFF). Presents two synced ItemLists (item names + prices), a shopkeeper text box with bilingual EN/JP flavor strings, a confirm Yes/No hand, background music and many voice-line SFX, plus fade animations. Buying checks BattlefieldInfo.money, picks a recipient unit (or Convoy) via the Unit Picker Solo, deducts gold, and creates an item from ALL_ITEMS_REF/item_database. Selling picks a unit, opens the Unit Inventory Display, confirms, removes the item and adds its selling cost to money.
+
+3. FUNCTIONS (grouped)
+- _ready(): Disables input, reset(), hides/ignores scroll bars, connects the shop list scrollbar value_changed -> _adjust_hand_value.
+- start(): Reset, state ASK, sets money label from BattlefieldInfo.money, plays fade + greeting SFX/text, enables the confirm hand on Yes.
+- _input(event): Big per-state match handling left/right (Yes/No hand), accept, cancel across ASK/BUY/SELL/SELL_SELECT_UNIT/CONFIRM_BUY/CONFIRM_SELL/SELECT_UNIT — transitions state, swaps shopkeeper text, plays SFX, shows/hides sub-screens.
+- buy_item(index): Parses price from the price-list text, checks BattlefieldInfo.money, on success -> SELECT_UNIT + unit_picker.start_with_convoy(); else "not enough money" flow.
+- sell_item(item): Removes item from current_unit_selected.UnitInventory, adds get_selling_cost() to BattlefieldInfo.money, updates label, returns to SELL_SELECT_UNIT.
+- _on_Unit_Picker_Solo_unit_picked(unit): For SELECT_UNIT, adds bought item to unit inventory or Convoy (checks MAX_INVENTORY space); for SELL_SELECT_UNIT, validates non-empty inventory then opens Unit Inventory Display or routes to Convoy sell.
+- _on_Unit_Inventory_Display_item_selected(): Reads the item, blocks unsellable (selling_cost<0), else -> CONFIRM_SELL.
+- allow_list_input(), back_to_browing(), select_unit_for_inventory(), exit(), reset(), check_unit_inventory_space(), _on_ShopList_item_selected(), _adjust_hand_value(), set_input_timer(): focus/scroll/hand bookkeeping and teardown; exit() returns to the walkable map or the preparation screen.
+Heavy coupling: BattlefieldInfo (money, item_database, preparation_screen, walkable_map), Convoy autoload, ALL_ITEMS_REF, Unit_Inventory, sibling Unit Picker Solo / Unit Inventory Display.
+
+4. POSSIBLE IMPROVEMENT
+- ~830 lines mixing state machine, presentation, audio cue sequencing, and economy mutation. Split into a ShopModel (pure buy/sell/price logic, testable) + ShopView.
+- Price is recovered by string-parsing the price ItemList text (substr off the trailing char) — fragile; prices should come from the item data, not the label.
+- Money mutation and inventory add/remove happen directly in the view.
+- Extremely long _input match with duplicated hand-position/SFX boilerplate per state.
+- Bilingual UI strings are hardcoded consts in code; should be a localization/data file.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP (as a battle feature). DoT explicitly CUTS in-battle production, capture/income economy, and item/inventory shopping is not part of the design — there is no gold armory. The two DoT currencies are BATTLE BUDGET (per-mission deployment, no shop) and SOULS (spent BETWEEN missions on General leveling/revival, never mid-mission). So the whole gold-shop concept and per-item inventory economy do not carry over. What is transferable is only the generic pattern: a between-mission spend screen (the camp screen) where souls buy General levels (30/60/100/150/210) and revival (18xcurrent level). That screen is a fresh /ui build, not a port of this — reuse the state-machine + confirm-hand UX pattern at most. Everything item/gold/convoy/Eirika-specific is dropped.

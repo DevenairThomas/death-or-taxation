@@ -1,0 +1,22 @@
+FILE: engine/movement_utilities/movement_arrow.gd
+
+1. CLASS
+class_name Movement_Arrow. Extends Node. View/input helper that tracks the cursor's path across cells to build the FE-style movement arrow while the player plots a move.
+
+2. WHAT IT DOES
+As the cursor walks over highlighted (allowed) cells, it records the trail into a queue and toggles a per-cell "Marked" visual. If the trail exceeds the unit's movement range, it defers to MovementCalculator to recompute the shortest legal path instead of the raw cursor trail.
+
+3. FUNCTIONS
+- _ready(): empty stub.
+- check_for_queue(current_cell: Cell): the core. Reads BattlefieldInfo.current_Unit_Selected.UnitMovementStats (movementSteps, allowedMovement, movement_queue). Clears the unit's movement_queue; only proceeds if current_cell is in allowedMovement. If the accumulated trail (last_movements) exceeds max_movement, it calls BattlefieldInfo.movement_calculator.get_path_to_destination() using the cursor's grid position (BattlefieldInfo.cursor, BattlefieldInfo.grid, Cell.CELL_SIZE) and re-marks that computed path; otherwise it links current_cell.parentTile to previous_cell and appends. Heavy coupling to the BattlefieldInfo autoload and to Cell scene nodes.
+- add_to_queue(both_cells): sets the cell's "MovementRangeRect/Marked" node visible and pushes onto last_movements. Mutates scene nodes directly.
+- clear_queue(): hides "MovementRangeRect/Marked" for every cell in allowedMovement and clears last_movements.
+
+4. POSSIBLE IMPROVEMENT
+- Mixes model (path trail) with view (get_node("MovementRangeRect/Marked").visible). Split arrow computation (pure) from arrow rendering (node toggling).
+- Reaches through BattlefieldInfo global for unit, cursor, grid, and calculator instead of receiving them as parameters — hard to test and tightly coupled.
+- Parameter name `both_cells` is misleading (it is a single cell). Type the arrays; give _ready a real body or delete it.
+- The cursor-position-to-grid math (position.x / Cell.CELL_SIZE) is duplicated logic that belongs in one coordinate util.
+
+5. RELATION TO DEATH OR TAXATION
+Change/split. The arrow-path derivation (given start, cursor trail, allowed set, movement budget -> ordered cell list) is sim-adjacent logic that could live as a pure function in /sim and be tested headless. The visual marking belongs entirely in /scenes reacting to sim state. Under DoT's sim/view rule this file's node-mutation half is view-layer; the pathing half should call the same movement/path sim used by the AI and forecast. Keep the UX (Advance Wars/FE movement arrow is desirable), rebuild decoupled.

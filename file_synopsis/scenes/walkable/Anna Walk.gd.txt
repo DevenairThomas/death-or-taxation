@@ -1,0 +1,40 @@
+SYNOPSIS: scenes/walkable/Anna Walk.gd
+
+1. CLASS
+extends CharacterBody2D. No class_name. An idle NPC avatar in the walkable camp map. Anna is
+the SHOP/PREP-screen NPC — talking to her opens the shop rather than starting VN dialogue.
+
+2. WHAT IT DOES
+Anna stands idle in the camp and, when the player talks to her, transitions the game from the
+free-roam walkable map into the preparation/shop screen. She is the bridge NPC between the
+overworld camp and the prep/deployment UI.
+
+3. FUNCTIONS
+_ready() — plays "Idle" animation.
+start_dialogue() — invoked by Eirka_Walk on interact. It: sets the Shop node's
+  came_from_walkable_map = true (so the shop knows to return to the map on exit); stops the
+  walkable map's music (BattlefieldInfo.walkable_map.music.stop()); sets the player avatar's
+  status to UI (BattlefieldInfo.walkable_map.eirika_walk.current_status = Eirka_Walk.STATUS.UI)
+  to freeze movement; and calls the Shop's start() to open the prep/shop screen.
+Autoloads/classes touched: BattlefieldInfo (preparation_screen -> "Shop" node, walkable_map ->
+  music + eirika_walk), Eirka_Walk (STATUS.UI enum). No movement/patrol logic.
+
+4. POSSIBLE IMPROVEMENT
+- start_dialogue() reaches four levels deep through globals
+  (BattlefieldInfo.preparation_screen.get_node("Shop"), BattlefieldInfo.walkable_map.music,
+  .eirika_walk) — highly coupled train-wreck access; a single "open shop" signal or a camp
+  manager method would decouple it.
+- Overloads the start_dialogue() name (same as talk NPCs) to mean "open shop"; a distinct
+  interaction type/flag would be clearer.
+- Depends on get_node("Shop") string path and the came_from_walkable_map flag on the shop.
+
+5. RELATION TO DEATH OR TAXATION
+This is the camp -> prep/shop TRANSITION, conceptually relevant to DoT even though the
+implementation is scrapped. DoT has a between-missions economy (souls spent on leveling/
+reviving Generals: costs 30/60/100/150/210; revival = 18 x level) accessed from a camp/prep
+screen — Anna is the reference project's "enter the prep screen" entry point. KEEP THE CONCEPT
+(a clear hand-off from camp into deployment/economy UI, remembering where to return), SCRAP the
+implementation (deep global reach-through, real-time avatar freeze, hardcoded node paths). In
+DoT this transition should be a signal/scene-change through a proper flow controller, and the
+"shop" is DoT's soul economy screen, not an FE item shop. Note DoT currency rules: souls are
+spent only between missions, budget never carries over. Nothing here informs the /sim grid.

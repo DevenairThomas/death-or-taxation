@@ -1,0 +1,27 @@
+SYNOPSIS — scenes/events/level_2/L2_event_part_50.gd
+
+1. CLASS
+class_name L2_Event_Part5, extends "res://scenes/events/event_base.gd" (Event_Base).
+Concrete scripted cutscene beat — Level 2 final intro beat (soldiers shout, camera settles, gameplay begins).
+
+2. WHAT IT DOES
+The shortest L2 beat and the last of the intro chain: shows three soldier rally-cry lines, then pans the camera to its gameplay position and completes — handing control to the player. Pure text + camera, no movement or combat.
+
+3. FUNCTIONS
+- var dialogue (Array): three "Soldiers@portrait@text" battle cries.
+- _init(): debug name/part (mislabeled "Before Battle Event"/"Part 3") + path.
+- start():
+  * Connects message_system.no_more_text -> move_camera.
+  * enable_text(dialogue) (no set_position).
+- move_camera(): tweens main_game_camera to Vector2(48,0) via the child "Tween"; connects tween_all_completed -> event_complete. When this event_done fires and empties the Event_System queue, start_events_queue triggers start_level()/resume and gameplay begins.
+
+Coupling: BattlefieldInfo, message_system, main_game_camera+Tween. Advanced by Event_System.
+
+4. POSSIBLE IMPROVEMENT
+- Deprecated child-Tween interpolate_property; magic Vector2(48,0).
+- Mislabeled debug metadata (copied from Part 3).
+- Connect without disconnect; not headless-testable.
+- Functionally identical shape to L1_Event_Part_20 (text -> camera -> complete) — another candidate for a shared/data pattern.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as script. A trivial text+camera beat is, in DoT, just the final lines of an intro data scene played by the VN stub; the camera settle is irrelevant to the gray-box milestone. Confirms no new runner capability. Reinforces that a whole family of these near-identical beats collapses to a handful of data rows plus one generic player. Content is FE placeholder, replaced by DoT writing.

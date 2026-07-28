@@ -1,0 +1,34 @@
+SYNOPSIS: scenes/walkable/Naomi Walk.gd
+
+1. CLASS
+extends CharacterBody2D. No class_name. An idle NPC party-member avatar in the walkable camp
+map (Naomi, an archer).
+
+2. WHAT IT DOES
+Naomi stands idle in the camp and delivers a scripted VN dialogue when the player talks to her.
+The dialogue doubles as a tutorial-flavored lore beat: it explains the archer role (hit enemies
+from range, soften them up, vulnerable up close). Content is a hardcoded `dialogue` array in
+"Name@portrait_path@text" format. No movement, no patrol, no state.
+
+3. FUNCTIONS
+_ready() — plays "Idle" animation.
+start_dialogue() — invoked by Eirka_Walk on interact; calls
+  BattlefieldInfo.message_system.start(dialogue) to display Naomi's 9-line conversation.
+Autoloads/classes touched: BattlefieldInfo.message_system; called by the Eirka_Walk avatar.
+
+4. POSSIBLE IMPROVEMENT
+- Dialogue text + portrait paths are hardcoded in the script; move to /data so writing/
+  localization/asset moves don't require code edits.
+- Identical shape to Seth/Vanessa Walk (idle + start_dialogue) — collapse into a single
+  data-driven "TalkNPC" that takes a dialogue resource, rather than one script per character.
+- No class_name / no talk_name here (Colm/Seth have talk_name) — inconsistent NPC interface.
+
+5. RELATION TO DEATH OR TAXATION
+Camp NPC dialogue flavor, not tactical-grid logic — outside the grid-builder mandate; SCRAP the
+per-character-script implementation. Transferable idea: content-as-data. DoT keeps all VN/
+cutscene content in /data and adding characters/dialogue should require zero code — so DoT's
+version of these NPC beats is a data-defined dialogue asset played by one shared VN component,
+not a bespoke script per General. The "tutorial via character chatter" device could be reused
+to teach DoT's actual mechanics (terrain defense values, squad HP-degradation damage, souls),
+but written in DoT's register (the lich's earnest fury about Taxation without Representation).
+Nothing here feeds /sim.

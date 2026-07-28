@@ -1,0 +1,30 @@
+SYNOPSIS: scenes/items/Axes/Iron Axe.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete weapon
+script for Iron Axe.tscn.
+
+2. WHAT IT DOES
+Basic FE axe. _ready() sets uses/max_uses 45, might 8, weight 10, hit 75, crit 0, range 1-1,
+worth 270, weapon_type AXE (overrides the SWORD default), strong_against LANCE (weapon
+triangle), icon ironAxe.png, weapon_string_name "axe". Registered in Item_Dict and seeded
+heavily into the convoy demo (convoy.gd adds four). High might, low accuracy — the axe
+archetype.
+
+3. FUNCTIONS
+- _ready(): assigns stats and sets weapon_type = AXE (important: base default is SWORD).
+- draw_attack_sound() / put_away_attack_sound(): standard draw/put-away SFX from
+  BattlefieldInfo.weapon_sounds.
+- special_ability(unit_holding_this_item, unit_that_is_being_attacked): returns 1 (params
+  unused). Damage-multiplier hook called by combat_calculator.
+
+4. POSSIBLE IMPROVEMENT
+- Data belongs in a Resource/data table, not _ready().
+- weapon_type must be manually set here because the base class defaults to SWORD; a proper
+  data schema would make type a required field, removing this footgun.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED. No axes, might, weight, hit, or weapon triangle in DoT. The AXE > LANCE > SWORD >
+AXE triangle is replaced entirely by the deterministic base_table[attacker_type][defender_type],
+which expresses arbitrary type advantages directly and in /data. weapon_type enum is the one
+reference-worthy idea (DoT needs a unit-TYPE enum keying the table). No literal reuse.

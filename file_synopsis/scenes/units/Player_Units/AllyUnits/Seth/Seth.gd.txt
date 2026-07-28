@@ -1,0 +1,40 @@
+FILE: scenes/units/Player_Units/AllyUnits/Seth/Seth.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the cavalier/
+paladin unit (character Seth). The richest config script in the folder — it overrides base stats,
+not just cosmetics.
+
+2. WHAT IT DOES
+Configures Seth on spawn AND tweaks gameplay stats: high movement, a class bonus, multi-weapon
+proficiency, a large starting inventory (partly test duplicates), a terrain movement penalty, a
+death quote, and the combat scene. Demonstrates how per-unit scripts can silently encode balance.
+
+3. FUNCTIONS
+- _ready(): super._ready(); then:
+    * UnitMovementStats.movementSteps = 8 (high mobility mounted unit; read by pathfinding/range).
+    * UnitStats.class_bonus_b = 60 (a stat/growth bonus consumed by Calculators/Combat_Calculator).
+    * $Animation.current_animation = "Idle".
+    * preload seth mugshot into unit_portrait_path and unit_mugshot (alt cavalier portrait commented
+      out).
+    * append SWORD and LANCE to usable_weapons; add_item Silver Lance, Steel Sword, Iron Lance — then
+      a "Delete later" block adds the SAME three again (test duplicates left in).
+    * UnitMovementStats.riverPenalty = 3 (explicitly a "River penalty test").
+    * death_sentence one-line quote.
+    * combat_node = "Seth Combat.tscn".
+
+4. POSSIBLE IMPROVEMENT
+- Content AND tuning in code: movementSteps, class_bonus_b, riverPenalty, inventory all belong in a
+  unit data record so balance is editable without touching scripts.
+- Remove the "Delete later" duplicate-inventory block and the "River penalty test" line — leftover
+  test scaffolding shipping in a config script.
+- Terrain penalties (river) should be terrain data x unit-movement-type, not a per-unit magic number.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE. Seth (a strong signature ally) maps to a DoT GENERAL — persistent, named, level 1-5, grown
+with souls. His per-unit stats (movement, bonuses, inventory, terrain interaction) are exactly the
+data that DoT mandates live in /data files, never hardcoded (CLAUDE.md: "If you find yourself
+hardcoding content, stop and move it to data"). Terrain movement cost maps to DoT's terrain data
+(distinct from the terrain DEFENSE value in the damage formula). Scrap the script; model Seth as a
+General data entry. The test-duplicate and test-penalty lines are precisely the kind of thing DoT's
+"no dead code / no leftover test stubs" convention forbids.

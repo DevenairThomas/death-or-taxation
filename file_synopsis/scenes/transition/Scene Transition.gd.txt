@@ -1,0 +1,24 @@
+FILE: scenes/transition/Scene Transition.gd
+
+1. CLASS
+- No class_name. extends CanvasLayer.
+- Used as the global AUTOLOAD SINGLETON "SceneTransition" (referenced elsewhere as SceneTransition.change_scene_to_file / SceneTransition.change_scene_to_packed / SceneTransition's scene_changed signal, e.g. from Intro Screen, World Map Screen, Game Over Screen). Owns a "Scene Changer" node with a Black overlay and an Animation player.
+
+2. WHAT IT DOES
+- Centralizes all fade-to-black scene changes. It fades the black overlay in, swaps the active scene (either via get_tree().change_scene_to_file for PackedScene paths, or by revealing a persistent autoload node for change_scene_to_packed), fades back out, and emits scene_changed so listeners can react (e.g. WorldMapScreen.start()).
+
+3. FUNCTIONS
+- change_scene_to_file(path, delay=0.1): Waits delay, plays "fade", awaits it, calls get_tree().change_scene_to_file(path), plays fade backwards, awaits, emits scene_changed. Standard path-based scene swap. Called by Game Over Screen (to intro), and generally for file-backed scenes.
+- change_scene_to_packed(scene_node, delay=0.1): For a persistent already-in-tree autoload (the WorldMapScreen), not a PackedScene. Fades in, queue_free()s the outgoing current_scene (unless it is the target), nulls current_scene, emits scene_changed (which drives WorldMapScreen.start() making it visible + running its queued event), then fades the overlay back out. Called by Intro Screen "New Game".
+- manual_swap(path): call_deferred wrapper to run deferred_next_level(path) safely outside signal/physics callbacks.
+- deferred_next_level(path): Plays fade, ResourceLoader.load()s + instantiate()s the scene, adds it under root, fades back, emits scene_changed, sets it current. An alternate manual instancing path (keeps a current_scene ref).
+- Signals emitted: scene_changed (multiple listeners connect/disconnect around it). Handles none itself.
+
+4. POSSIBLE IMPROVEMENT
+- Three overlapping scene-swap methods with duplicated fade boilerplate; unify into one with a strategy for path vs. node vs. deferred.
+- change_scene_to_packed hard-couples the singleton to the WorldMapScreen contract (comment says so). Better: emit a generic signal and let the target own its reveal, keeping SceneTransition content-agnostic.
+- Untyped params; add types (path: String, delay: float) and typed @onready refs (already present for black_transition/animation_player).
+- scene_changed is a single shared signal that many nodes connect/disconnect dynamically — error-prone; consider per-call await or a one-shot connection helper.
+
+5. RELATION TO DEATH OR TAXATION
+- KEEP (adapt). This maps directly to DoT SCREEN FLOW: mode-select -> Map1 -> camp -> Map2 -> camp -> Map3 -> victory. A single autoload that fades and swaps screens is exactly what the campaign flow needs, and belongs in /scenes (view). Simplify to one file-based change_scene method plus a generic scene_changed; drop the WorldMapScreen-specific packed path unless DoT keeps a persistent campaign-map node. Must remain pure view/navigation, never touch sim (souls, budget, General state) — those transitions are triggered by the game-flow controller after sim/save work completes.

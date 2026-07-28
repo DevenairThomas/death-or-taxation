@@ -1,0 +1,28 @@
+SYNOPSIS: scenes/items/Lance/Iron Lance.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete weapon
+script for Iron Lance.tscn.
+
+2. WHAT IT DOES
+Basic FE lance. _ready() sets uses/max_uses 45, might 7, weight 8, hit 90, crit 0,
+range 1-1, worth 360, weapon_type LANCE, strong_against SWORD (weapon triangle), icon
+iron_lance_icon.png, weapon_string_name "lance". Listed in Item_Dict.all_items. Middle of
+the triangle: beats swords, loses to axes.
+
+3. FUNCTIONS
+- _ready(): assigns stats and sets weapon_type = LANCE.
+- special_ability(_holder, _target): returns 1 (no bonus); damage-multiplier hook, params
+  ignored.
+- draw_attack_sound() / put_away_attack_sound(): standard draw/put-away SFX from
+  BattlefieldInfo.weapon_sounds.
+
+4. POSSIBLE IMPROVEMENT
+- Pure data in code; convert to Resource/data row (identical structure to every other
+  basic weapon — prime candidate for eliminating the per-weapon script).
+- Base class could default special_ability to 1, deleting this stub.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED. No lances, might/weight/hit/durability, or weapon triangle in DoT. Any
+lance-vs-sword advantage is expressed by the deterministic base_table by unit type. No
+literal reuse beyond the generic "unit type keys the damage table" idea.

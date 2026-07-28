@@ -1,0 +1,16 @@
+SYNOPSIS: scenes/combat/double_attack_logo.gd
+
+1. CLASS
+   extends Node2D (no class_name). A one-shot decorative widget shown on the combat screen when a unit gets a double (follow-up) attack.
+
+2. WHAT IT DOES
+   Plays a looping/spin "rotate" animation on its child AnimationPlayer as soon as it enters the tree. Purely a visual flourish.
+
+3. FUNCTIONS
+   _ready(): $anim.play("rotate"). No signals, no logic, no state.
+
+4. POSSIBLE IMPROVEMENT
+   - Trivial; if the animation is meant to be self-contained it could use an AnimationPlayer autoplay flag instead of a script at all, removing the file.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. It advertises the FE "double attack" mechanic, which does not exist in DoT's deterministic one-strike-then-counter skirmish model. No double attacks means no double-attack logo. Delete; no port.

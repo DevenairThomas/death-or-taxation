@@ -1,0 +1,25 @@
+FILE: scenes/transition/Combat Transition.gd
+
+1. CLASS
+- No class_name. extends Control.
+- A self-contained visual-effect node (a "combat transition" wipe overlay). Not an autoload; it is a scene node driven by an AnimationPlayer child ($anim) and a shader-masked ColorRect child ($"Combat Trans"). Instantiated where a shard/wipe transition into combat is wanted.
+
+2. WHAT IT DOES
+- Plays an animated mask-based screen wipe (the classic GBA Fire Emblem "shards"/diagonal/left-right/top-down transition into the battle animation view). It picks a random mask texture each play and drives a shader "cutoff"/"mask" parameter through an animation, plus a plain fade. Emits signals when each phase finishes so a caller can sequence the effect.
+
+3. FUNCTIONS
+- _ready(): Builds all_transitions array from the four preloaded mask PNGs and calls randomize() to seed RNG. RNG here is purely cosmetic (mask choice), unrelated to gameplay.
+- set_new_mask(): Picks a random mask (randi() % size) and sets it as the shader "mask" parameter on $"Combat Trans".material.
+- play_transition_forward(): Sets a fresh mask, resets to original state, plays "shard_transition" animation on $anim, awaits animation_finished, then emits transition_done. Caller awaits/handles this signal to know the wipe finished.
+- play_fade(): Plays "fade" on $anim, awaits finish, emits fade_done.
+- set_original_state(): Forces $Black visible/opaque and $"Combat Trans" visible with shader "cutoff" = 1.0 (the pre-wipe state).
+- Signals emitted: transition_done, fade_done. No signals handled here; a parent sequences it.
+
+4. POSSIBLE IMPROVEMENT
+- All child node access uses fragile string paths ($"Combat Trans", $anim, $Black); use @onready typed vars for safety and editor-refactor resilience.
+- all_transitions could be a const array literal built at parse time instead of appended in _ready().
+- The two await-then-emit patterns are boilerplate; the signals could be replaced by returning from an async function (await play_transition_forward()) since Godot 4 supports awaiting coroutine calls directly, decoupling callers from signal names.
+- Magic literal Color(0,0,0,1) and cutoff 1.0 could be named constants.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE / mostly SCRAPPED. This is battle-animation flavor tied to the FE combat-animation screen, which DoT does not have (DoT is Advance Wars skirmish math resolved on the map, gray-box ColorRects, no per-attack cinematic). The random mask selection is also mild RNG-cosmetic clutter. Keep only the general idea of a reusable view-layer transition overlay; fold it into DoT screen-flow transitions (mode-select -> Map1 -> camp -> Map2 ...). Any such effect lives in /scenes (view layer) and must never touch sim state. Do not port the four FE mask assets (no art until the loop is proven fun).

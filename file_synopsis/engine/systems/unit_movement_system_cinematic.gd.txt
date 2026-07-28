@@ -1,0 +1,19 @@
+FILE: engine/systems/unit_movement_system_cinematic.gd
+
+1. CLASS
+class_name Unit_Movement_System_Cinematic. Extends Node. A cutscene variant of the movement animator that moves multiple units simultaneously along their queues (no camera follow, no action-menu/AI handoff).
+
+2. WHAT IT DOES
+Nearly identical per-tile lerp logic to unit_movement_system.gd, but iterates a set of units (unit_to_move_same_time) and advances them all each frame. As each unit empties its queue it finalizes tile occupancy, clears range highlights, sets Idle, emits individual_unit_finished_moving(unit), and is removed from the set. When the set is empty it stops and emits unit_finished_moving_cinema. Used for scripted marches during cutscenes.
+
+3. FUNCTIONS
+- process_movement(delta): if is_moving, loops over unit_to_move_same_time; per unit computes starting/destination from UnitMovementStats.movement_queue, sets walk animation via get_direction_to_face, lerps position (no camera pan, unlike the non-cinematic version), snaps within 0.75px and hard-snaps on >=16px overshoot, pops the queue. On a unit's queue empty: sets currentTile/occupyingUnit, calls BattlefieldInfo.movement_calculator.turn_off_all_tiles, sets Idle animation, emits individual_unit_finished_moving(unit), erases unit from the set. After the loop, if the set is empty: is_moving=false and emit unit_finished_moving_cinema.
+Signals: unit_finished_moving_cinema, individual_unit_finished_moving. Touches BattlefieldInfo.movement_calculator/grid and each unit's Animation node. Driven by cutscene code (e.g. tests/new_event_system.move_units sets movement_system_cinematic.is_moving = true).
+
+4. POSSIBLE IMPROVEMENT
+- ~90% duplicated with unit_movement_system.gd; extract a shared per-unit tile-step routine and parameterize (single vs. multi, camera vs. no camera, handoff vs. none). Duplication means the 0.75/16 thresholds and snap logic are maintained twice.
+- Same layer violation: mutates model state (currentTile, occupyingUnit) and clears highlights from within an animation loop.
+- Erasing from unit_to_move_same_time while iterating it is risky; collect finished units and remove after the loop.
+
+5. RELATION TO DEATH OR TAXATION
+Change; view-layer, and merge with the single-unit mover. DoT cutscene choreography lives in /scenes; the sim only supplies where units end up. Same guidance as unit_movement_system: keep the visual march in /scenes reacting to signals; move the currentTile/occupancy commit into /sim. A cutscene director (see events_system) should orchestrate which units march when, communicating via signals. No RNG. Worth keeping as a reference for multi-unit scripted movement, but consolidate the duplicated animator into one view component.

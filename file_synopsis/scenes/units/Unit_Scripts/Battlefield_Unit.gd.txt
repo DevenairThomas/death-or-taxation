@@ -1,0 +1,25 @@
+FILE: scenes/units/Unit_Scripts/Battlefield_Unit.gd
+
+1. CLASS
+class_name Battlefield_Unit, extends Node2D. The base node for EVERY unit on the map (allies and enemies). It is a scene-node composite: it owns sub-nodes/objects for movement, action state, stats, and inventory. All concrete unit scripts (Enemy Soldier, Bandit, Enemy General, Enemy Pegasus Knight, etc., and the player equivalents) extend this and call super._ready().
+
+2. WHAT IT DOES
+Acts as the aggregate root for a single unit instance. On _ready() it wires up the component objects (Unit_Movement, Unit_Action_Status, an instanced Inventory.tscn, and Unit_Stats), exposes greyscale (turn taken/untaken) tinting, computes facing direction between cells, and provides a full save() serializer that flattens every component's fields (movement penalties, action status, ~40 stat fields, battle quotes, inventory item list, and AI node data) into a dictionary. load() is an empty stub.
+
+3. FUNCTIONS
+- _ready(): Instantiates UnitMovementStats = Unit_Movement.new() (added as child "UnitMovementStats"), UnitActionStatus = Unit_Action_Status.new() (child "UnitActionStatus"), UnitInventory from preloaded Inventory.tscn (added as child), and UnitStats = Unit_Stats.new() (NOT added as child — it extends Object). Subclasses override _ready and call super._ready() first.
+- turn_greyscale_on()/turn_greyscale_off(): Modulate the "Sprite2D" child to a grey tint or back to white — visual "has acted / can act" cue. Directly touches a hardcoded child node named "Sprite2D".
+- get_direction_to_face(starting_cell, destination_cell) -> String: Compares the two cells' getPosition() x/y to return "Right"/"Left"/"Up"/"Down"/"Idle". Consumed by animation/movement code to orient the sprite. Note it calls getPosition() (a Cell/grid-object method), not Godot .position.
+- save() -> Dictionary: Builds a big nested save_dict — scene filename + parent path, position, every Unit_Movement penalty and is_ally, action status, the entire Unit_Stats field set, death_sentence/before_battle_sentence quotes, a serialized inventory (iterates get_node("Inventory").inventory calling each item.save()), and, if an "AI" child node exists, its filename/parent/ai_type and two patrol cells (tile_to_walk_A/B). Used by the save-game system.
+- load(): Empty stub (pass) — loading is handled elsewhere or unimplemented.
+
+4. POSSIBLE IMPROVEMENT
+- Component fields (UnitMovementStats, UnitStats, etc.) are untyped — give them explicit types for editor safety.
+- save() manually mirrors every Unit_Stats field; this duplicates the schema and rots when a stat is added. Delegate serialization to each component (e.g. UnitStats.save()) as is already done for inventory items.
+- Hardcoded child names "Sprite2D", "Inventory", "AI", "Animation" couple the base class to scene structure; use @onready @export NodePaths.
+- get_node("Inventory") in save() vs the UnitInventory reference is inconsistent — pick one.
+- Mixed node/Object lifetimes (Unit_Stats extends Object and is never freed with the tree) risk leaks; make it RefCounted.
+- load() is a dead stub presented as an API.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE substantially. This is the FE "god object" unit that fuses logic and view in one Node2D — the exact opposite of DoT's sim/view split. In DoT: the pure state (HP, tier, stats, position, owner, has-acted) becomes a RefCounted class in /sim with NO nodes, no Sprite2D, no greyscale, no preloads; per-type stats move to /data. The Node2D + Sprite2D + greyscale + facing logic stays in /scenes as a thin view that renders a sim unit and listens to signals (unit_damaged/unit_destroyed/turn_changed). Keep the component decomposition idea (movement/stats/action-status/inventory) but as plain data structs. Drop FE-specific fields wholesale: no luck/skill/crit/dodge/hit/xp (RNG + per-kill EXP are cut). Tier becomes SQUAD/SINGLE/GENERAL with 10/25/level HP. Keep before_battle/death quotes (VN textbox, and remember dead Generals still appear in cutscenes). save() logic maps to campaign persistence for Generals/souls, not per-battle unit dumps.

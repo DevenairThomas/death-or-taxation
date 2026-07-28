@@ -1,0 +1,77 @@
+SYNOPSIS: scenes/gui/Damage Preview/Damage Preview.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The pre-combat damage forecast screen: pick an enemy target and show the
+   attacker-vs-defender combat prediction box before confirming the attack.
+
+2. WHAT IT DOES
+   After a weapon is chosen, this screen finds every enemy reachable with that
+   weapon's range, lets the player cycle through them with a hand cursor,
+   highlights reachable tiles red, and displays a two-sided forecast box
+   (each side's name, weapon icon, HP, damage, crit, hit, double-attack, and
+   weapon-triangle up/down arrows). Confirming launches the actual combat.
+   Depends on autoloads BattlefieldInfo (combat units, combat_screen),
+   Combat_Calculator (damage/crit/hit numbers), Calculators (tile distance),
+   and Combat_Screen (phase constant).
+
+3. FUNCTIONS
+   - _ready(): Sets inactive, parks the preview box on the RIGHT_SIDE, and
+     connects the sibling "Action Selector Screen" menu_moved signal to
+     set_menu_position (so the box dodges to the other side of the screen).
+   - _input(event): When active, handles accept (process_selection), cancel
+     (go_back to Weapon Select), and up/right / down/left to cycle the selected
+     enemy, replaying cursor sounds and refreshing the preview.
+   - start(item): Entry point. Stores the weapon, sets
+     BattlefieldInfo.combat_player_unit to the current unit, builds the reachable
+     enemy list, resets selection, updates cursor + preview box, turns on.
+   - get_reachable_enemies(): BFS outward from the attacker's tile up to
+     weapon.max_range over Cell.adjCells, collecting tiles within min_range for
+     red highlight and enemy-occupied tiles into reachable_enemies_list. Uses
+     Calculators.get_distance_between_two_tiles for min-range gating.
+   - process_selection(): Turns off the screen and calls
+     BattlefieldInfo.combat_screen.start_combat(Combat_Screen.player_first_turn)
+     to begin resolution.
+   - update_preview_box(): Sets combat_ai_unit to the highlighted enemy, calls
+     Combat_Calculator.calculate_damage(), then writes both sides' name/icon/HP/
+     dmg/crit/hit into the box and toggles double-attack logos and weapon-triangle
+     up/down arrows from Combat_Calculator's results.
+   - set_menu_position(new_position): Slides the preview box LEFT_SIDE/RIGHT_SIDE
+     so it never sits under the cursor.
+   - update_enemy_chosen(): Moves the "Cursor Select" highlight from the old to
+     the newly selected enemy unit.
+   - go_back(): Turns off and reopens the sibling "Weapon Select" screen.
+   - turn_on_red_tiles() / turn_off_red_tiles(): Toggle each highlight tile's
+     MovementRangeRect "Red" overlay.
+   - turn_on() / turn_off(): Show/hide the box, manage red tiles, clear cursor,
+     hide all arrows/double-attack logos; turn_on starts a 0s Timer that flips
+     is_active on timeout (defers input one frame to swallow the confirming press).
+   - _on_Timer_timeout(): Sets is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - The BFS in get_reachable_enemies re-runs distance calculation per tile and
+     can add tiles to the queue without a visited-set, risking re-processing;
+     it should share one range/reachability helper with Weapon Select and Healing
+     Select instead of three near-duplicate BFS copies.
+   - update_preview_box hard-codes ~20 node paths and mutates them inline; a small
+     "CombatantPanel" sub-scene taking a struct would decouple layout from logic.
+   - Reaching across siblings via get_parent().get_node("Weapon Select") couples
+     screens by tree position; use signals or an injected controller.
+   - The 0s-Timer input-debounce trick is fragile; use set_process_input toggling
+     or accept-just-released instead.
+
+5. RELATION TO DEATH OR TAXATION
+   THIS IS THE KEY WIDGET - KEEP THE ROLE, REBUILD THE GUTS. DoT mandates a
+   damage-forecast popup shown before confirming any attack, and the forecast is
+   a PROMISE: it must EXACTLY equal the resolved result because both call the
+   SAME sim function. Here the preview calls Combat_Calculator.calculate_damage()
+   and combat resolution is a separate path - that divergence risk is exactly
+   what DoT's architecture forbids. In DoT, this popup must display the value
+   returned by the single deterministic sim damage function
+   (base_table[atk][def] * atk_hp% * (1 - terrain_def), floor, min 1), and
+   resolution must reuse that identical number. STRIP the FE-only fields entirely:
+   crit, hit/accuracy, weapon-triangle up/down arrows, and double-attack are all
+   RNG/weapon-triangle mechanics that are CUT in DoT. Show attacker damage,
+   defender counter damage, resulting HP, and any kill indicator. The reachable-
+   enemy BFS should move to /sim as a pure range query; this widget stays in /ui
+   as pure view + input forwarding.

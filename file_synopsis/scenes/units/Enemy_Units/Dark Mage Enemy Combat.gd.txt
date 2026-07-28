@@ -1,0 +1,23 @@
+FILE: scenes/units/Enemy_Units/Dark Mage Enemy Combat.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (Combat_Unit subclass). Enemy-side combat-cutscene actor for the Dark Mage Enemy (its Dark Mage Enemy Combat.tscn). Byte-for-byte equivalent to Black Soldier Combat.gd / Enemy General Black Combat / Enemy Pegasus Knight Combat.
+
+2. WHAT IT DOES
+AI-side audiovisual glue for the duel: attack/hit/draw/put-away/miss/crit/death sounds and death-anim signal. Reads BattlefieldInfo.combat_ai_unit for weapon draw/put-away SFX and declares play_player_dodge_anim so a miss triggers the player actor's dodge. (Despite being a "mage", it plays the generic melee attack sounds — no tome-cast SFX specialization.)
+
+3. FUNCTIONS
+- signal play_player_dodge_anim.
+- play_attack_sound()/play_hit_sound(): Random "Attack N"/"Attack Hit N" from BattlefieldInfo.battle_sounds.
+- play_draw_sound()/put_away_attack_sound(): BattlefieldInfo.combat_ai_unit.UnitInventory.current_item_equipped weapon SFX.
+- play_miss_sound(): Random "Attack Miss N" + emits play_player_dodge_anim.
+- play_crit_sound(): Random "Critical Hit N".
+- play_death_sound(): "Death".
+- death_anim_signal(): Emits death_anim_done. Driven by AnimationPlayer method tracks.
+
+4. POSSIBLE IMPROVEMENT
+- Identical clone of the other enemy *Combat scripts — consolidate to one base; there is no mage-specific behavior despite the name (no cast sound), so it adds nothing over the shared script.
+- Global BattlefieldInfo.combat_ai_unit coupling.
+
+5. RELATION TO DEATH OR TAXATION
+LARGELY SCRAP; keep trimmed view actor. Remove miss/crit/dodge (deterministic combat). The caster archetype fits DoT (mage's constructs), but its combat presentation should be the shared data-parameterized enemy combat-view — ideally with a distinct cast VFX/SFX chosen by unit-type data — driven by sim signals (unit_damaged/unit_destroyed), not global current-unit state.

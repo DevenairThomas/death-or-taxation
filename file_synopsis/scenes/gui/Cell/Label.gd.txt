@@ -1,0 +1,30 @@
+SYNOPSIS: scenes/gui/Cell/Label.gd
+
+1. CLASS
+   No class_name, extends Label.
+   Tiny view helper attached to a Label node (the per-cell debug coordinate
+   label, judging by its location under Cell).
+
+2. WHAT IT DOES
+   Plays a looping color animation ("red to green to blue") on an attached
+   AnimationPlayer child named "Anim" as soon as the label is ready. Cosmetic
+   only. Essentially placeholder/demo code.
+
+3. FUNCTIONS
+   - _ready(): Prints "this node is now ready to be used!" (debug noise) and
+     calls get_node("Anim").play("red to green to blue") to start the color
+     cycling animation. Interacts only with its own "Anim" child.
+   - _process(delta): Empty pass stub; runs every frame doing nothing (pure
+     overhead).
+
+4. POSSIBLE IMPROVEMENT
+   - Delete the empty _process (it costs a per-frame call for nothing).
+   - Remove the debug print in _ready.
+   - This is effectively dead/demo code; the color animation has no gameplay
+     purpose. Either remove the script entirely or fold the behavior into the
+     scene's AnimationPlayer autoplay setting (no script needed).
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. Pure decorative debug-label filler with a print and an empty _process.
+   DoT's rendering spec calls for a text label showing unit type initial + HP,
+   not a rainbow-cycling coordinate label. Nothing here maps to DoT; discard.

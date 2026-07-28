@@ -1,0 +1,22 @@
+SYNOPSIS — scenes/events/level_2/event_loader_L2.gd
+
+1. CLASS
+No class_name. extends Node.
+Level-2 bootstrap / event-registration node (the L2 counterpart of event_loader_L1).
+
+2. WHAT IT DOES
+On scene load, registers Level 2's opening event(s) into the global Event_System queue. In its current (partly broken/WIP) state it only adds a single event, "L3_Event_Part10", and does NOT queue the actual L2_Event_Part_05/10/20/30/40/50 beats that exist in this folder, nor does it self-free or set the loading flag the way the L1 loader does. A commented-out block hints it once also added mid_level_events to the tree.
+
+3. FUNCTIONS
+- _ready():
+  * BattlefieldInfo.event_system.add_event(L3_Event_Part10.new()) — queues one event by a class name (L3_Event_Part10) that does not correspond to any file in this scope; likely stale/renamed (a wiring bug or leftover from refactor).
+  * Commented-out loop that would have add_child'd each of turn_manager.mid_level_events "to prevent a bug".
+  No self.queue_free(), no is_loading_level reset (unlike the L1 loader).
+
+4. POSSIBLE IMPROVEMENT
+- Broken/stale: references L3_Event_Part10 and omits the real L2 beats — a symptom of hand-maintained, class-name-coupled registration. A data manifest would make such drift impossible.
+- Missing the self-free and save-flag steps its L1 sibling performs; the two loaders should share one parameterized implementation instead of diverging copies.
+- The commented "prevent a bug" hack around adding mid events to the tree signals an ownership/lifetime problem with how mid_level_events nodes are parented.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP; strong argument FOR the data-driven design. Two per-level loader scripts that have already diverged and bit-rotted (this one points at a non-existent L3 event) is precisely the maintenance failure DoT's zero-code-per-scene rule prevents. In DoT there is no per-level loader script: the map's data file lists its intro scene id(s) and its mid-mission event triggers, and one generic system reads them. This file's existence and its bugs are the cautionary reference, not a template. The commented mid-event-parenting hack maps, in DoT, to "mid-mission triggers are data-registered and owned by one runner", avoiding ad-hoc add_child lifetime bugs.

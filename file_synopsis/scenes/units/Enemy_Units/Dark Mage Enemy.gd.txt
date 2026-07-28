@@ -1,0 +1,18 @@
+FILE: scenes/units/Enemy_Units/Dark Mage Enemy.gd
+
+1. CLASS
+No class_name. extends Battlefield_Unit. Concrete enemy unit definition (dark/tome caster).
+
+2. WHAT IT DOES
+Spawn config for an enemy dark mage: base setup, enemy flag, idle anim, red-soldier portrait/mugshot, a Flux dark tome loadout, and the dark-mage combat scene.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation="Idle"; UnitMovementStats.is_ally=false; unit_portrait_path and unit_mugshot = red soldier portrait; appends Item.WEAPON_TYPE.DARK to usable_weapons; adds preloaded Flux tome; combat_node = preload("Dark Mage Enemy Combat.tscn"). Touches Battlefield_Unit, $Animation, UnitInventory, Item enum.
+
+4. POSSIBLE IMPROVEMENT
+- Same content-as-code issue; move to data.
+- Uses the generic red-soldier portrait for a mage (placeholder mismatch).
+- Magic damage in FE keys off UnitStats.magic vs. defender res — none of that is set here, so it leans on placeholder stats.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE to data; strong fictional fit. The antagonist is an isekai'd mage controlling the Crown, so a hostile caster is exactly the "mage's construct" enemy family DoT wants. Re-skin "dark mage" as an arcane construct / conjured caster. Mechanically: DoT has no magic-vs-res formula — a caster is just another unit-type row in the damage base_table (likely a ranged, high-damage line that ignores or partly ignores terrain defense if desired), defined in /data. Keep it as a distinct enemy archetype with its own damage-table row and range; drop the Flux tome and the magic/res stat model.

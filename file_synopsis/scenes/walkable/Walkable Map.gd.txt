@@ -1,0 +1,42 @@
+SYNOPSIS: scenes/walkable/Walkable Map.gd
+
+1. CLASS
+extends Node2D. No class_name. Root controller for a "walkable map" scene — the
+between-battles overworld/camp space the player strolls around (not a tactical battle grid).
+
+2. WHAT IT DOES
+This is the container/entry node for the free-roam camp/prep area where the player controls
+Eirika and walks up to NPC party members to trigger dialogue. It starts background music and
+registers itself into the BattlefieldInfo autoload so other systems (dialogue, prep/shop
+screen) can reach the map and its player avatar. It has no grid, no cells, no combat — it is
+FE-style overworld traversal, distinct from the tactical Level* loaders.
+
+3. FUNCTIONS
+_ready() — @onready caches `music` = $"BG Music" and `eirika_walk` =
+  $"Node2D/Eirika Walk" (the player-controlled walk avatar). On ready it plays the music
+  from position 0 and sets BattlefieldInfo.walkable_map = self so global systems (e.g.
+  NPC start_dialogue() which does BattlefieldInfo.walkable_map.music.stop() and
+  BattlefieldInfo.walkable_map.eirika_walk.current_status = ...) can control the map.
+Autoloads/classes touched: BattlefieldInfo (walkable_map slot); child nodes "BG Music" and
+"Node2D/Eirika Walk" (Eirka_Walk).
+
+4. POSSIBLE IMPROVEMENT
+- Exposes internal children (music, eirika_walk) as public fields that external scripts poke
+  directly (NPCs stop the music and mutate Eirika's status through this reference) — leaky
+  coupling; prefer methods like pause_map()/resume_map() or signals.
+- Registering `self` into a global autoload is the same god-object pattern as the battle
+  loaders; a scene-tree lookup or a dedicated overworld manager would be cleaner.
+- Hardcoded child node paths ($"Node2D/Eirika Walk") are fragile to scene restructuring.
+
+5. RELATION TO DEATH OR TAXATION
+This is the CAMP/PREP overworld, not battle-grid logic, so it is outside the primary "grid
+builder reference" mandate — but it maps conceptually to DoT's between-missions "camp screen"
+(/ui) where the player spends souls, revives/levels Generals, and reads VN dialogue between
+missions. KEEP THE CONCEPT, SCRAP THE IMPLEMENTATION SPECIFICS: DoT is data-driven and
+gray-box, so a camp built from real-time CharacterBody2D walking + per-NPC scene scripts is
+heavier than needed for a prototype; DoT's camp can be a menu/VN screen. If DoT does want a
+walkable camp later, keep the pattern (a map node that hosts a player avatar + interactable
+NPCs that launch dialogue) but drive it via signals and /data-defined NPC/dialogue content
+rather than a BattlefieldInfo global and hardcoded child paths. Remember DoT rules:
+between-mission only for soul spending, dead Generals still appear (no death-variant scenes).
+Nothing here feeds the /sim tactical grid.

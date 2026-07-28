@@ -1,0 +1,34 @@
+FILE: scenes/gui/Cursor/Cursor.gd
+
+1. CLASS
+class_name Cursor. extends Node2D. The core grid cursor / primary input driver for the battle map. Owns the tile-selection state machine (MOVE, SELECT_MOVE_TILE, WAIT, PREP) and drives most of the player's turn interaction.
+
+2. WHAT IT DOES
+This is the player's on-map pointer. It reads directional/confirm/cancel input, moves cell-by-cell, and depending on state: hovers units and shows their move range, selects a unit and enters move-tile selection, confirms a destination and hands off to the movement system, opens the End Turn menu on empty tiles, cycles units (L), opens the unit info screen (R), and toggles an enemy-threat overlay. In PREP state it handles the pre-battle deployment swap/placement of allies onto blue swap-point tiles. It is the central hub wired to BattlefieldInfo globals.
+
+3. FUNCTIONS
+- _ready(): Starts cursor animation, sets state WAIT, connects Action Selector "selected_wait" -> enable_standard, connects turn_manager "play_transition" -> disable_standard, registers self as BattlefieldInfo.cursor, adds a Movement_Arrow child.
+- _input(event): Guards against victory/game_over/WAIT. Ignores mouse. On arrow keys moves position by Cell.CELL_SIZE, updates data, plays MoveSound, emits cursorMoved (camera + UI listen). Accept/cancel/L/R/highlight_enemy/debug dispatch.
+- updateCursorData(): Clamps to map bounds. Per state: MOVE hovers a unit (sets current_Unit_Selected, calls BattlefieldInfo.movement_calculator.calculatePossibleMoves to highlight range, plays Selected anim on ally); SELECT_MOVE_TILE feeds tiles to movement_arrow.check_for_queue to build the path arrow; PREP is a lighter hover for deployment.
+- acceptButton(): MOVE -> either open End Turn (empty/DONE tile) or select the unit and enter SELECT_MOVE_TILE (records previous_camera_position). SELECT_MOVE_TILE -> validates ally + move legality (movement_calculator.check_if_move_is_valid), builds path (get_path_to_destination), clears occupancy, moves camera, sets unit_movement_system.is_moving=true. PREP -> the deployment swap logic (pick ally_1, swap with ally_2, or move ally_1 to empty swap tile), mutating grid occupancy and unit tiles directly.
+- cancel_Button(): SELECT_MOVE_TILE -> clears highlights, back to MOVE. PREP -> deselect ally_1 or return to the preparation_screen, resetting blue tiles.
+- l_button(): Cycles camera+cursor to the next ally still in MOVE (rebuilds all_ally_units if roster changed).
+- r_button(): Opens BattlefieldInfo.unit_info_screen for the hovered unit.
+- set_animation_status(bool): Toggle animated vs static cursor sprite.
+- enable(status, next_cursor_state): Set visibility + state; toggles input in PREP.
+- highlight_enemy_positions(): Toggles purple enemy-range overlay via movement_calculator.highlight_enemy_movement_range / turn_off_purple over BattlefieldInfo.enemy_units.
+- enable_standard() / disable_standard(transition_type): Show/hide, start a re-enable Timer / force WAIT, emit turn_on_ui/turn_off_ui.
+- back_to_move(): Return to PREP or MOVE depending on turn.
+- debug(): Prints tile + occupying unit info.
+- _on_Timer_timeout(): Sets state MOVE if it is the player's turn.
+Signals: cursorMoved, turn_off_ui, turn_on_ui.
+
+4. POSSIBLE IMPROVEMENT
+- Massive single class doing input, hover, selection, movement handoff, AND deployment-swap. Split PREP/deployment logic into its own controller; it bloats the state machine.
+- Very heavy reliance on BattlefieldInfo global for grid, calculators, units, camera — near-untestable. Inject dependencies or route via signals.
+- Repeated `BattlefieldInfo.grid[self.position.x / Cell.CELL_SIZE][self.position.y / Cell.CELL_SIZE]` appears a dozen times — extract `current_cell()`.
+- Directly mutates grid occupancy and unit tiles from the view layer (sim/view boundary violation by DoT rules).
+- Redundant self-assignment `current_Unit_Selected = current_Unit_Selected`.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP THE ROLE, RE-ARCHITECT HARD. Every tactics game needs this grid cursor + move-select loop, and it maps directly onto DoT's turn UI. BUT in DoT the cursor must be view-only: it forwards input and renders sim state, and NEVER mutates the grid/unit occupancy directly (this file does — that's the exact sim/view violation the design forbids; sim owns state, view talks to it via signals/method calls into /sim). Reachable-move computation (calculatePossibleMoves, check_if_move_is_valid, pathing) must be pure /sim functions. Enemy-range overlay is a good keep for the deterministic threat-range display (FE-tier AI telegraphing). The PREP/deployment swap maps to DoT's deployment screen but must respect BATTLE BUDGET (deploy cost), not FE's free 6-unit cap. Strip FE-specific "Eirika" and inventory assumptions. No RNG here to remove.

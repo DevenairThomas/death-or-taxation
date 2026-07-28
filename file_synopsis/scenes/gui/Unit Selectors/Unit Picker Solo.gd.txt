@@ -1,0 +1,29 @@
+FILE: scenes/gui/Unit Selectors/Unit Picker Solo.gd
+
+1. CLASS
+No class_name. extends Control. A single-select unit chooser list: shows all ally units (optionally plus the Convoy) and emits unit_picked when one is confirmed. Used by the Shop to choose who receives a bought item or whose inventory to sell from.
+
+2. WHAT IT DOES
+Builds an ItemList of ally units (name + portrait), tracks the highlighted unit, and on accept emits unit_picked(unit). It merges units in-battle and not-in-battle. It also (as debug/test scaffolding in _ready) instantiates Eirika and Seth and registers them into BattlefieldInfo.ally_units. A start_with_convoy() variant appends a "Convoy" pseudo-entry.
+
+3. FUNCTIONS
+- _ready(): Disables input, clears list focus, hides scroll bar. TEST SCAFFOLD: loads/instantiates Eirika.tscn and Seth.tscn under "TEST NODE", hides them, sets identifiers, and stuffs them into BattlefieldInfo.ally_units.
+- _input(_event): ui_accept -> emit unit_picked(unit_selected).
+- start(): populate_array_with_units(), show + fade in, then enable input and focus the list (select 0).
+- start_with_convoy(): start() then adds Convoy to all_units_available and as a list row (using Convoy UI icon).
+- exit(): Stop input, drop focus, fade out, hide.
+- stop_input()/allow_input(): Focus/selection toggles.
+- populate_array_with_units(): Clears the dict; merges BattlefieldInfo.ally_units and ally_units_not_in_battle keyed by UnitStats.identifier; rebuilds the list rows; sets unit_selected to index 0.
+- get_unit(index): Looks up the unit by the row's displayed name text.
+- set_new_text_instructions(instructions): Sets the Instructions label.
+- _on_Unit_List_item_selected(index): unit_selected = get_unit(index).
+Signal: unit_picked (Shop_UI connects).
+
+4. POSSIBLE IMPROVEMENT
+- The _ready() Eirika/Seth instantiation is hardcoded test scaffolding living in a production widget — must be removed; it also couples the picker to specific scene paths and mutates global roster as a side effect of merely existing.
+- get_unit() keys off the visible name TEXT, so duplicate names would collide; key off identifier/index instead.
+- Mixes dict (all_units_available) and the ItemList as parallel sources of truth.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP THE PATTERN, DROP THE SHOP/CONVOY PURPOSE. A single-select unit picker is directly reusable for DoT's /ui: choosing a General in the camp screen (to level 1-5 or revive with souls) or picking a unit during deployment. Its current callers (Shop buy/sell recipient, Convoy) are CUT content (no in-battle item economy). CHANGE: remove the hardcoded Eirika/Seth test instantiation, remove Convoy, and make it data-driven over DoT's roster (Squads/Singles/Generals). It renders roster state and forwards a pick via signal — already the correct view-only shape for DoT. No RNG.

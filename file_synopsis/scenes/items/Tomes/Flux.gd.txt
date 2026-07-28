@@ -1,0 +1,29 @@
+SYNOPSIS: scenes/items/Tomes/Flux.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete magic-item
+script for Flux.tscn (Flux Tome, dark magic).
+
+2. WHAT IT DOES
+Basic dark-magic attack tome. _ready() sets uses/max_uses 45, might 7, weight 8, hit 75,
+crit 0, range 2-1 (1-2 ranged), worth 350, weapon_type DARK, strong_against ELEMENTAL,
+item_class MAGIC, icon flux.png, weapon_string_name "flux". Listed in Item_Dict.all_items
+and seeded into the convoy demo. Slightly higher might but lower accuracy than Fire; sits
+in the magic sub-triangle (DARK strong vs ELEMENTAL).
+
+3. FUNCTIONS
+- _ready(): assigns stats; sets weapon_type = DARK and item_class = MAGIC.
+- draw_attack_sound() / put_away_attack_sound(): overridden to pass (no SFX).
+- special_ability(unit_holding_this_item, unit_that_is_being_attacked): returns 1 (params
+  unused); damage-multiplier hook.
+
+4. POSSIBLE IMPROVEMENT
+- Reused "# Iron Axe stats" comment again — duplication artifact; data-drive to remove.
+- The magic sub-triangle (DARK/LIGHT/ELEMENTAL strong_against relations) is scattered
+  across tome files; centralize in one advantage table if kept.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED. Same as Fire Tome: DoT has no separate magic defense, no durability, no hit/crit,
+no anima/light/dark triangle. Thematically, DoT's arcane attackers (Arcane Sentinel single,
+or General spellcasters) are unit TYPES with their own damage-table rows and, for Generals,
+/data abilities — not tomes. No literal reuse.

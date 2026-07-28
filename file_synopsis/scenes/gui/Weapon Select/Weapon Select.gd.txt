@@ -1,0 +1,55 @@
+SYNOPSIS: scenes/gui/Weapon Select/Weapon Select.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The attack weapon-selection menu: lists the unit's usable weapons that can
+   currently reach an enemy, then hands off to the Damage Preview.
+
+2. WHAT IT DOES
+   Attack counterpart to Healing Select. Builds a list of non-healing weapons the
+   unit can use that have at least one reachable enemy, shows an item stat box
+   (Atk/Crit/Avoid[weight]/Hit/icon/name), lets the player pick, equips the
+   chosen weapon, and opens the Damage Preview. Uses BattlefieldInfo, Item
+   (ITEM_CLASS/WEAPON_TYPE), Calculators, GroupNames.
+
+3. FUNCTIONS
+   - start(): get_all_enemies_available (no-op), build_item_list, create_mugshot,
+     update_item_box, turn_on.
+   - _input(event): up/down movement; accept -> process_selection; cancel ->
+     go_back.
+   - get_all_enemies_available(): Empty stub (pass).
+   - build_item_list(): For each inventory weapon that is_usable_by_current_unit,
+     is PHYSICAL/MAGIC and NOT HEALING, BFS out to max_range; if any enemy-
+     occupied tile is within min_range, marks the weapon usable. Then for each
+     usable weapon instantiates a Weapon Select Slot, fills/positions/adds it,
+     records it, and places top/bottom frame and hand cursor.
+   - create_mugshot(): Sets the unit portrait texture.
+   - movement(direction): Hand cursor over slots, clamped, move sound, then
+     update_item_box.
+   - update_item_box(): Sets the selected option and writes might/crit/weight/hit/
+     icon/name into the "Item Box" panel.
+   - go_back(): turn_off then emits unit_movement_system "action_selector_screen".
+   - process_selection(): turn_off, sets UnitInventory.current_item_equipped, and
+     calls sibling "Damage Preview".start(item).
+   - turn_on(): Shows menu+hand, resets index, starts input-defer Timer.
+   - turn_off(): queue_free()s all ITEM_SLOT_GROUP_NAME nodes (comment: "prevent
+     memory leaks"), hides, deactivates, resets index.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - Same duplicated reachability BFS as three other screens; extract a shared
+     pure range/target query (ideally sim-side and testable).
+   - get_all_enemies_available dead stub - remove.
+   - Group-based bulk free is risky; own instanced slots locally.
+   - Sibling coupling via get_parent().get_node("Damage Preview"); use signals.
+   - The stat box mixes attack stats with "Avoid"/weight - inconsistent labeling.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. Choosing a weapon before attacking is an FE mechanic absent from DoT:
+   DoT combat is table-driven by unit type with no weapon stats, crit, hit, weight
+   or avoid (all RNG/weapon-triangle concepts are cut). In DoT, selecting a target
+   goes straight from the unit's attack action to the deterministic damage-forecast
+   popup - no weapon pick step. The reusable parts are the list-menu pattern (to
+   /ui) and, crucially, the "reachable enemies from this tile" logic, which must
+   become a pure /sim range query shared by AI targeting and the forecast. Remove
+   the weapon-stat UI entirely.

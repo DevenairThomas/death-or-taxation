@@ -1,0 +1,53 @@
+SYNOPSIS: scenes/gui/Item Screen/Equip Discord Box.gd
+(filename likely a typo for "Equip Discard Box")
+
+1. CLASS
+   No class_name, extends Control.
+   A small two-option popup ("Equip"/"Discard", or "Use"/"Discard" for
+   consumables) shown after selecting an item in the Item Screen.
+
+2. WHAT IT DOES
+   When the player picks an inventory item, this box offers to equip/use it or
+   discard it. It greys out the top option when the action is not allowed (item
+   not usable by this unit, or consumable with no uses left), performs the equip/
+   use, or hands off to the Yes/No confirmation box for discard. Reads Item.
+   ITEM_CLASS and BattlefieldInfo.current_Unit_Selected.
+
+3. FUNCTIONS
+   - start(item): Shows the box, stores the item, resets cursor and option index.
+     Decides label text: consumables show "Use" and enable only if
+     item.can_be_consumed(); weapons show "Equip" and enable only if
+     item.is_usable_by_current_unit. Sets the font color white (enabled) or grey
+     (disabled) and starts the 0s input-defer Timer.
+   - _input(event): When active: accept -> process_selection; cancel -> go_back;
+     up/down -> movement.
+   - movement(direction): Moves the hand cursor between the two options, clamping
+     at the ends and playing a move sound only on an actual move.
+   - process_selection(): For "Equip": if allowed, either use_consumable() (and
+     go back) or set current_Unit_Selected.UnitInventory.current_item_equipped to
+     the item; if not allowed, plays an invalid sound. For "Discard": opens the
+     child "Yes No Box" with the item and deactivates itself.
+   - go_back(): Deactivates, hides, and calls
+     get_parent().get_parent().start() to reopen the Item Screen.
+   - turn_off()/turn_on(): Visibility + input toggles (turn_on has a dangling
+     "$"Box Texture2D/Equip"" expression statement that does nothing).
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - Remove the no-op line 110 ($"Box Texture2D/Equip" with no assignment).
+   - Hard-coded font colors should be theme constants; the two option strings and
+     enable rules could be data-driven.
+   - Cross-tree navigation via get_parent().get_parent().start() is brittle; use
+     a signal back to the Item Screen.
+   - Mixing "Use consumable" and "Equip weapon" branches in one box is workable
+     but the item-type logic belongs on the item/inventory model, not the widget.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP / HEAVILY SIMPLIFY. Equip-and-discard is FE inventory management built
+   on per-item usability and consumable uses - concepts DoT does not have. DoT
+   units are Squads/Singles/Generals whose combat value comes from the damage
+   table and HP tier, not from swappable weapons with durability. There is no
+   in-battle item economy in DoT (only battle budget at deployment and souls
+   between missions). If Generals ever get a single equippable ability/loadout,
+   it would be chosen in the between-missions camp UI (/ui), be data-driven, and
+   carry zero RNG - not an in-battle equip/discard popup. Remove for the prototype.

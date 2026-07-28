@@ -1,0 +1,16 @@
+SYNOPSIS: scenes/combat/down_arrow_combat.gd
+
+1. CLASS
+   extends Node2D (no class_name). Decorative widget: the red "down" arrow shown next to a combatant's stats when they are at a weapon-triangle DISADVANTAGE (weapon_bonus == -1).
+
+2. WHAT IT DOES
+   On entering the tree, plays a "move" animation (bobbing arrow). Visibility is toggled by combat.gd.adjust_gui_text_and_hp_box() based on Combat_Calculator.player_weapon_bonus / enemy_weapon_bonus.
+
+3. FUNCTIONS
+   _ready(): $anim.play("move"). No signals or logic.
+
+4. POSSIBLE IMPROVEMENT
+   - Could be replaced by an AnimationPlayer autoplay, eliminating the script.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP as-is. It signals the FE weapon-triangle (sword>axe>lance) advantage system, which is not part of DoT's spec (damage comes from a type-vs-type base table, not a rock-paper-scissors bonus). If DoT ever surfaces a "matchup advantage" hint from its damage table, a similar tiny indicator widget could be re-created, but the current file has no reusable logic.

@@ -1,0 +1,24 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Thief/Colm Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (Combat_Unit, Node2D).
+Combat-animation controller for the thief's battle scene.
+
+2. WHAT IT DOES
+Overrides only the miss-SFX/dodge hook and the death-complete signal for the thief's battle
+animation. Invoked by the combat scene's AnimationPlayer method tracks.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: opponent dodge cue on miss.
+- play_miss_sound(): random "Attack Miss 1..2" from BattlefieldInfo.battle_sounds; emits
+  play_enemy_dodge_anim.
+- death_anim_signal(): emits base death_anim_done so the Combat_Screen proceeds.
+
+4. POSSIBLE IMPROVEMENT
+- Verbatim duplicate of the base Combat_Unit methods; subclass adds nothing — attach Combat Unit.gd
+  directly.
+- Same randf_range->int off-by-one; use randi_range.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. No per-unit combat-animation scenes or miss mechanic in DoT. Only the "view reacts to sim
+signal with a cue" pattern transfers, implemented once and data-driven.

@@ -1,0 +1,20 @@
+FILE: scenes/units/Enemy_Units/Black Archer Combat.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (Combat_Unit subclass). Enemy-side combat-cutscene actor for the Black Archer (its Black Archer Combat.tscn). A TRIMMED variant of the other enemy *Combat scripts — it overrides only two hooks and inherits the rest from Combat Unit.gd.
+
+2. WHAT IT DOES
+AI-side audiovisual glue for the archer's duel, specialized so the attack sound is a bow shot. Declares play_player_dodge_anim for miss handling. Everything else (hit/draw/put-away/crit/death sounds, shake, death_anim_signal) is inherited from the Combat_Unit base.
+
+3. FUNCTIONS
+- signal play_player_dodge_anim: Emitted on a miss so the player actor dodges.
+- play_attack_sound(): Overrides the base to play "Bow Shoot" from BattlefieldInfo.weapon_sounds (not the random melee "Attack N" pool) — the one genuine per-unit specialization among the combat scripts.
+- play_miss_sound(): Random "Attack Miss N" from BattlefieldInfo.battle_sounds + emits play_player_dodge_anim.
+- (Inherited from base: play_hit_sound, play_draw_sound, put_away_attack_sound, play_crit_sound, play_death_sound, shake_camera_*, death_anim_signal — note the base's draw/put-away read combat_PLAYER_unit, so an enemy archer would pull the wrong actor's weapon SFX.) Driven by AnimationPlayer method tracks.
+
+4. POSSIBLE IMPROVEMENT
+- Shows the RIGHT pattern (override only what differs) that the other five enemy combat scripts fail to follow — but inheriting the base's play_draw_sound/put_away_attack_sound means it reads BattlefieldInfo.combat_player_unit instead of combat_ai_unit (latent wrong-actor bug for an enemy).
+- BattlefieldInfo.weapon_sounds vs battle_sounds split is inconsistent with siblings; unify the sound routing.
+
+5. RELATION TO DEATH OR TAXATION
+LARGELY SCRAP; keep trimmed view actor + the override pattern. Remove miss/dodge (deterministic combat). This is the template to follow for DoT: one shared enemy combat-view scene, with per-unit-type overrides (bow-shot vs. melee vs. cast SFX) selected from /data, driven by sim signals (unit_damaged/unit_destroyed). The ranged archetype itself is worth keeping (see Black Archer.gd) because attack range feeds DoT's AI counter scoring; the audiovisual specialization here is the correct, minimal way to express unit variety in the view.

@@ -1,0 +1,35 @@
+SYNOPSIS: scenes/walkable/Test Walk Map.gd
+
+1. CLASS
+extends Node2D. class_name Test_Walk_Map. Root node of a test/prototype walkable-map scene.
+Exists mainly to expose one shared constant.
+
+2. WHAT IT DOES
+A near-empty scaffold for a walkable overworld test map. Its only real payload is the exported
+const MAP_LIMIT = Vector2(480, 480) — the pixel bounds used to clamp the player avatar's
+movement. Eirika's walk script (Eirika Walk.gd) references Test_Walk_Map.MAP_LIMIT to keep her
+inside the map, so this class is effectively the map-bounds definition holder. Its _ready() is
+an empty stub.
+
+3. FUNCTIONS
+_ready() — empty (`pass`); placeholder, does nothing.
+Constant: MAP_LIMIT (Vector2 480x480) — consumed by Eirka_Walk.clamp_eirika() to clamp the
+player's x/y to [0, MAP_LIMIT]. This is the file's only functional contribution.
+Autoloads/classes touched: none directly; provides MAP_LIMIT to Eirka_Walk.
+
+4. POSSIBLE IMPROVEMENT
+- Global-const-as-map-bounds means every walk map shares one hardcoded 480x480 size; bounds
+  should be a per-map property (exported var) or derived from the actual map/camera limits, so
+  different camp maps aren't all forced to one dimension.
+- The class exists almost solely so another script can read Test_Walk_Map.MAP_LIMIT — this
+  couples the player avatar to a specific test-map class name. Pass bounds in or read from a
+  shared config instead.
+- Empty _ready stub is dead code.
+
+5. RELATION TO DEATH OR TAXATION
+Test scaffold for the camp/overworld, not tactical grid logic — outside the grid-builder
+reference mandate and SCRAP as-is. The one takeaway: map bounds/dimensions must be DATA, which
+aligns with DoT's data-driven mandate (a map's size comes from its /data definition, not a
+hardcoded class constant). For DoT, whether camp or battle map, dimensions belong in the map
+Resource/JSON. This particular class-name-holds-a-const pattern should not be carried into DoT.
+Nothing here informs the /sim grid.

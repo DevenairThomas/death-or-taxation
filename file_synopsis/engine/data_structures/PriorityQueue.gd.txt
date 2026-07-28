@@ -1,0 +1,25 @@
+FILE: engine/data_structures/PriorityQueue.gd
+
+1. CLASS
+class_name PriorityQueue. Extends nothing (implicitly RefCounted). A min-priority queue ordered by a cell's fCost, plus a nested CustomSorter helper class.
+
+2. WHAT IT DOES
+Serves as the A* "open list" in MovementCalculator. Holds cells and keeps them sorted so the lowest-fCost cell is at the front. The header comment concedes it is unoptimized: it re-sorts the whole array on every insertion.
+
+3. FUNCTIONS
+- add_first(value): push_front then sort_custom by fCost. Called by get_path_to_destination_AI() to seed and expand the open list.
+- add_last(value): push_back then sort_custom. Not used in the A* path read.
+- pop_front(): returns/removes the lowest-fCost cell (the A* "current").
+- pop_last(): returns/removes the back element. Unused in scope.
+- is_empty(): size()==0; drives the A* while loop.
+- get_size(): element count.
+- contains(value): array.has() linear scan; used by A* to avoid re-adding open cells.
+- CustomSorter.custom_sort(Cell_A, Cell_B): static comparator returning true when Cell_A.get_fCost() < Cell_B.get_fCost(). Depends on Cell exposing get_fCost().
+
+4. POSSIBLE IMPROVEMENT
+- Sorting on every insert is O(n log n) per add -> O(n^2 log n) overall. Replace with a real binary heap (or push all then sort once) for correct priority-queue cost.
+- contains() is O(n); pair with a Dictionary membership index if kept.
+- Add `extends RefCounted`, type the array, and take the comparator/priority as a Callable in the constructor so the queue is decoupled from Cell.get_fCost() (currently tightly bound to the Cell class).
+
+5. RELATION TO DEATH OR TAXATION
+Keep the concept, rewrite as a generic heap in /sim. A pure RefCounted priority queue parameterized by a cost Callable is ideal for headless A* on the DoT grid and is directly unit-testable. Remove the hard dependency on a Cell API so sim units/tiles can be plain data. No rules, no RNG — clean to port.

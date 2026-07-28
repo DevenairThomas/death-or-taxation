@@ -1,0 +1,34 @@
+SYNOPSIS: scenes/items/Tomes/Fire.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete magic-item
+script for Fire.tscn (Fire Tome).
+
+2. WHAT IT DOES
+Basic anima/elemental attack tome. _ready() sets uses 40 / max_uses 45 (note: starts NOT
+full — the only item that ships partially used), might 5, weight 4, hit 90, crit 0,
+range 2-1 (1-2 ranged magic), worth 300, weapon_type ELEMENTAL, strong_against LIGHT,
+item_class MAGIC (so combat uses magic/resistance defense, not physical), icon fire.png,
+weapon_string_name "fire". Listed in Item_Dict.all_items and seeded into the convoy demo.
+The MAGIC item_class is what distinguishes tomes from physical weapons in combat math.
+
+3. FUNCTIONS
+- _ready(): assigns stats; sets both weapon_type = ELEMENTAL and item_class = MAGIC.
+- draw_attack_sound() / put_away_attack_sound(): overridden to pass (no SFX; magic likely
+  handled by animation elsewhere).
+- special_ability(unit_holding_this_item, unit_that_is_being_attacked): returns 1 (params
+  unused); damage-multiplier hook.
+
+4. POSSIBLE IMPROVEMENT
+- uses 40 vs max_uses 45 looks like a copy-paste slip (comment even says "Iron Axe stats");
+  starter tomes usually ship full. Also the reused wrong comment header signals duplication.
+- Data-drive stats; the physical/magic split should be a clean data field, not two enums
+  set by hand per file.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED as an item. The one transferable idea is the item_class PHYSICAL vs MAGIC split —
+a two-defense system. DoT collapses this: there is a single deterministic damage table
+keyed by unit TYPE, and defense comes only from terrain (1−terrain_def), not a separate
+magic-resistance stat. A "magic/artillery" attacker is just another TYPE row (e.g. Arcane
+Sentinel, Cannon Crew) in the table. No RNG, no might/weight/hit. Keep nothing literal;
+the type enum informs DoT's unit-type list.

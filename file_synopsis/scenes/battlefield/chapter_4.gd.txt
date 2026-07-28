@@ -1,0 +1,29 @@
+SYNOPSIS: scenes/battlefield/chapter_4.gd
+
+FILENAME NOTE: Named chapter_4, but the CONTENT is the Chapter 3 mission ("3\nScourge of the Sea", enemy commander "Rolod", objective ELIMINATE_ALL_ENEMIES, events L3_*, +1500 money, prep screen, advances to Level 4 world map). Chapter file names in the reference project are offset from their content numbers.
+
+1. CLASS
+   extends Node2D (no class_name). Per-chapter/mission setup script for Chapter 3, and the first that introduces the pre-battle PREPARATION phase and battle-budget money.
+
+2. WHAT IT DOES
+   Configures the Chapter 3 mission (camera/cursor positions, music, ELIMINATE_ALL victory, enemy commander, L3 event queue), adds 1500 to BattlefieldInfo.money, and enters a preparation mode where the player arranges units before the battle starts. Provides start_battle() (kick off events + music once prep is done), next_level(), and preperation_mode().
+
+3. FUNCTIONS
+   _ready(): registers as level_container; sets camera/cursor; sets music; victory_system -> ELIMINATE_ALL_ENEMIES; caches enemy_commander["Rolod"]; clears event_system, sets starting_events state, adds L3_Event_Part10/20/30; reparents player party into the level; if not loading, adds money_to_add (1500) and calls preperation_mode(); makes ally units visible; clears container modulate (removes dark overlay); frees stale "/root/Level/Chapter 3".
+   next_level(): reparents surviving allies to the persistent y-sort, disables cursor, stops music, fades out, sets WorldMapScreen.current_event = Level4_WM_Event_Part10, SceneTransition.change_scene_to_packed, clears events.
+   start_battle(): event_system.start_events_queue() + play music — the "begin" button out of prep.
+   preperation_mode(): opens BattlefieldInfo.preparation_screen.start(...) with the chapter title/victory text (note: builds a Callable with title+victory_text bound to the intro-screen path — an unusual/likely-buggy use of Callable as a data tuple), shows cursor + Battlefield HUD, sets turn_manager.turn = Turn_Manager.WAIT (freezes turns during prep), and sets every ally unit's action status to MOVE so they can be repositioned.
+
+4. POSSIBLE IMPROVEMENT
+   - preperation_mode() constructs `Callable(chapter_title, victory_text).bind(path)` — Callable's first arg is an Object; passing a String title here is almost certainly a bug / misuse and should be a plain data struct or explicit args.
+   - Mission content hardcoded (commander, money, events, coords); should be data.
+   - `has_node("/root/Level/Chapter 3")` absolute-path cleanup is brittle.
+   - money_to_add / prep_music_choice are per-map magic values.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE. The MISSION content becomes /data. The PREPARATION phase is highly relevant: DoT has a per-mission BATTLE BUDGET used to deploy units, and this prep/deploy screen is the closest reference for DoT's deployment UI. BUT the economy semantics differ hard and must be enforced:
+   - DoT battle budget is per-mission and NEVER carries over; the reference's BattlefieldInfo.money += 1500 accumulating across chapters is exactly the carry-over DoT forbids. Reset budget per mission.
+   - No mid-mission spending beyond deployment; souls (the meta currency) are spent only between missions, never here.
+   - Objective (rout) evaluated in /sim.
+   - Keep the "freeze turns, set units to MOVE for placement" prep flow as a view concept, but deployment validity/budget math lives in /sim.
+   - SCRAP per-map .gd scripting.

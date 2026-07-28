@@ -1,0 +1,29 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ephraim Soldier/Soldier Ally.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for a generic
+soldier unit ("Ephraim Soldier").
+
+2. WHAT IT DOES
+Populates the Battlefield_Unit base fields for a rank-and-file lance soldier on spawn: name,
+portrait/mugshot, lance proficiency + an Iron Lance, and the combat-animation scene. Notably it
+sets NO death_sentence — being a nameless generic soldier, it has no permadeath quote.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation = "Idle"; UnitStats.name = "Ephraim
+  Soldier"; preload soldier portrait into unit_portrait_path and unit_mugshot; append LANCE to
+  UnitInventory.usable_weapons and add_item(Iron Lance) (bound to a local var then added); combat_node
+  = "Soldier Ally Combat.tscn". No death_sentence array (unlike the named characters). Configuration
+  only.
+
+4. POSSIBLE IMPROVEMENT
+- Content-in-code; this generic trooper is the clearest case for a shared data-defined unit type
+  with no bespoke script at all.
+- Absent death_sentence means the death/VN system must null-guard; a data schema with an optional
+  quote field makes that explicit.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE/SCRAP. This is exactly a DoT SQUAD (10 HP, damage scales with remaining HP%) or SINGLE (25 HP,
+full damage at any HP) — an unnamed, disposable, data-defined unit, no permadeath quote, no soul
+persistence. It should be a pure /data unit-type entry instantiated with zero code. Keep the concept
+(generic troops as data); scrap the per-file script.

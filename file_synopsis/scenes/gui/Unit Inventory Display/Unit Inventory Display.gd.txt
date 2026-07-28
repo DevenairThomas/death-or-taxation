@@ -1,0 +1,31 @@
+FILE: scenes/gui/Unit Inventory Display/Unit Inventory Display.gd
+
+1. CLASS
+No class_name. extends Control. A reusable list widget showing one unit's item inventory and letting the player pick an item; emits item_selected. Used primarily by the Shop (sell flow) and item/trade contexts.
+
+2. WHAT IT DOES
+Populates an ItemList with a unit's inventory (name + icon), tracks the currently highlighted item, and on accept emits a signal so an owner (e.g. Shop_UI) can act on the picked item. Has explicit enable/disable-input and fade-in/out lifecycle helpers so owners can hand focus back and forth.
+
+3. FUNCTIONS
+- _ready(): Disables input, clears focus/selection, hides + mouse-ignores the scroll bar.
+- _input(_event): ui_accept -> process_accept().
+- process_accept(): If current_item_selected != null, emit item_selected (null guard prevents a crash from spamming accept).
+- start(unit): Disables input, populate_list_of_items(unit), shows UI, fades in, sets the "X's Inventory" title, sets current_item_selected to item 0 if inventory non-empty.
+- start_with_input(unit): start() then allow_input().
+- allow_input(): Focus the list, select index 0 (and fire _on_Inventory_List_item_selected), enable input.
+- allow_input_last_pick(): Same but re-selects last_index (return to previously chosen row).
+- populate_list_of_items(unit): Clears arrays/list, adds each inventory item (item_name, icon) to the ItemList and to unit_inventory.
+- disallow_input(): Disable input, drop focus/selection.
+- exit(): Fade out, hide, disallow_input, reset().
+- reset(): Clear unit_inventory, last_index=0, current_item_selected=null.
+- _on_Inventory_List_item_selected(index): Sets current_item_selected + last_index.
+Signal: item_selected (Shop_UI connects to it).
+
+4. POSSIBLE IMPROVEMENT
+- Reasonably clean and decoupled already (takes a `unit` param, emits a signal) — better isolated than most siblings.
+- current_item_selected is untyped and can desync from last_index; consider a single selection struct.
+- Relies on unit.UnitInventory internal shape; an interface/duck-typed accessor would decouple it.
+- Add docstrings per project convention.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP (item inventory is CUT). DoT has no in-battle items and no per-unit item inventory economy — the design cuts item shopping/trading; the two currencies are battle budget and souls, neither of which is an item list. So this specific widget has no home in the DoT battle loop. The transferable asset is the pattern: a clean, signal-emitting, focus-managed scrollable list picker. That pattern can be reused in DoT's /ui for the camp screen (pick a General to level/revive) or deployment (pick a unit to deploy). Reuse the structure; drop the item/inventory content entirely.

@@ -1,0 +1,45 @@
+SYNOPSIS: scenes/combat/combat.gd
+
+1. CLASS
+   class_name Combat_Screen; extends Control. The full-screen Fire Emblem-style animated battle cutscene ("combat screen"): the zoomed-in view where two units trade blows with weapon animations, HP bars draining, crit/miss flourishes, death animations, then XP/level-up. Pure VIEW layer plus a hand-rolled _process() state machine that drives pacing.
+
+2. WHAT IT DOES
+   Given the two combatants already chosen (BattlefieldInfo.combat_player_unit / combat_ai_unit) and the numbers already computed by Combat_Calculator, it plays out the duel visually: fades the tactical map, transitions in, loads per-unit combat art scenes, sets backgrounds by terrain, animates each attack in sequence (first/second, player/enemy), lerps HP bars down over time toward a destination HP, handles healing, death, before-battle and death dialogue via the Message System, then routes to XP/level-up screens and returns control to the battlefield. It self-registers as BattlefieldInfo.combat_screen in _ready().
+
+3. FUNCTIONS
+   _ready(): wires XP Screen "done_adding_xp" and Level Up Screen "done_leveling_up" to back_to_battlefield; connects the Message System "no_more_text" to process_after_text; registers self on BattlefieldInfo.combat_screen.
+   _process(delta): the heart — a giant match on current_combat_state, itself gated by whether BattlefieldInfo.turn_manager.turn is PLAYER_TURN or ENEMY_COMBAT_TURN. States: player/enemy first/second turn (trigger an attack), the *_hp_*_update states (drain the HP bar via delta and, on reaching destination HP, branch to death, counter, double-attack, or process_xp based on Combat_Calculator flags), death, healing/healing_adjust, and wait. This is where the whole FE combat flow (attack -> counter-if-alive-and-in-range -> optional doubles -> XP) is sequenced. It reads Combat_Calculator.enemy_can_counter_attack / player_can_counter_attack / player_double_attack / enemy_double_attack to decide ordering.
+   start_combat(initial_combat_state): entry point (called by BattlefieldInfo.start_ai_combat and the player attack flow). Runs Combat_Calculator.process_player_combat()/process_enemy_combat() (RESOLUTION rolls happen here), fades map via the level "Anim", hides tactical units and enemy movement highlights (movement_calculator.turn_off_purple), plays the Combat Trans transition, places art, sets GUI text and background, and either shows before-battle dialogue or starts the Pause timer that kicks the state machine.
+   place_combat_art(): instantiates each unit's combat_node scene plus a "placeholder" idle pose; connects per-unit animation signals (play_enemy_dodge_anim/play_player_dodge_anim -> miss anims, death_anim_done -> on_*_death_complete, the AnimationPlayer "animation_finished" -> update_hp_number).
+   adjust_gui_text_and_hp_box(): fills name/HP/hit/damage/crit/weapon labels from Combat_Calculator and unit stats, sizes the HP region_rects, and shows weapon-triangle up/down arrows from Combat_Calculator.player_weapon_bonus/enemy_weapon_bonus.
+   adjust_player_hp_box_over_time / adjust_enemy_hp_box_over_time(delta): decrement current_health by SPEED*delta and resize the HP bar — the animated drain. NOTE these mutate the sim unit's UnitStats.current_health directly from the view over multiple frames (view mutating sim state).
+   set_player_box / set_enemy_box(): snap HP bar + number to exact current value at destination.
+   adjust_healing_player(delta) / player_healing_anim(): heal path (staff), increments enemy(target) health, decrements staff durability, flags broke_item.
+   set_background(tilename): match on terrain name -> preloaded PNG; default plains.
+   player_attack() / enemy_attack(): pick the "<weapon> crit/regular/miss" AnimationPlayer clip based on the per-attack hit/crit booleans from Combat_Calculator; decrement weapon uses; on break, cancel counter/double. Set state to wait until animation_finished fires.
+   update_hp_number(anim_name): the callback from the combat art's AnimationPlayer.animation_finished; ignores death/dodge, handles staff healing destination, else computes the HP destination for the just-played attack (current_health - Combat_Calculator.*_actual_damage) and advances current_combat_state to the matching *_hp_update state. Clamps destinations.
+   play_enemy_miss_anim / play_player_miss_anim(): dodge/miss flourish.
+   turn_on(): reveals the combat control, ducks the music volume.
+   process_ally_death / process_enemy_death(): if the unit has a death_sentence, route through Message System (messaging_state ally_death/after_fight), else play death animation immediately.
+   on_ally_death_complete(): erases the ally from BattlefieldInfo.ally_units, clears its tile.occupyingUnit, removes the node; if the dead unit is "Eirika" -> game_over; else consults battlefield_container.check_loss(). (RNG-free but hardcodes the protagonist name.)
+   on_enemy_death_complete(): erases from enemy_units, clears tile, removes node, then process_death_xp().
+   process_after_text(): resumes flow after Message System dialogue based on messaging_state (before_fight -> start; ally_death/after_fight -> play death anim).
+   process_xp / process_heal_xp / process_death_xp(): guard against level 20, show the XP Screen and start the appropriate XP tally (per-kill / per-hit / heal EXP — all out of spec for DoT).
+   back_to_battlefield(): starts the Return Pause timer, resets combat state to wait.
+   turn_off(): hides XP/item-broke UI; if cinematic_branch emits combat_screen_done; restores enemy movement highlights; sets BattlefieldInfo.game_over if needed; emits turn_manager "check_end_turn".
+   _on_Pause_timeout(): advances current/previous state to next_combat_state (kicks off the first attack after intro).
+   _on_Return_Pause_timeout(): tear-down — greyscales the acting unit, restores cursor/turn (PLAYER_TURN -> enable cursor; ENEMY_COMBAT_TURN -> turn_manager.turn = ENEMY_TURN), re-shows tactical units, restores music, fades out, frees the combat art nodes and any dead units, resets state, calls turn_off().
+
+4. POSSIBLE IMPROVEMENT
+   - The state machine is a ~280-line nested match duplicated across two turn contexts with near-identical branches; it is fragile (e.g. line ~650 `elif enemy_second_turn:` tests a truthy enum constant, not `previous_combat_state == enemy_second_turn` — a latent bug). Replace with a small explicit queue of "attack events" produced by the sim resolver, then just play them back.
+   - The view mutates sim state (current_health) frame-by-frame for the drain animation; instead the sim should resolve final HP once and the view should lerp a display-only value toward it. This is the single biggest architectural violation to carry as a warning into DoT.
+   - Godot 4 idiom: replace connect(..., Callable(self, "name")) with signal.connect(callable) and typed signals; replace get_parent().get_parent().get_node(...) chains and deep $"A/B/C" paths with @export NodePaths or unique-name (%) nodes.
+   - Hardcoded "Eirika"/"Seth"/"staff" strings and level-20 cap should be data/constants.
+
+5. RELATION TO DEATH OR TAXATION
+   MOSTLY SCRAP as logic, KEEP as optional gray-box view. Per DoT notes this FE combat-animation screen is view-layer/optional. In DoT the skirmish RESOLUTION must live in /sim (pure, deterministic), and this screen — if kept at all in prototype — becomes a thin animation player that consumes a list of already-resolved events (attacker deals X, defender counters for Y) emitted via the BattleSim signals (unit_damaged, unit_destroyed, skirmish_resolved). Specifically:
+   - REMOVE all references to hit/crit/miss/dodge branches and Combat_Calculator RNG flags; DoT has none.
+   - REMOVE per-kill/per-hit/heal XP (process_xp/process_heal_xp/process_death_xp, level-up screen) — DoT has NO per-kill EXP; souls are awarded on mission completion only.
+   - The "counter only if alive and in range" ordering encoded in _process IS the DoT skirmish order and should be preserved, but computed in /sim, not derived here from Calculator booleans.
+   - The HP-bar drain must NOT mutate sim health; it animates toward a value the sim already committed.
+   - For gray-box, this entire screen can be replaced by a ColorRect flash + damage number; the earnest lich VN dialogue (before_battle_sentence/death_sentence via Message System) is the piece worth keeping conceptually, but DoT must NEVER author death-variant scenes — dead Generals still appear in cutscenes.

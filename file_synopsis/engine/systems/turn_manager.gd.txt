@@ -1,0 +1,30 @@
+FILE: engine/systems/turn_manager.gd
+
+1. CLASS
+class_name Turn_Manager. Extends Node. The turn-phase state machine coordinating player turn, enemy turn, enemy combat, waiting, transitions, victory, and game over.
+
+2. WHAT IT DOES
+Tracks whose turn it is and the turn counters, detects end-of-turn (all units DONE), drives AI unit sequencing during the enemy phase, fires turn-transition graphics, checks victory/game-over each poll, resets unit action/greyscale state between turns, and handles the game-over scene change.
+
+3. FUNCTIONS
+- _init(): turn = WAIT.
+- _ready(): connects check_end_turn -> check_end_of_turn and game_over -> game_over_scene.
+- reset_allys() / reset_enemies(): set every unit's UnitActionStatus to MOVE (skips allies while loading). Called at the start of each phase.
+- reset_greyscale(): turn_greyscale_off on all units (skips allies while loading) — view refresh at turn start.
+- check_end_of_turn(): the core poll. Calls BattlefieldInfo.victory_system.check_victory_status(); if victory -> WAIT + deferred victory_next_level; if game_over -> WAIT + deferred game_over_scene. Otherwise match turn: PLAYER_TURN — if every ally is DONE, increment player_turn_number, emit player_turn_increased, and (if no mid events) start_ally_transition; ENEMY_TURN — advance the next not-DONE enemy via BattlefieldInfo.next_ai(enemy_unit), or when all done increment enemy_turn_number, emit enemy_turn_increased, and start_enemy_transition.
+- start_ally_transition() / start_enemy_transition(): start the "End of Enemy"/"End of Ally" timers; the enemy one first re-centers the camera on Eirika.
+- _on_End_of_Ally_timeout() / _on_End_of_Enemy_timeout(): emit play_transition("Ally"/"Enemy") and reset_greyscale().
+- reset(): turn counters back to 1.
+- game_over_scene(): reset(), disables cursor input, SceneTransition.change_scene_to_file to the Game Over screen.
+- victory_next_level(): BattlefieldInfo.level_container.next_level().
+- move_camera_to_Eirika(): pans main_game_camera + cursor to Eirika and re-emits cursorMoved.
+Signals: player_turn_increased, enemy_turn_increased, play_transition, check_end_turn, game_over. Touches BattlefieldInfo (victory_system, enemy/ally_units, next_ai, cursor, camera, Eirika, level_container), Unit_Action_Status, SceneTransition.
+
+4. POSSIBLE IMPROVEMENT
+- Comment admits "not a fan of checking this every frame" — end-of-turn detection is polled rather than event-driven off unit-completed signals; convert to reactive.
+- Hardcodes protagonist "Eirika" and camera offsets; couples turn logic to camera/cursor view concerns and to concrete scene child timers ("End of Ally"/"End of Enemy").
+- victory/game_over are read as BattlefieldInfo booleans and also as signals — two sources of truth; unify.
+- Blends AI stepping (next_ai) and view transitions into the phase machine; separate phase state (pure) from presentation.
+
+5. RELATION TO DEATH OR TAXATION
+Keep the concept, rebuild as a pure /sim phase machine. Turn/phase sequencing is core to the DoT skirmish loop and should be a headless-testable RefCounted: it decides phase order, when a side's turn ends, and emits signals (turn_changed) that /scenes consume — DoT explicitly lists turn_changed as a sim->view signal. Strip camera/cursor/Eirika and scene-timer coupling to /scenes. Victory and game-over evaluation should call sim predicates (see victory_checker) not scene booleans. Replace polled end-of-turn with unit-action-completed events. No RNG here (good). Remember DoT specifics: losing the last General under No-Revive is game over — that condition belongs in the victory/defeat checker the turn machine consults, not hardcoded to a single named unit. This is one of the more directly reusable systems, once decoupled.

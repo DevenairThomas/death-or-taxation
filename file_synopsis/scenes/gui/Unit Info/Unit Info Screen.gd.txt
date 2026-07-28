@@ -1,0 +1,26 @@
+FILE: scenes/gui/Unit Info/Unit Info Screen.gd
+
+1. CLASS
+No class_name (registered as BattlefieldInfo.unit_info_screen). extends CanvasLayer. The detailed single-unit stat sheet, opened with R over a unit: portrait, name, class, level, XP, HP, all combat stats, and the unit's item inventory.
+
+2. WHAT IT DOES
+Builds and shows a full character info panel for BattlefieldInfo.current_Unit_Selected. Displays portrait/name/class/level/current XP/HP, then Str-or-Mag (whichever is higher), Def, Res, Move, Con, Skill, Spd, Luck, and up to 6 inventory item slots. Ducks the music while open and restores on close.
+
+3. FUNCTIONS
+- _ready(): Registers self as BattlefieldInfo.unit_info_screen.
+- build_info_sheet(): Caches current_Unit_Selected, lowers AllyLevel music volume, writes portrait + all stat labels. Chooses Str vs Mag label by comparing strength/magic. Reads UnitStats (name, class_type, level, current_xp, current/max_health, strength, magic, def, res, consti, skill, speed, luck) and UnitMovementStats.movementSteps. Then reset_item_slots() + set_items(); plays Fade anim; starts input Timer.
+- _input(event): When input_is_active, ui_cancel -> turn_off().
+- reset_item_slots(): Re-gathers the six fixed "Item Slot N" nodes into item_slots and calls empty_slot() on each.
+- set_items(unit): For each item in unit.UnitInventory.inventory, pops a slot and calls slot.start(item).
+- turn_on(): Show container + build_info_sheet().
+- turn_off(): Restore music, disable input, play Fade backwards, hide, then return control via BattlefieldInfo.cursor.back_to_move() + turn_on_ui.
+- _on_Timer_timeout(): input_is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+- One long block of node-path string assignments; drive from a data map {stat_name: label_node} or a reusable StatRow component.
+- Str-vs-Mag "show the bigger one" is a display heuristic that hides one stat; questionable UX, and it's logic baked in the view.
+- Fixed 6 item-slot nodes; instance rows from inventory instead.
+- Reaches into BattlefieldInfo.current_Unit_Selected and music_player globally; pass the unit in explicitly for testability/reuse.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP THE ROLE, REWORK THE STAT MODEL. An inspect-a-unit panel is valuable for DoT and lives in /ui rendering sim state only. BUT the FE stat block (Str/Mag/Skill/Spd/Luck/Def/Res/Con + per-kill XP) does NOT match DoT: DoT units are 3 tiers (Squads 10HP, Singles 25HP, Generals lvl1-5) with a deterministic damage table, no Luck/Skill/hit/RNG stats, and NO per-kill EXP. So the XP field and most FE stats are CUT/replaced. For a General, this panel should show tier, level (1-5), HP, damage-table row, terrain context, and abilities — not the FE spread. The inventory/item-slot section is dropped (no in-battle items per design). Music-ducking and fade are fine gray-box presentation. Use this only as a layout reference; the content is a fresh DoT-data-driven build.

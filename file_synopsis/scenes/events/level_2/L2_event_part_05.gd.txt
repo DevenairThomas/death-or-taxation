@@ -1,0 +1,33 @@
+SYNOPSIS — scenes/events/level_2/L2_event_part_05.gd
+
+1. CLASS
+class_name L2_Event_Part05, extends "res://scenes/events/event_base.gd" (i.e. Event_Base, referenced by path rather than class_name).
+Concrete scripted cutscene beat — Level 2 opening (Seth briefs the soldiers; a patrol walks off south).
+
+2. WHAT IT DOES
+Opens Level 2 at night: hides the whole army, reveals only the staging cast (Seth, a Dead Soldier, some Ally units, two "Move Me" patrol soldiers), fades in, plays Seth's briefing dialogue in the top textbox, then walks the two patrol soldiers south and despawns them as they arrive (they "leave" the scene). Completes when the cinematic movement finishes.
+
+3. FUNCTIONS
+- var dialogue (Array): Seth's briefing + a soldier's reply, "Name@portrait@text".
+- var move_actor_3 / move_actor_4: the two patrol units that walk off.
+- _init(): sets debug name/part and path = the .gd's own res:// path (used by save()).
+- start():
+  * Hides all ally_units and calls ally.turn_greyscale_off() on each (resets a visual state).
+  * Reveals the specific staging cast by identifier (Seth, "Dead Soldier", "Ally 1/2/3", "Move Me 3/4"); caches Move Me 3/4.
+  * Plays battlefield_container "Anim" "Fade" and awaits it.
+  * Connects message_system.no_more_text -> move_actor; movement_system_cinematic.individual_unit_finished_moving -> hide_actor; movement_system_cinematic.unit_finished_moving_cinema -> event_complete.
+  * Sets box to Messaging_System.TOP, enable_text(dialogue).
+- move_actor(): paths Move Me 3 and 4 to grid[8][12] (movement_calculator.get_path_to_destination_AI), nulls their occupied tiles, appends both to unit_to_move_same_time, sets is_moving = true.
+- hide_actor(unit): fires per-unit as each patrol soldier arrives — sets BattlefieldInfo.turn_manager.turn = Turn_Manager.WAIT, hides the unit, erases it from BattlefieldInfo.ally_units, nulls its tile, queue_free()s it (permanently removing the walk-off patrol).
+
+Coupling: BattlefieldInfo, message_system (Messaging_System), movement_system_cinematic, movement_calculator, turn_manager (Turn_Manager), battlefield_container Anim. Advanced by Event_System via event_done.
+
+4. POSSIBLE IMPROVEMENT
+- Actor selection is by hard-coded string identifiers ("Move Me 3", "Ally 1"...) — brittle content-in-code; should be data references.
+- Both patrol units path to the SAME tile grid[8][12] (occupancy conflict); relies on despawn timing to avoid a stuck unit — fragile.
+- Setting turn_manager.turn = WAIT inside a per-unit hide callback is a surprising side effect buried in a visual routine.
+- Deprecated fade/anim + string node paths; magic grid coordinate.
+- No signal disconnects; not headless-testable (BattlefieldInfo + live nodes).
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as script; a couple of runner requirements to note. The dialogue+staging is a data scene in DoT. New capability this beat exercises beyond L1: "actor walks off and is removed from the roster" — a stage direction a full event runner might support, but well beyond the DoT gray-box VN stub, which only needs text + speaker + colored-rect portrait + advance. The "Dead Soldier"/reveal-specific-cast bookkeeping is FE staging noise. Note one DoT-relevant contrast: this reference freely deletes ally units for cinematic effect; DoT must never do death-variant staging for Generals — cutscene actors are decoupled from the persistent roster, and dead Generals still appear. So the "erase unit from roster during a cutscene" trick is explicitly NOT to be mirrored for Generals.

@@ -1,0 +1,29 @@
+SYNOPSIS — scenes/events/level_1/L1_event_part_20.gd
+
+1. CLASS
+class_name L1_Event_Part_20, extends Event_Base.
+Concrete scripted cutscene beat — Level 1, second beat (the bandit leader Marcus taunts). One .gd per beat.
+
+2. WHAT IT DOES
+Plays the villain's intro dialogue for Level 1: starts battle music, shows Marcus's threat lines in the bottom VN textbox, then pans the camera back to a fixed position and completes the beat. The shortest of the L1 beats — pure music + text + camera, no actor movement.
+
+3. FUNCTIONS
+- var dialogue (Array): Marcus's lines in "Name@portrait@text" form (English; Japanese originals commented out).
+- _init(): sets event_name = "Level 1 Bandit Leader Talk", event_part = "Part 20".
+- start():
+  * BattlefieldInfo.music_player.get_node("AllyLevel").play(0) — starts a music track.
+  * Connects message_system.no_more_text -> move_camera.
+  * Sets message box to Messaging_System.BOTTOM.
+  * enable_text(dialogue) — base method calling message_system.start; displays the lines.
+- move_camera(): tweens BattlefieldInfo.main_game_camera to Vector2(0,80) over 1s via the camera's child "Tween"; connects tween_all_completed -> event_complete (emits event_done, advancing Event_System to the next beat).
+
+Coupling: BattlefieldInfo, music_player, message_system (Messaging_System), main_game_camera+Tween. Queued by event_loader_L1, advanced by Event_System.
+
+4. POSSIBLE IMPROVEMENT
+- Deprecated Godot-3 Tween.interpolate_property/child-Tween-node pattern (conversion debris) — Godot 4 uses create_tween().
+- Camera target Vector2(0,80) and music node path "AllyLevel" are magic literals.
+- Connects no_more_text -> move_camera without ever disconnecting; re-running would double-fire.
+- Music node lookup by string path ("AllyLevel") is brittle content-in-code.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as a script; the villain-taunt beat is just another data scene. In DoT this is one entry in the map's pre-battle scene data: a couple of lines with a speaker and a portrait-color, played by the generic VN stub. Music selection and camera position would, in DoT, be scene metadata fields (if supported at all) rather than imperative node lookups — and for the gray-box milestone, music and camera tweening are out of scope, so only the text+speaker survives. Confirms a runner requirement already covered by beat 10: "show a block of speaker/text and advance". No new capability. Content is placeholder, replaced by DoT writing (e.g. a Crown officer, played straight-faced).

@@ -1,0 +1,30 @@
+FILE: scenes/units/Player_Units/AllyUnits/Natasha/Natasha.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the healer/cleric
+unit (character Natasha).
+
+2. WHAT IT DOES
+Populates the Battlefield_Unit base fields for Natasha on spawn: name, portrait/mugshot, HEALING
+proficiency + a Heal staff, combat-animation scene, and a death quote. Uniquely a support unit — its
+only "weapon" is a staff, so it heals rather than attacks.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation = "Idle"; UnitStats.name = "Natasha";
+  preload cleric mugshot into unit_portrait_path and unit_mugshot (a commented-out alternate portrait
+  path remains); append HEALING to UnitInventory.usable_weapons and add_item(Heal.tscn staff);
+  combat_node = "Natasha Combat.tscn"; death_sentence one-line quote. Configuration only; the healing
+  behavior lives in the staff item + action code, not here.
+
+4. POSSIBLE IMPROVEMENT
+- Content-in-code; convert to a unit data resource; drop the commented-out portrait line.
+- HEALING as a weapon type is a clean example of why "usable_weapons + inventory" should be a data
+  list rather than per-script append calls.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE, and question the role. Healing/staff support is not part of DoT's stated deterministic
+skirmish loop (design centers on the damage formula and tiers; no healing action is specified). If a
+support/heal action is wanted it must be defined deterministically and logged in DECISIONS.md, not
+imported wholesale. A cleric could be a SQUAD/SINGLE or, if a named father, a GENERAL — always /data.
+Scrap the per-unit script; treat "can heal" as a data-defined action/ability, not a subclass, and
+only if the design admits it.

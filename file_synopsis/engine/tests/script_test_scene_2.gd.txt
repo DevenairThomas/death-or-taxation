@@ -1,0 +1,16 @@
+FILE: engine/tests/script_test_scene_2.gd
+
+1. CLASS
+No class_name. Extends Control. An empty placeholder scene script.
+
+2. WHAT IT DOES
+Nothing functional — on ready it prints "Running Script Test Scene 2". A scaffold/second test scene left in place.
+
+3. FUNCTIONS
+- _ready(): print("Running Script Test Scene 2"). No signals, no autoload references, no logic.
+
+4. POSSIBLE IMPROVEMENT
+- Delete it, or turn it into a real test. It is a print-only stub with no assertions and no purpose.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap. No content, no logic, no reuse value. DoT tests should be headless, assertion-based sim tests run via tests/run_tests.gd (CLAUDE.md), not empty Control scenes that print on _ready. Nothing to port.

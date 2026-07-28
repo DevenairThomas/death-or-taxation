@@ -1,0 +1,26 @@
+FILE: scenes/transition/Turn Transition.gd
+
+1. CLASS
+- No class_name. extends Node2D.
+- A battlefield-scoped node (the "Player Phase"/"Enemy Phase" banner overlay). Registers itself on the global BattlefieldInfo singleton as BattlefieldInfo.turn_transition. Not an autoload itself; it lives inside the (currently non-loading) battle map scene.
+
+2. WHAT IT DOES
+- Shows the animated "Player Phase" / "Enemy Phase" turn banner and, on the way in/out, drives the turn hand-off: toggling battlefield UI and cursor, flipping the Turn_Manager turn state, resetting ally/enemy units, and kicking off the AI phase. It is the glue between the visual turn banner animation and the turn-manager sim state.
+
+3. FUNCTIONS
+- _ready(): Connects BattlefieldInfo.turn_manager "play_transition" -> start_transition, and BattlefieldInfo.tile_unit_updater "update_done" -> finish_turn_transition. Registers self as BattlefieldInfo.turn_transition.
+- start_level(): Convenience to begin with a Player phase (calls start_transition("Player")).
+- start_transition(type): If "Enemy": shows Enemy Phase banner, plays Move_Off, turns off battlefield UI (via BattlefieldHUD node up the tree), sets cursor to WAIT. Else shows Player Turn banner and plays its Move_Off. Triggered by turn_manager's play_transition signal.
+- ally_animation_finished(anim_name): Animation callback -> BattlefieldInfo.tile_unit_updater.ally_turn_update().
+- enemy_animation_finished(anim_name): Animation callback -> tile_unit_updater.enemy_turn_update().
+- finish_turn_transition(type): On "Ally": sets turn_manager.turn = PLAYER_TURN, resets allies + enemies, re-enables HUD + cursor, clears save_load_system.is_loading_level. Else: sets turn = ENEMY_TURN, resets enemies, emits turn_manager "check_end_turn" to start AI. Triggered by tile_unit_updater update_done.
+- Signals: handles turn_manager.play_transition, tile_unit_updater.update_done; emits turn_manager.check_end_turn. Touches BattlefieldInfo (turn_manager, tile_unit_updater, cursor, save_load_system) and Turn_Manager constants.
+
+4. POSSIBLE IMPROVEMENT
+- get_parent().get_parent().get_node("BattlefieldHUD") is brittle tree-walking; inject the HUD reference or route through BattlefieldInfo/signals.
+- View node (banner) is mutating sim state directly (turn_manager.turn = ...): this violates a clean sim/view split. The turn-state flip should live in the sim turn manager, with the banner only listening.
+- Untyped params; anim callbacks ignore their arg.
+- Commented-out music line is dead code.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE. DoT keeps a turn banner concept (player phase / enemy phase) as a view element, but the architecture must invert: in DoT the turn manager lives in /sim (pure, headless, testable) and OWNS turn state; the banner in /scenes only reacts to a turn_changed signal (sim->view signals only). So: keep the visual "phase" banner idea, SCRAP the pattern of the banner writing turn_manager.turn and calling AI start. The enemy-phase kickoff (check_end_turn -> AI) belongs to the sim turn loop invoking the deterministic AI scorer in /sim.

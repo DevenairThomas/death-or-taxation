@@ -1,0 +1,33 @@
+SYNOPSIS — scenes/events/event_base.gd
+
+1. CLASS
+class_name Event_Base, extends Node2D.
+Abstract base class / interface for a single scripted cutscene "beat" (event). Every hard-coded per-level event script (L1_Event_Part_*, L2_Event_Part_*, L2_Event_Mid_*) extends this. Spawn_Event also extends it.
+
+2. WHAT IT DOES
+Defines the common contract for an event in the reference project's cutscene/event system: a set of virtual hook methods (start, move_camera, move_actor, enable_text, enable_combat, check_player_input) that concrete subclasses override, plus the completion signal that drives the Event_System queue. It also holds debug metadata (event_name, event_part) and a serialization path. Only two methods have real bodies here; the rest are `pass` stubs meant to be overridden.
+
+3. FUNCTIONS
+- enum {active, wait} / var current_state = wait: nominal state flag; in practice unused by subclasses (they drive flow via signals).
+- signal event_done: emitted by event_complete(); Event_System.start_events_queue connects to this to advance to the next queued event.
+- var path: resource path string, written by subclass _init, consumed by save() for serialization.
+- var event_name / event_part: debug strings printed by Event_System when an event starts.
+- start(): virtual, empty. Entry point called by Event_System.start_events_queue when this event is popped from the queue. Every subclass overrides it to wire up signals and kick off the beat.
+- move_camera(): virtual stub. Subclasses override to tween BattlefieldInfo.main_game_camera (via its child "Tween" node).
+- move_actor(): virtual stub. Subclasses override to path units through BattlefieldInfo.movement_system_cinematic.
+- enable_text(text_array: Array): concrete. Calls BattlefieldInfo.message_system.start(text_array) to display VN dialogue. The one shared, reused implementation; subclasses call it directly.
+- enable_text_no_array(): virtual stub (overridden in L1_Event_Part_10 to feed its own dialogue after movement).
+- enable_combat(): virtual stub. Overridden (e.g. L2_Event_Part2) to trigger a scripted battle via BattlefieldInfo.start_ai_combat.
+- check_player_input(): virtual stub, never overridden in scope; intended to force a required player action.
+- event_complete(): concrete. emit_signal("event_done"). Called by subclasses (often via a tween/movement/message callback) to hand control back to Event_System.
+- save(): returns {"filename": path} dict for the save/load system to reconstruct the event.
+
+4. POSSIBLE IMPROVEMENT
+- Extends Node2D but the class carries no 2D transform/visual responsibility — it manipulates autoload singletons. Should be RefCounted or plain Node; Node2D is misleading and heavier.
+- The virtual methods are untyped and take no parameters, so the "contract" is only a naming convention — subclass signatures drift (move_camera vs move_actors, enable_text_no_array). A typed, parameterized interface (e.g. play(context) or explicit step objects) would make it enforceable.
+- current_state/active/wait enum is dead — either use it to gate re-entrancy or remove it.
+- Godot-4 idiom: use `event_done.emit()` and `signal.connect(callable)` rather than emit_signal/Callable(self,"name") string-based wiring.
+- Heavy reliance on the BattlefieldInfo god-object makes every event untestable in isolation; injecting the systems it needs would allow headless tests.
+
+5. RELATION TO DEATH OR TAXATION
+Concept KEEP, implementation SCRAP. The idea of a common event/beat abstraction with a completion signal that a queue-runner advances on is exactly what DoT's VN-stub player needs — a generic runner plays a scene, waits for "beat done", advances. But in DoT the beats must NOT be GDScript subclasses; they are entries in a /data scene file (speaker, portrait-color, text; optional camera/actor/combat directives), and a single generic player interprets them. So Event_Base becomes, at most, a tiny runtime handle for "the scene currently playing" rather than a base class content authors subclass. The useful residue: the list of capabilities a data-driven runner must support is exactly the hook set here — move camera, move actor, show text, trigger combat, (check player input). Note DoT's VN stub is far simpler: full-width bottom textbox, colored-rectangle portrait placeholder, advance on click/space; no music, no mugshot PNGs, no camera tweening required for the gray-box milestone. save()'s path-based serialization is irrelevant to a data-defined scene (you save "which scene id / index", not a script path).

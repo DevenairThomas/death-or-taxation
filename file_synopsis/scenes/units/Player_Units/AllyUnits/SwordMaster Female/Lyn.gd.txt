@@ -1,0 +1,28 @@
+FILE: scenes/units/Player_Units/AllyUnits/SwordMaster Female/Lyn.gd
+
+1. CLASS
+No class_name. `extends Node2D` (NOT Battlefield_Unit, unlike every other unit in this folder).
+This is the odd one out — a bare display scene, not a configured playable unit.
+
+2. WHAT IT DOES
+Almost nothing. It appears to be a standalone/preview node (e.g. a swordmaster "Lyn" idle display or
+placeholder) that just starts its idle animation. It is NOT hooked into the Battlefield_Unit system:
+no UnitStats, no inventory, no combat_node, no death quote. Likely a leftover/prototype or a
+menu/gallery sprite rather than a battlefield unit.
+
+3. FUNCTIONS
+- _ready(): calls $Animation.play("Idle") — starts the AnimationPlayer's Idle clip. Note it uses the
+  AnimationPlayer API `.play(name)` whereas the real units set `$Animation.current_animation` on a
+  different animation setup; combined with extending Node2D, this confirms it is not a Battlefield_Unit.
+
+4. POSSIBLE IMPROVEMENT
+- Boilerplate comment cruft ("Declare member variables here" examples) should be removed.
+- If it is dead/preview code, delete it; if it is meant to be a playable swordmaster, it needs to
+  extend Battlefield_Unit and be configured like its siblings (name, inventory, combat_node, quote).
+- Its inconsistency (Node2D + .play vs current_animation) is a maintenance trap.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. As a bare idle-animation node with no sim data it has no place in DoT's sim/view architecture.
+If a swordmaster-type were wanted it would be a data-defined SQUAD/SINGLE, or a GENERAL if a named
+father — always /data, and the VIEW would play an idle animation generically. This file is a good
+example of the leftover/placeholder code DoT's "no dead code" convention says to remove.

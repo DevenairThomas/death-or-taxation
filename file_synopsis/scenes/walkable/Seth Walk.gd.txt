@@ -1,0 +1,36 @@
+SYNOPSIS: scenes/walkable/Seth Walk.gd
+
+1. CLASS
+extends CharacterBody2D. No class_name. An idle NPC party-member avatar in the walkable camp
+map (Seth, a cavalier). Has a talk_name = "Seth" field.
+
+2. WHAT IT DOES
+Seth stands idle in the camp and delivers a scripted VN dialogue when talked to. His lines are
+exposition about the training grounds / camp itself: what the prep area is for (training units,
+preparations, alliances) and why it currently looks empty (no builders/resources yet) — a
+lightweight world/tutorial beat. Content is a hardcoded `dialogue` array in
+"Name@portrait_path@text" format. No movement or patrol.
+
+3. FUNCTIONS
+_ready() — plays "Idle" animation.
+start_dialogue() — invoked by Eirka_Walk on interact; calls
+  BattlefieldInfo.message_system.start(dialogue) to display Seth's 5-line conversation.
+Fields: talk_name = "Seth" (an interaction-label field also present on Colm; unused by the
+  message call itself here).
+Autoloads/classes touched: BattlefieldInfo.message_system; called by the Eirka_Walk avatar.
+
+4. POSSIBLE IMPROVEMENT
+- Hardcoded dialogue + portrait paths belong in /data, not in the script.
+- Structurally identical to Naomi/Vanessa Walk — one shared data-driven TalkNPC would replace
+  all three. talk_name exists here but not on Naomi/Vanessa — inconsistent NPC interface.
+- No class_name; the reusable "idle NPC that talks" pattern should be a named base class.
+
+5. RELATION TO DEATH OR TAXATION
+Camp NPC exposition, not tactical-grid logic — outside the grid-builder mandate; SCRAP the
+per-character-script form. Transferable idea: content-as-data, plus this specific dialogue is
+essentially the camp's self-description — DoT's camp/prep screen (between-mission soul economy:
+level/revive Generals) could use a similar in-character explainer, but data-defined and in
+DoT's voice (the earnest lich). Note DoT rules differ from the FE fiction here: DoT's
+"training/preparation" is soul spending between missions only, no mid-mission economy, no budget
+carry-over. Rebuild any such NPC as a shared VN component reading /data dialogue. Nothing here
+informs /sim.

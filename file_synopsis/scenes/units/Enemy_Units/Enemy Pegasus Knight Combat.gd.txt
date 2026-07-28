@@ -1,0 +1,23 @@
+FILE: scenes/units/Enemy_Units/Enemy Pegasus Knight Combat.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (Combat_Unit subclass). Enemy-side combat-cutscene actor for the Enemy Pegasus Knight (its Enemy Pegasus Knight Combat.tscn). Byte-for-byte equivalent to the other enemy *Combat scripts.
+
+2. WHAT IT DOES
+AI-side audiovisual glue for the flyer's duel: attack/hit/draw/put-away/miss/crit/death sounds and death-anim signal. Reads BattlefieldInfo.combat_ai_unit for weapon SFX, declares play_player_dodge_anim for miss handling. No flight-specific presentation.
+
+3. FUNCTIONS
+- signal play_player_dodge_anim.
+- play_attack_sound()/play_hit_sound(): Random "Attack N"/"Attack Hit N".
+- play_draw_sound()/put_away_attack_sound(): BattlefieldInfo.combat_ai_unit.UnitInventory.current_item_equipped SFX.
+- play_miss_sound(): Random "Attack Miss N" + emits play_player_dodge_anim.
+- play_crit_sound(): Random "Critical Hit N".
+- play_death_sound(): "Death".
+- death_anim_signal(): Emits death_anim_done. Driven by AnimationPlayer method tracks.
+
+4. POSSIBLE IMPROVEMENT
+- Identical clone of the other enemy *Combat scripts — no unique flyer behavior; consolidate to one shared enemy combat base.
+- Global BattlefieldInfo.combat_ai_unit coupling.
+
+5. RELATION TO DEATH OR TAXATION
+LARGELY SCRAP; keep trimmed view actor. Remove miss/crit/dodge (deterministic combat). Flight is a movement-class distinction (sim/data), not a combat-view distinction, so this script offers nothing unique and should fold into the shared, data-parameterized enemy combat-view driven by sim signals. Re-skin the flyer as a Crown airborne unit or a flying construct.

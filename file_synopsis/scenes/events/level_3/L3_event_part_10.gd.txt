@@ -1,0 +1,26 @@
+SYNOPSIS: scenes/events/level_3/L3_event_part_10.gd
+
+1. CLASS
+class_name L3_Event_Part10. extends "res://scenes/events/event_base.gd" (Event_Base, itself extends Node2D).
+A single scripted pre-battle dialogue beat for Level 3.
+
+2. WHAT IT DOES
+Plays a 3-line opening conversation (Seth / Eirika / Eirika) before the Level 3 battle map runs. It is one entry in the level's event list (registered via a loader into BattlefieldInfo.event_system). The dialogue array encodes speaker, portrait path, and line in a single "Name@portraitPath@text" string.
+
+3. FUNCTIONS
+_init():
+- Sets debug metadata: event_name, event_part, and path (used by Event_Base.save() for serialization/save-games).
+start():
+- BattlefieldInfo.message_system.connect("no_more_text", event_complete) — when the messaging system exhausts the dialogue, event_complete() (inherited from Event_Base) emits "event_done", signaling the event runner to advance to the next event.
+- message_system.set_position(Messaging_System.BOTTOM) — places the textbox at bottom.
+- enable_text(dialogue) — inherited helper that calls BattlefieldInfo.message_system.start(dialogue) to begin playback.
+Callers: start() is invoked by the event system/runner when this event's turn comes up. Relies on autoload BattlefieldInfo.message_system (a Messaging_System) and its "no_more_text" signal.
+
+4. POSSIBLE IMPROVEMENT
+- The "Name@path@text" packed string is fragile parsing; use a typed structure (dict/Resource with fields speaker, portrait, text) so an @ in dialogue can't break it.
+- The "no_more_text" signal is connected but never disconnected; if this event object is reused or the signal fires in another context, it can double-fire. Use one-shot connect flag (CONNECT_ONE_SHOT) in Godot 4.
+- Speaker names, portraits, and lines are content in code — should be data.
+- No docstrings on start().
+
+5. RELATION TO DEATH OR TAXATION
+Scrap as code, keep as the canonical shape of one VN beat. This is almost exactly DoT's "minimal VN stub" (bottom textbox, speaker name, portrait placeholder, advance to end) but hardcoded as a class. DoT wants each such beat DEFINED IN DATA and played by one generic scene player. The useful takeaway: the minimum fields a DoT cutscene line needs are speaker, portrait ref, and text, plus a box-position flag and an on-complete hook — precisely what a data schema must capture. In DoT, portraits are colored-rect placeholders, so the portrait field becomes a color/id rather than an asset path.

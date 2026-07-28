@@ -1,0 +1,20 @@
+FILE: engine/tests/script_test_scene.gd
+
+1. CLASS
+No class_name. Extends Control. A throwaway manual test harness for the event-instancing/serialization mechanism.
+
+2. WHAT IT DOES
+On ready it instantiates one concrete event (L2_Event_Mid_10) and adds it to a test array and the scene tree. On a "debug" input action it re-loads a fresh instance of that event from its stored path and prints the array size — a manual smoke test that event classes can be dynamically loaded/instanced (relevant to save/load reconstruction).
+
+3. FUNCTIONS
+- _ready(): first = L2_Event_Mid_10.new(); append to test_array; add_child(first). (A second event is commented out.)
+- _input(event): on the "debug" action, appends load(first.path).new() to test_array and prints test_array.size(). References first.path — assumes the event exposes a resource path used by the save system.
+No signals, no autoload use. Depends on the concrete content class L2_Event_Mid_10 and its .path field.
+
+4. POSSIBLE IMPROVEMENT
+- Not an automated test — prints to console and requires manual input; it is scratch/debug code that should not live in a tests/ folder as if it were a real test.
+- Hardcodes a specific content class (L2_Event_Mid_10) and commented-out dead lines.
+- No assertions; "test" in name only.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap. This is disposable manual scaffolding tied to reference-project content (chapter-2 mid events). DoT's testing is headless and assertion-based: `godot --headless -s res://tests/run_tests.gd`, with real unit tests over /sim pure functions (CLAUDE.md: new sim logic requires new tests, tests must pass before commit). The pattern of "can I dynamically load and reinstantiate a content object" is only relevant if DoT hand-rolls Node serialization — which it should avoid by keeping sim state as plain serializable data. No reuse value beyond noting the reference project relied on manual, input-driven smoke tests rather than a headless suite.

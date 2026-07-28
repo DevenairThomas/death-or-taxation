@@ -1,0 +1,72 @@
+SYNOPSIS: scenes/levels/Level5.gd
+
+1. CLASS
+extends Node2D. No class_name. Battle-map loader on a level scene root.
+Declares `signal mapInformationLoaded` (declared, never emitted here).
+NOTE: Level5.gd and Level4a.gd are byte-for-byte identical in logic.
+
+2. WHAT IT DOES
+Reference-project battle-map loader. On _ready() converts a Tiled-derived scene tree
+($CellInfo/$Allies/$Enemies layers of get_meta markers) into a live grid + enemy units and
+publishes to the BattlefieldInfo autoload. Distinguishing traits vs level2/Level3: it is a
+"prep-aware" loader — it does NOT freshly spawn allies from metadata; instead it repositions
+allies that already exist in BattlefieldInfo.ally_units (units carried in from the
+preparation/deployment screen), and it supports Spawn / Swap tile flags used by the
+deployment swap screen. Enemy AI is set by ai_type property directly (no patrol cells).
+
+3. FUNCTIONS
+_ready() — sole function, load pipeline:
+  - Sets BattlefieldInfo.current_level; sets AllyLevel music volume.
+  - Reads own meta height/width -> map_height/map_width; Victory_Condition ->
+    BattlefieldInfo.victory_text.
+  - Clears BattlefieldInfo.spawn_points and BattlefieldInfo.swap_points.
+  - Builds grid (map_width x map_height 2D array of 0).
+  - Terrain: for each $CellInfo marker, instantiate Cell.tscn and
+    init(Vector2(pos/Cell.CELL_SIZE), get_meta("Avd"), get_meta("Def"),
+    get_meta("MovementCost"), get_meta("TileType")). If marker has_meta("Spawn"): mark
+    cell.is_spawn_point and append to BattlefieldInfo.spawn_points. If has_meta("Swap"):
+    append to BattlefieldInfo.swap_points. Store into grid at tile coord.
+  - Adjacency: double-loop appends left/right/up/down neighbors into each Cell.adjCells,
+    bounds-checked.
+  - Allies: for each $Allies marker, looks up identifier in BattlefieldInfo.ally_units; if
+    present, repositions the existing unit (position, currentTile, occupyingUnit),
+    unhides/resets modulate, and sets its action state to MOVE via
+    UnitActionStatus.set_current_action(Unit_Action_Status.MOVE). Units NOT already present
+    are ignored (they must be deployed via prep screen). Then heals all allies to max_health.
+  - Enemies: for each $Enemies marker, load()s enemy .tscn; sets
+    get_node("AI").ai_type = get_meta("aiType") (no patrol cells); copies ~stat/XP/movement
+    meta fields; sets is_ally=false; links currentTile/occupyingUnit; records in
+    all_enemies_location by Identifier.
+  - Publishes to BattlefieldInfo: grid, map_height, map_width, enemy_units. Frees
+    $CellInfo/$Allies/$Enemies. Calls
+    BattlefieldInfo.main_game_camera._on_Level_mapInformationLoaded().
+Autoloads/classes touched: BattlefieldInfo, Cell (+CELL_SIZE), Unit_Action_Status enum,
+UnitStats/UnitMovementStats, enemy "AI" node.
+
+4. POSSIBLE IMPROVEMENT
+- Level5.gd and Level4a.gd are duplicate files — collapse into one shared loader script
+  instanced by both scenes; there is no per-level code difference.
+- Same monolithic _ready and duplicated get_meta enemy-stat block as the other loaders;
+  extract build/spawn helpers and a metadata->property table.
+- `signal mapInformationLoaded` declared but never emitted; hand-off is a direct camera
+  call. Wire the signal or delete it.
+- Spawn/Swap tile handling, deployment persistence, terrain, and enemy stats should live in
+  data/config, not scene-node metadata.
+- Replace adjCells graph with AStarGrid2D; replace Cell-node-as-data with a data model.
+
+5. RELATION TO DEATH OR TAXATION
+Tiled/get_meta loading is SCRAPPED (reference only). Level5 is the most DoT-relevant of the
+loaders because it embodies the PREP -> BATTLE handoff DoT needs: allies are not authored
+into the map, they are units the player deployed on a prep/deployment screen and placed onto
+declared Spawn tiles, with Swap tiles letting the player rearrange the starting formation.
+DoT's data-driven map loader must reproduce, minus Tiled: (a) grid of tiles carrying terrain
+type + movement cost + DEFENSE (Plains/Forest/Mountain/Road/River/HQ-Zone); (b) passability/
+adjacency (DoT via AStarGrid2D: River solid, per-terrain weights, mountain infantry-only);
+(c) DEPLOY zones = the Spawn/Swap concept: the map declares where the player may place their
+roster (Generals + squads), rather than hardcoding ally spawns; (d) enemy placements each
+with an AI flag (DoT: guard/aggressive/balanced x simple/medium/smart); (e) map objective/
+victory condition (rout/defend/seize). Keep the deploy-zone + prep-persistence pattern as a
+blueprint for DoT's deployment screen -> /sim battle handoff. SCRAP: Avd/avoidance and RNG-
+combat stat fields (DoT combat is deterministic); marker-node substrate; Cell scene
+instancing; the BattlefieldInfo god-object + direct camera call. In DoT this belongs in pure
+/sim, headless-testable, communicating to the view via signals.

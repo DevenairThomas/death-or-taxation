@@ -1,0 +1,21 @@
+FILE: scenes/units/Unit_Scripts/Unit_Stats.gd
+
+1. CLASS
+class_name Unit_Stats, extends Object. Plain data container (not a Node) holding one unit's RPG statline. Instantiated by Battlefield_Unit._ready() as UnitStats = Unit_Stats.new().
+
+2. WHAT IT DOES
+Defines the full Fire Emblem stat block for a unit: identity (identifier, name, class_type), progression (level, current_xp, class point bonuses class_bonus_a/b, class_power, boss_bonus, thief_bonus), the eight core FE stats (strength, skill, speed, magic, luck, def, res, consti), health (max_health/current_health, MAX_POSSIBLE_HEALTH=60), combat bonuses (bonus_crit, bonus_dodge, bonus_hit), per-stat level-up growth chances (str_chance ... max_health_chance), and movement/combat class flags (horse, pegasus, armor for weapon-triangle/effective-damage math). Constants: MAX_STAT=30, MAX_LEVEL=20, NEXT_LEVEL_XP=100.
+
+3. FUNCTIONS
+- _init(): Sets name and class_type to placeholder strings. Actual values are assigned later by the owning unit script or by the level/loader (e.g. Enemy Pegasus Knight sets UnitStats.name/pegasus in its _ready).
+No other methods — this is pure state read/written by combat calculators, level-up logic, and Battlefield_Unit.save() (which serializes every field here).
+
+4. POSSIBLE IMPROVEMENT
+- Extends Object with no free() management — leaks unless owner frees it; make it RefCounted.
+- All fields untyped; add static types (int/bool/String) for safety and speed.
+- The stat data is baked in code with per-unit overrides scattered across unit _ready() scripts — this is content that belongs in a data resource (.tres/.json), not a code class.
+- growth-"chance" fields hardcode an RNG level-up model into the base stat struct.
+- No docstrings on the class API beyond inline comments.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE heavily / partially SCRAP. DoT units are not FE stat-block units. The whole eight-stat FE model (strength/skill/speed/magic/luck/def/res/consti), all *_chance growth fields, bonus_crit/bonus_dodge/bonus_hit, current_xp/NEXT_LEVEL_XP, and boss/thief bonuses are SCRAPPED — DoT has no RNG, no hit/crit/dodge, no per-kill EXP, and damage comes from a base_table[attacker][defender] lookup, not stat arithmetic. Keep only: identity (identifier/name/class_type -> unit-type id + General name), tier + HP (10/25/level rather than max_health=20), level (Generals cap at 5, hard, grown by souls between missions — not level 20 via XP), and terrain/move flags conceptually. In DoT this becomes a pure RefCounted sim struct populated from /data unit-type definitions (adding a unit = data-only change). class_type/horse/pegasus/armor map loosely to DoT unit archetypes (redcoat squads, mage constructs, Generals) that select rows in the damage table and movement/terrain rules.

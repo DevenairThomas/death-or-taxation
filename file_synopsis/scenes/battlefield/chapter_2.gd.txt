@@ -1,0 +1,26 @@
+SYNOPSIS: scenes/battlefield/chapter_2.gd
+
+FILENAME NOTE: The filename says chapter_2, but the CONTENT is the "Chapter 1: Victims of War" mission (enemy commander "Marcus", objective ELIMINATE_ALL_ENEMIES, events L1_Event_Part_10/20/30, advances to Level 2 world-map event). The reference project's chapter file names are offset from the chapter numbers in their content — treat the content, not the filename, as authoritative.
+
+1. CLASS
+   extends Node2D (no class_name). A per-chapter/mission setup script for Chapter 1.
+
+2. WHAT IT DOES
+   Configures the Chapter 1 mission: music, a "rout" victory condition (eliminate all enemies), the enemy commander, the intro cutscene event queue, reparents the player party onto the level, and defines the extra loss check and the transition to the next chapter/world map.
+
+3. FUNCTIONS
+   _ready(): registers self as BattlefieldInfo.level_container; sets AllyLevel music stream; BattlefieldInfo.victory = false; victory_system.clear() then victory_condition_state = Victory_Checker.ELIMINATE_ALL_ENEMIES; caches enemy_commander from enemy_units["Marcus"]; clears event_system and adds L1_Event_Part_10/20/30; reparents player units from y_sort_player_party into current_level.Node2D; if not loading a save, event_system.start_events_queue().
+   check_loss(): returns BattlefieldInfo.ally_units.has("Seth") — extra defeat condition (Seth must survive), consulted by combat.gd on ally death.
+   next_level(): reparents surviving allies back to the persistent y-sort, disables cursor, stops music, fades the container out, makes WorldMapScreen visible, sets its current_event (Level2_WM_Event_Part10) and calls SceneTransition.change_scene_to_packed, then clears the event system.
+
+4. POSSIBLE IMPROVEMENT
+   - Same as the other chapter scripts: mission content is hardcoded imperatively and should be data-driven; one script per map does not scale.
+   - Filename/content mismatch (chapter_2.gd == Chapter 1) should be corrected to avoid confusion.
+   - Hardcoded "Marcus"/"Seth" and event class names couple content into code.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE — becomes a data-defined MISSION in /data. This one is the cleanest reference for DoT's "rout" objective: ELIMINATE_ALL_ENEMIES is exactly DoT's rout condition and should be evaluated in /sim (Victory_Checker -> DoT objective evaluator). Keep the mission shape (objective + commander + event list + roster reparent + next-mission transition), but:
+   - Move objective evaluation into pure /sim (rout/defend/seize), emitting mission_complete via BattleSim signals.
+   - Souls award on completion in /sim economy at the next_level boundary; no in-battle currency.
+   - Cutscene/event queue kept as data (VN), authored straight-faced; never death-variant scenes.
+   - SCRAP the per-map .gd approach.

@@ -1,0 +1,29 @@
+FILE: scenes/preparation_screen/Preparation Screen.gd
+
+1. CLASS
+- No class_name. extends CanvasLayer.
+- The pre-battle Preparation screen. Registers itself as BattlefieldInfo.preparation_screen (singleton-like accessor). Instanced within the battlefield context; owns a menu (Select/Inventory/Map/Market/Save), a hand selector, a unit-select ItemList, a Shop, and prep-theme music tracks.
+
+2. WHAT IT DOES
+- The FE deployment/prep hub shown before a chapter: choose which allies deploy, manage inventory, preview the map and set start positions, visit the marketplace, and save. It seeds ally units onto "swap point" tiles, heals/resets them, plays prep music, and on "start_battle" transitions the cursor/camera and hands off to the level container to begin combat.
+
+3. FUNCTIONS
+- _ready(): Disables input, registers BattlefieldInfo.preparation_screen = self.
+- start(chapter_text, victory_text, path_to_next_level, prep_song): Removes lingering Intro Screen; clears ally currentTile refs then assigns each ally (except Eirika) to a free swap_point tile; heals all allies to max and resets action status/greyscale; plays prep music; sets chapter title + victory-condition text; resets hand + menu option; resets turn_manager turn numbers to 1; fades in and enables input. (Note: has a stray backslash after the signature line.)
+- _input(event): Up/Down move the menu option + hand and update side text; ui_accept -> process_selection; "start_battle" action -> start_battle().
+- set_side_text(): Sets the side panel help text per current option.
+- process_selection(): "Select" -> opens Unit Select ItemList (multi-select) and temp-disables menu; "Inventory" -> sets text; "Map" -> hides prep, enables main camera + battlefield HUD, turns on blue swap tiles, sets cursor to PREP mode; "Market" -> opens Shop, hides prep UI, stops music; "Save" -> BattlefieldInfo.save_load_system.save_game(), awaits saving_complete, shows "Game Saved!".
+- play_song(song_name)/stop_music(): Prep theme A/B control.
+- start_battle(): turn_off(); disables cursor UI; moves main camera to Eirika, clamps, moves cursor to Eirika and fires cursorMoved; plays "Start Battle" anim; stops music; calls BattlefieldInfo.level_container.start_battle().
+- turn_on/turn_on_fade/turn_on_without_anim/temp_disable/turn_off: Visibility + input-enable helpers for the menu.
+- Interactions: BattlefieldInfo (ally_units, swap_points, Eirika, turn_manager, main_game_camera, cursor, battlefield_ui, save_load_system, level_container), Unit_Action_Status, Cursor states, ItemList.SELECT_MULTI.
+
+4. POSSIBLE IMPROVEMENT
+- Deeply couples to ~10 BattlefieldInfo members and walks named nodes; extract a deployment controller and communicate via signals.
+- Content baked in: "Eirika" special-cased, weapon shop, five fixed menu options; should be data-driven.
+- The stray backslash after the start() signature is a latent syntax hazard.
+- View directly heals units, resets turn numbers, and mutates tiles (sim state in a view node) — should call into sim.
+- Magic offsets Vector2(-112,-82), timer 1s; name them.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE -> this is the closest analog to the DoT PRE-BATTLE DEPLOYMENT screen, but the economy is completely different. KEEP the shell (a pre-battle screen that picks who deploys and then starts the map) and the swap-point/start-position idea. SCRAP: Market/Shop (no gold/items), Inventory (no FE items), heal-to-full weapons flow, prep A/B FE music. REPLACE the "Select units, limited count" step with DoT deployment: spend BATTLE BUDGET (per-mission, never carried over) to buy squads (10 HP)/singles (25 HP)/Generals, with a hard max of 2 DEPLOY SLOTS, placing them on start tiles. General availability/level and alive-state come from persistent SOULS/campaign save; budget is per-mission only and computed from data. Deployment cost math and slot/budget validation belong in /sim (pure, testable); this screen is the /ui view that reads a budget, shows costs from /data, and forwards a confirmed deployment. "Save" here becomes DoT's single-JSON save (souls, levels, alive-state, mode) — but note DoT saves on CAMP-screen exit, not necessarily here. Keep sim->view via signals; no mid-mission souls, no budget carry-over.

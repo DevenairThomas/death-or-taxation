@@ -1,0 +1,35 @@
+SYNOPSIS: scenes/items/Swords/Iron Sword.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (so it IS an Item / Node2D). Concrete
+weapon script attached to Iron Sword.tscn.
+
+2. WHAT IT DOES
+A basic FE sword. Sets its stats in _ready(): uses/max_uses 45, might 5, weight 5, hit 95,
+crit 0, range 1-1, worth 460, weapon_type defaults to SWORD (inherited), strong_against
+AXE (weapon triangle), icon iron_Sword.png, weapon_string_name "sword". Registered in
+Item_Dict as an available/default item. One of the cheapest, most-durable starter weapons.
+
+3. FUNCTIONS
+- _ready(): assigns all stat fields on spawn. Runs because the item is a scene node
+  instantiated by convoy/shop/inventory code.
+- draw_attack_sound() / put_away_attack_sound(): override base hooks to play "Draw Weapon"
+  / "Put Away Weapon" from BattlefieldInfo.weapon_sounds during the attack animation.
+- special_ability(_unit_holding_this_item, _unit_that_is_being_attacked): returns 1 (no
+  bonus). Called by combat_calculator.get_special_ability as a damage multiplier;
+  underscore-prefixed params mean it ignores holder/target. Placeholder for future effects.
+
+4. POSSIBLE IMPROVEMENT
+- Entire script is data (stat assignments in _ready) — should be a .tres Resource or a row
+  in a data table, eliminating this per-weapon script. The only real code is the
+  return-1 special ability, which the base class could default.
+- Sound-node fetch by string name (get_node("Draw Weapon")) is fragile; use a typed
+  reference or an audio bus/event enum.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED as an item. DoT has no swords, no might/weight/hit/crit/durability, no weapon
+triangle. The only carry-over is conceptual: "Iron Sword" is a unit-TYPE-flavored damage
+profile; in DoT that becomes a unit TYPE (e.g. Line Infantry) row in the base damage
+table, with terrain and hp% applied in /sim. The stub special_ability returning 1 maps to
+"unit with no active General ability." Delete the script and sound plumbing; keep nothing
+literal.

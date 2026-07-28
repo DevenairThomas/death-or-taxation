@@ -1,0 +1,45 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Archer/Ally Archer.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit` (the shared base Node2D that owns UnitMovementStats,
+UnitActionStatus, UnitStats, UnitInventory, portrait/mugshot, combat_node, death_sentence).
+This is a per-character CONFIGURATION script attached to the "Ally Archer" unit scene.
+
+2. WHAT IT DOES
+Configures a single playable archer instance (the character Naomi/Neimi). It does no logic of
+its own; it only fills in the base-class fields on spawn so the generic Battlefield_Unit machinery
+has this character's portrait, inventory, weapon proficiencies, combat-animation scene, and death
+quote.
+
+3. FUNCTIONS
+- _ready(): Calls super._ready() (base allocates UnitMovementStats/UnitActionStatus/UnitInventory/
+  UnitStats). Then:
+    * Sets $Animation.current_animation = "Idle" (the AnimationPlayer child in the map sprite).
+    * preloads a portrait PNG into unit_portrait_path and reuses it as unit_mugshot (read by the
+      StatusScreen / weapon-select UI and by cutscene/death dialogue).
+    * Appends BOW to UnitInventory.usable_weapons and adds an Iron Sword and Iron Bow item scene
+      instances via UnitInventory.add_item() (Inventory.tscn logic).
+    * Sets combat_node to the "Naomi Combat.tscn" scene (instantiated by the Combat_Screen when a
+      battle animation plays).
+    * Builds death_sentence, a one-line array read by the death/VN dialogue system on unit death.
+  Note: unlike its siblings this script never sets UnitStats.name (the archer is spawned unnamed
+  unless set elsewhere), and the death quote says "Neimi" while the portrait file is "Naomi.png"
+  — an inconsistency.
+
+4. POSSIBLE IMPROVEMENT
+- This is pure data expressed as code; it should be a Resource (.tres) or data-file entry, not a
+  script. Every archer difference (portrait, weapons, quote, name) is content.
+- Missing UnitStats.name assignment is a latent bug; the Naomi/Neimi mismatch should be resolved.
+- Hard-coded preload paths make renaming assets brittle; a data table keyed by unit id is cleaner.
+- death_sentence uses a plain "Name:\n\ntext" string here but Eirika uses an "@path@" mugshot
+  format — the format is inconsistent across characters and should be one schema.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE/SCRAP as code. A generic archer maps to DoT's SQUAD or SINGLE tier (unnamed, statted from
+data), so there should be no per-character script at all — unit definitions live in /data and are
+instantiated with zero code changes. If this archer were a named recurring hero it would map to a
+GENERAL (persistent, level 1-5, souls), but even then the config belongs in a data file, not a
+subclass. Keep the CONCEPT (portrait + inventory + death quote + combat visuals per unit); scrap
+the per-file-script delivery. Note the death quote here is a permadeath line — DoT keeps permadeath
+(No-Revive mode) and reuses dead Generals in cutscenes, so a single death-quote field per General
+data entry is the right home for this.

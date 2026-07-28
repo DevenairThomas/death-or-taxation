@@ -1,0 +1,23 @@
+FILE: scenes/gui/Attack Arc/AI Attack Arc.gd
+
+1. CLASS
+No class_name. extends Node2D. A pure visual debug/telegraph widget: draws a single colored line between two points, used to show an AI unit's intended attack (attacker -> target).
+
+2. WHAT IT DOES
+Renders one straight line via _draw(). Exposes setters for start point, end point, color (default red), and width (default 3). Each setter updates the stored value and requests a redraw. Presumably used to visualize which enemy an AI unit is targeting.
+
+3. FUNCTIONS
+- _draw(): Draws draw_line(starting_vector, ending_vector, line_color, line_width).
+- update_starting_value(v): Sets starting_vector, calls update().
+- update_ending_value(v): Sets ending_vector, calls update().
+- update_line_color(c): Sets line_color, calls update().
+- update_line_width(w): Sets line_width, calls update().
+No signals, no autoload interaction. Called by whatever AI/visual system wants to draw an attack telegraph (caller not in this file).
+
+4. POSSIBLE IMPROVEMENT
+- update() is the Godot 3 API; in Godot 4 it is queue_redraw(). This is a live bug on 4.x — update() no longer triggers _draw() (Node2D.update was removed). Should be queue_redraw().
+- The four near-identical setters could be @export properties with setters, or a single update_line(start, end, color, width) to avoid four redraw calls when setting all at once.
+- Add docstrings (project convention requires them).
+
+5. RELATION TO DEATH OR TAXATION
+KEEP (small, cheap, useful), FIX FOR GODOT 4. A line/arc telegraph showing "this enemy intends to hit that unit" is a good gray-box affordance and fits DoT's FE-tier AI (dormant until threatened, then commits). It renders only — no game rules — so it belongs in /scenes as a view widget driven by sim AI decisions. Must be updated to queue_redraw(). Pair it with the deterministic damage forecast (design: forecast == resolution) so the telegraph can also surface expected damage. No RNG involved, so nothing to strip.

@@ -1,0 +1,32 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Knight/Gilliam Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (Combat_Unit, Node2D).
+Combat-animation controller for the knight's battle scene.
+
+2. WHAT IT DOES
+Overrides base Combat_Unit hooks for the knight's battle animation: miss SFX + dodge cue, death
+SFX, and the death-animation-complete signal. Called by the combat scene's AnimationPlayer method
+tracks.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: tells the opponent node to play its dodge anim on a miss.
+- play_miss_sound(): random "Attack Miss 1..2" from BattlefieldInfo.battle_sounds; emits
+  play_enemy_dodge_anim.
+- play_death_sound(): plays the "Death" clip from BattlefieldInfo.battle_sounds.
+- death_anim_signal(): emits the base `death_anim_done` signal so the Combat_Screen knows the death
+  animation finished and can tear down / return control.
+
+4. POSSIBLE IMPROVEMENT
+- Duplicates base Combat_Unit.play_miss_sound()/play_death_sound()/death_anim_signal() almost
+  verbatim — this subclass adds nothing over the base and could be deleted (attach Combat Unit.gd
+  directly).
+- Same randf_range(1,3)->int off-by-one (only ever 1 or 2); use randi_range.
+- Stringly-typed get_node on the sound autoload; prefer a sound-bank API.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. No scripted per-unit combat-animation scenes exist in DoT's deterministic sim/view model;
+there is no "miss." Death is a sim event (unit_destroyed signal) the view reacts to, not an
+animation-driven callback chain. Keep only the pattern "view plays a death cue on the
+unit_destroyed signal," implemented generically in the view, not as a per-character Combat_Unit
+subclass.

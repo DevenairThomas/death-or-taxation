@@ -1,0 +1,24 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Pegasus Knight/Vanessa Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (Combat_Unit, Node2D).
+Combat-animation controller for the pegasus knight's battle scene.
+
+2. WHAT IT DOES
+Overrides only the miss-SFX/dodge hook and the death-complete signal for the pegasus knight's battle
+animation. Called by the combat scene's AnimationPlayer method tracks.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: opponent dodge cue on miss.
+- play_miss_sound(): random "Attack Miss 1..2" from BattlefieldInfo.battle_sounds; emits
+  play_enemy_dodge_anim.
+- death_anim_signal(): emits base death_anim_done so the Combat_Screen proceeds after the death anim.
+
+4. POSSIBLE IMPROVEMENT
+- Both methods duplicate the base Combat_Unit verbatim; the subclass is redundant — attach Combat
+  Unit.gd directly.
+- Same randf_range->int off-by-one; use randi_range.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP. No per-unit combat-animation scenes or miss mechanic in DoT. Keep only the general idea that
+the view reacts to sim signals (unit_destroyed) with a cue, implemented once and data-driven.

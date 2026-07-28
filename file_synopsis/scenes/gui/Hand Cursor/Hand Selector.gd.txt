@@ -1,0 +1,17 @@
+FILE: scenes/gui/Hand Cursor/Hand Selector.gd
+
+1. CLASS
+No class_name. extends Control. A tiny decorative widget: the pointing-hand menu cursor sprite that plays its idle "Slide" animation.
+
+2. WHAT IT DOES
+On ready it just starts an AnimationPlayer ("Anim") on a child TextureRect playing "Slide" — the little bobbing/sliding animation of the hand pointer used across menus (Action Selector, End Turn, Shop, Unit Select all reference a "Hand Selector" node with Accept/Move/Cancel/Invalid SFX children).
+
+3. FUNCTIONS
+- _ready(): $TextureRect/Anim.play("Slide"). No input handling, no signals, no state. The hand's POSITION and the Accept/Move/Cancel/Invalid sound playback are all driven externally by whichever menu owns it; this script only kicks off the looping visual.
+
+4. POSSIBLE IMPROVEMENT
+- Trivially could be replaced by setting "Autoplay" on the AnimationPlayer in the scene, eliminating the script entirely.
+- If kept, add a docstring and consider exposing helper methods (e.g. play_accept()) so owning menus don't reach into child node paths like "Hand Selector/Accept".
+
+5. RELATION TO DEATH OR TAXATION
+KEEP AS A SHARED WIDGET (or delete in favor of autoplay). A reusable menu-cursor sprite is fine for DoT's gray-box UI and belongs in /ui as a pure presentation component. It renders/animates only, no rules — already compatible. In DoT, giving it a small API (play_accept/move/cancel/invalid) would let the shared menu component (see Action Selector / End Turn duplication) own its hand cleanly. No design conflict, no RNG.

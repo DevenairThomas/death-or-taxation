@@ -1,0 +1,18 @@
+FILE: scenes/units/Enemy_Units/Enemy General.gd
+
+1. CLASS
+No class_name. extends Battlefield_Unit. Concrete definition for the enemy General / boss unit (the "Main Villain").
+
+2. WHAT IT DOES
+Spawn config for the boss: base setup, enemy flag, idle anim, the Main Villain mugshot/portrait, a dual axe+lance usable set with a Gorehowl axe loadout, and the boss combat-cutscene scene. Represents the mission's named antagonist.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation="Idle"; UnitMovementStats.is_ally=false; unit_portrait_path and unit_mugshot = "Main Villain MugShot.png"; appends Item.WEAPON_TYPE.AXE and Item.WEAPON_TYPE.LANCE to usable_weapons; adds a preloaded Gorehowl axe; combat_node = preload("Enemy General Black Combat.tscn"). Touches Battlefield_Unit, $Animation, UnitInventory, Item enum.
+
+4. POSSIBLE IMPROVEMENT
+- No boss stats/boss_bonus or AI flags set here despite Unit_Stats having a boss_bonus field — boss identity is only cosmetic in this script; move boss config to data.
+- Content-as-code; asset paths hardcoded.
+- A boss deserves distinct HP/behavior data, not the placeholder Unit_Stats defaults.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE, high design relevance. This is the enemy-side counterpart to DoT's own GENERAL tier — the mage controlling the Crown (or a Crown commander) is the boss. In DoT, a General is a named, persistent, level-1-to-5 unit that deals FULL damage at any HP (no squad degradation) with 25+ HP scaling by level. The enemy General should share that tier's rules on the sim side but be authored in /data (name, level, damage-table row, HP, defeat = mission objective). Keep the "named boss with unique portrait + combat scene + before/death quotes" concept — DoT is VN-flavored and Generals get dialogue (and remember: dead Generals still appear in cutscenes, so no death-variant scenes). Drop the FE axe/lance weapon loadout; boss damage is table-driven. The AI for this unit uses DoT's target-scoring (expected_damage − 0.5×expected_counter + kill bonus) with the real damage formula, possibly with an aggressive/guard flag.

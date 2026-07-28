@@ -1,0 +1,47 @@
+SYNOPSIS: scenes/gui/Item Screen/Yes No Box.gd
+
+1. CLASS
+   No class_name, extends Control.
+   The item-specific discard-confirmation popup used by the Equip/Discard box.
+
+2. WHAT IT DOES
+   Confirms discarding a specific inventory item. On "Yes" it actually removes the
+   item from the unit's inventory and then navigates back through the menu chain
+   (to the action selector if the inventory is now empty, otherwise back to the
+   Item Screen). Tightly coupled to the item-menu tree and to
+   BattlefieldInfo.current_Unit_Selected.UnitInventory.
+
+3. FUNCTIONS
+   - start(item): Shows the box, stores item_selected, resets to "Yes", parks the
+     hand cursor, starts the 0s input-defer Timer.
+   - _input(_event): When active: accept -> process_selection; cancel -> go_back;
+     up/down -> movement.
+   - movement(direction): Yes/No hand cursor movement, clamped, with move sound.
+   - process_selection(): "Yes" -> UnitInventory.remove_item(item_selected); if
+     inventory is now empty, back_to_action_selector(), else deactivate, hide,
+     turn off the parent Equip box and reopen the Item Screen via
+     get_parent().get_parent().get_parent().start(). "No" -> go_back.
+   - back_to_action_selector(): Deactivates, hides, turns off the parent box, and
+     calls the grandparent chain's go_back() to leave the item menu entirely.
+   - go_back(): Deactivates, restarts the parent's Timer (to re-enable the Equip
+     box input), hides.
+   - turn_on(): Makes visible.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - The three-deep get_parent().get_parent().get_parent() navigation is extremely
+     fragile - any scene restructure breaks it. Replace with signals (this is
+     exactly what the Generic version already does).
+   - It duplicates ~90% of Yes No Box Generic but bakes in item-removal and
+     navigation; delete this and have Equip/Discard use the generic box, acting on
+     the returned boolean itself.
+   - Business logic (removing the item, deciding empty-inventory flow) lives in a
+     view widget - it should live on the inventory model / a controller.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. It confirms an FE inventory action DoT does not have (item discard) and
+   violates DoT's sim/view separation by mutating game state and driving
+   navigation from inside a HUD widget. Replace entirely with the generic signal-
+   based confirm box; any state change (spend souls, revive, end turn) must be
+   performed by sim/controller code in response to the signal, never inside the
+   dialog. Discard/remove-item semantics are cut with the item system.

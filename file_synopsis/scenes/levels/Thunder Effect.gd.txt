@@ -1,0 +1,44 @@
+SYNOPSIS: scenes/levels/Thunder Effect.gd
+
+1. CLASS
+extends Sprite2D. No class_name. A cosmetic view-layer effect node — a full-screen
+lightning/thunder ambiance overlay that lives inside a battle-map scene. NOT a map loader.
+
+2. WHAT IT DOES
+Purely presentational atmosphere. It periodically flashes a lightning sprite and plays one
+of two thunder sounds at randomized intervals, suppressed during victory/game-over and
+gated on the combat screen's state. It is the one file in scenes/levels/ that is NOT a
+grid/loader script; it just decorates the storm-themed maps.
+
+3. FUNCTIONS
+_ready() — calls randomize(); sets child $Interval timer wait_time to a random
+  (randi() % 40 + 15) seconds and starts it. Seeds the recurring flash loop.
+_on_Interval_timeout() — timer callback: picks sound_number = randi() % 2 + 1; if the
+  sibling "Combat Screen" node's current_combat_state == Combat_Screen.wait AND neither
+  BattlefieldInfo.victory nor BattlefieldInfo.game_over is set, plays animation
+  "Flash <n>" on $Anim; otherwise (combat active) references the "Thunder Sound <n>" node
+  (note: fetched via get_node but not explicitly .play()ed here). Re-randomizes wait_time to
+  schedule the next flash.
+Autoloads/classes touched: BattlefieldInfo (victory/game_over flags), Combat_Screen (its
+`wait` state constant), sibling "Combat Screen" node, child $Interval/$Anim/Thunder Sound
+nodes.
+
+4. POSSIBLE IMPROVEMENT
+- Uses randi()/randomize() — fine for cosmetic timing, but note the CLAUDE.md no-RNG rule is
+  about COMBAT determinism; visual jitter RNG is acceptable. Still, prefer a Godot 4
+  RandomNumberGenerator instance over the global randomize() for isolation/testability.
+- `get_node(str("Thunder Sound ", sound_number))` fetches the node but never calls play() —
+  looks like a latent bug (sound likely never triggers in the else branch).
+- Reaches sideways into a sibling "Combat Screen" node by name and into BattlefieldInfo
+  globals; a signal-driven "storm on/off" toggle would decouple it.
+- Magic numbers (40, 15, 2) should be named constants/exported ranges.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP AS OPTIONAL REFERENCE ONLY — this is pure flavor and touches none of the map-loading or
+grid logic being mined. DoT is a gray-box prototype: no art, no music, no atmosphere effects
+until the skirmish loop is proven fun, so a lightning overlay is out of scope now. If DoT
+later wants ambient battlefield VFX, the pattern (timer -> gated flash/sound, suppressed on
+victory/game-over) is reusable, but it must be a /scenes view-only node driven by /sim
+signals (e.g., turn_changed, mission_complete) rather than polling a BattlefieldInfo god-
+object and peeking at a sibling combat node. Fix the non-playing thunder-sound branch if
+adapted. Nothing here informs the /sim grid builder.

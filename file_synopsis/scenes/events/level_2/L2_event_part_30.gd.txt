@@ -1,0 +1,31 @@
+SYNOPSIS — scenes/events/level_2/L2_event_part_30.gd
+
+1. CLASS
+class_name L2_Event_Part3, extends "res://scenes/events/event_base.gd" (Event_Base).
+Concrete scripted cutscene beat — Level 2 (Seth recognizes General Vezarius; two soldiers rush off to the forward guard).
+
+2. WHAT IT DOES
+Plays the reaction beat after the villain's attack: reveals all enemies, shows Seth's alarmed dialogue in the (default-position) textbox, then walks two "Move Me" soldiers to the forward-guard tile, despawning each as it arrives, and completes when the cinematic movement finishes.
+
+3. FUNCTIONS
+- var dialogue (Array): Seth's lines identifying Vezarius, "Name@portrait@text".
+- var move_actor_1 / move_actor_2: the two soldiers that run off.
+- _init(): debug name/part + path.
+- start():
+  * Caches Move Me 1 / Move Me 2.
+  * Makes all enemy_units visible.
+  * Connects message_system.no_more_text -> move_actor; movement_system_cinematic.unit_finished_moving_cinema -> event_complete; movement_system_cinematic.individual_unit_finished_moving -> hide_actor.
+  * enable_text(dialogue) (no set_position call — uses whatever position was last set).
+- move_actor(): paths both soldiers to grid[9][13] (movement_calculator.get_path_to_destination_AI), nulls their tiles, appends both to unit_to_move_same_time, is_moving = true.
+- hide_actor(unit): per-unit on arrival — sets turn_manager.turn = Turn_Manager.WAIT, hides unit, erases from BattlefieldInfo.ally_units, nulls its tile, queue_free()s it.
+
+Coupling: BattlefieldInfo, message_system, movement_system_cinematic, movement_calculator, turn_manager (Turn_Manager). Advanced by Event_System. Structurally near-identical to L2_Event_Part_05's move/hide logic.
+
+4. POSSIBLE IMPROVEMENT
+- Duplicate of L2_Event_Part_05's move_actor/hide_actor almost line for line — the walk-off-and-despawn behavior should be one shared, data-parameterized routine, not re-copied per beat.
+- Both soldiers path to the same tile grid[9][13] (occupancy conflict masked by despawn timing).
+- Omits set_position, so textbox placement depends on prior beat state — hidden ordering dependency.
+- Magic string identifiers and grid coordinate; no disconnects; not headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as script; reinforces the duplication argument. The third instance of "walk named units to a tile and delete them" across L1/L2 beats — concrete proof that per-beat scripting multiplies copy-paste, exactly what DoT's data-driven scenes eliminate. In DoT this is a dialogue data scene; any actor movement is an optional stage direction interpreted by the generic runner, not re-authored per beat, and is out of scope for the text-only gray-box VN stub anyway. Same caution as Part_05: do not mirror "erase unit from roster mid-cutscene" for DoT Generals (dead Generals still appear; no death-variant staging). Content is FE placeholder.

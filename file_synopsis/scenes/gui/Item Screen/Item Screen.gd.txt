@@ -1,0 +1,56 @@
+SYNOPSIS: scenes/gui/Item Screen/Item Screen.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The unit inventory menu: lists a unit's items, shows the selected item's
+   stats, and routes into the Equip/Discard box.
+
+2. WHAT IT DOES
+   Displays up to six item slots plus a portrait ("Mugshot") and a stat panel
+   (name, uses, might/power, crit, hit, icon) for the highlighted item. The
+   player scrolls with a hand cursor; the currently equipped item is shown in
+   green. Selecting an item opens the "Equip Discord Box". Cancel returns to the
+   action selector. Reads BattlefieldInfo.current_Unit_Selected.UnitInventory
+   and drives the unit_movement_system via signals.
+
+3. FUNCTIONS
+   - _ready(): Calls add_item_back_to_array to cache the six slot nodes.
+   - start(): Positions the Item Menu, builds the menu, starts input-defer Timer.
+   - _input(event): When active: accept -> process_selection; cancel -> go_back;
+     up/down -> movement.
+   - movement(direction): Moves hand cursor over items, clamps ends, plays move
+     sound, and refreshes the stat panel via set_item_stats.
+   - add_item_back_to_array(): Clears and repopulates item_slot_array with the six
+     "Slot N" child nodes (called on ready and each rebuild).
+   - process_selection(): Opens "Equip Discord Box".start(selected item) and
+     deactivates input.
+   - build_menu(): Rebuilds the list: parks unused slots off-screen, sets the
+     mugshot texture, then for each inventory item pulls a slot, positions it,
+     and calls slot.start(item); positions the top/bottom frame pieces and hand
+     cursor; selects the first item and shows its stats.
+   - go_back(): Deactivates, moves the menu off-screen, and emits
+     BattlefieldInfo.unit_movement_system "action_selector_screen" to return.
+   - set_item_stats(item): Writes item_name/uses/might/crit/hit/icon into the
+     stat panel and plays an "equipped" highlight animation if it is the unit's
+     current_item_equipped, else resets the name color to white.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - Six slots are hard-coded by node name; a repeated container (VBoxContainer +
+     instanced slot scenes) scales to any inventory size without magic node paths
+     and manual position math.
+   - The pixel-offset layout math (TOP_LEFT + MARGIN + ACTION_SIZE_Y - 1) is
+     brittle; use container layout instead of absolute positioning.
+   - Menu navigation state (current index, options) is duplicated across every
+     screen in this folder; a shared list-menu component would remove the copy.
+   - Signal name string "action_selector_screen" is stringly-typed; declare it.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP for the battle loop. A per-unit item inventory with might/crit/hit/uses
+   is core FE and is explicitly outside DoT's model (no weapon stats, no crit/hit,
+   no durability, deterministic table-based damage). DoT units carry no inventory
+   in battle. The reusable pieces worth keeping are generic and belong in /ui: the
+   list-menu + hand-cursor navigation pattern and the portrait/stat-panel layout,
+   which could be repurposed for a between-missions General roster/camp screen
+   (souls leveling, revival). The item-specific stat fields are cut. Rebuild any
+   surviving UI as pure view forwarding input via signals, no rules inside.

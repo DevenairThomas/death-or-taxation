@@ -1,0 +1,36 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Knight/Ally Knight.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the armored
+knight unit (character Gilliam).
+
+2. WHAT IT DOES
+Fills the Battlefield_Unit base fields for Gilliam on spawn: name, the `armor` flag (drives armor
+weapon-triangle / effective-damage rules elsewhere), portrait/mugshot, lance proficiency + an Iron
+Lance, the combat-animation scene, and a death quote. No behavior of its own.
+
+3. FUNCTIONS
+- _ready(): super._ready() first, then:
+    * $Animation.current_animation = "Idle".
+    * UnitStats.name = "Gilliam" (comment flags this as a temporary hard-set until levels load it).
+    * UnitStats.armor = true — consumed by the damage/Calculators code for anti-armor effectiveness.
+    * unit_portrait_path and unit_mugshot both preload the Gilliam portrait PNG (read by StatusScreen
+      and dialogue).
+    * Appends LANCE to UnitInventory.usable_weapons and add_item(Iron Lance).
+    * combat_node = "Gilliam Combat.tscn".
+    * death_sentence: single permadeath quote line.
+
+4. POSSIBLE IMPROVEMENT
+- Same as siblings: this is content in code and should be a data resource keyed by unit id.
+- UnitStats.name and UnitStats.armor being set here (with a "set this when the level loads" comment)
+  confirm the intent is data-driven loading; finish that migration and delete the script.
+- The armor boolean is one of several unit traits (pegasus, etc.) scattered across scripts as ad hoc
+  flags — consolidate into a typed unit-class/trait data record.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE. A generic knight = DoT SQUAD or SINGLE tier, defined entirely in /data. The `armor` trait
+maps to DoT's damage table by attacker-vs-defender type (the base_table already encodes matchups,
+so a boolean flag is replaced by table entries), not an effectiveness multiplier. Scrap the per-unit
+script; keep the concept of a unit-type record (name, type, weapon, movement, portrait, death quote)
+as a data file. If Gilliam were a founding-father General he'd be a GENERAL data entry (persistent,
+lvl 1-5, souls) — still data, never a subclass.

@@ -1,0 +1,26 @@
+FILE: engine/systems/tile_unit_updater.gd
+
+1. CLASS
+class_name TileUnitUpdater. Extends Node. Per-turn terrain effect processor (heal tiles / damage tiles) applied to units standing on special cells.
+
+2. WHAT IT DOES
+At the start of each faction's turn it iterates that faction's units and applies terrain-based healing (Fortress/Heal Tile/Throne) or environmental damage (Lava/Poison), pans the camera to the affected unit, plays a sound, and waits ~1s per affected unit before emitting update_done.
+
+3. FUNCTIONS
+- ally_turn_update(): unless a level is loading, for each ally calls damage() then heal() on its currentTile; awaits a 1s timer if something happened; emits update_done("Ally"). Guarded by BattlefieldInfo.save_load_system.is_loading_level.
+- enemy_turn_update(): same for enemy_units; emits update_done("Enemy").
+- heal(unit, tile): skips if at max HP; match on tile.tileName — Fortress +20%, Heal Tile +10%, Throne +25% of max_health (rounded), sets healed status, clamps HP to [1, max]. Mutates unit.UnitStats.current_health directly.
+- damage(unit, tile): skips flying (pegasus) units; match on tile.tileName — Lava/Poison -10% max_health, moves camera, plays $"Damage Sound", sets damaged=true, clamps HP (min 1, so environment never kills).
+- set_healed_status(unit): pans camera + plays $"Heal Sound" + sets healed=true.
+- misc_tiles(_unit, _tile): empty stub for future tile effects.
+- set_camera_position(unit): sets BattlefieldInfo.main_game_camera position (with a fixed offset), clamps it, and moves BattlefieldInfo.cursor to the unit.
+Uses module-level healed/damaged flags because (per comment) yield/await behavior inside helpers was problematic.
+
+4. POSSIBLE IMPROVEMENT
+- Model (HP change) and view (camera pan, sound, 1s await) are fused. Separate the deterministic HP-effect computation (pure, testable) from the presentation pulse.
+- Terrain effects are hardcoded string matches with magic percentages (0.2/0.1/0.25/0.1) — move to /data terrain records.
+- Uses shared healed/damaged member flags as a workaround for async — fragile across interleaved calls; return results instead.
+- Damage clamps to min 1 so poison/lava can never kill — that's a design choice that should be explicit/data-driven, not implicit in a clamp.
+
+5. RELATION TO DEATH OR TAXATION
+Change; keep concept, make it deterministic and data-driven. Terrain that heals/harms fits DoT, but the numbers must live in /data terrain records alongside the (1 - terrain_def) defense value the damage formula uses. The HP math is pure and belongs in /sim (per-turn tile effects computed with no RNG — already deterministic here, good). Camera pan, sounds, and the 1s pacing await belong in /scenes reacting to a signal like unit_damaged/unit_healed (DoT mandates sim->view via signals only). Note DoT's tiers: Squads (10 HP) vs Singles (25 HP) vs Generals — percentage-based tile heal/damage must respect those HP pools and the rule that only Squads scale damage output with HP (tile effects are HP changes, not attack output, so they apply to all tiers, but revival/permadeath rules for Generals mean tile "damage" must never silently kill a General; the min-1 clamp partially anticipates this). Redo string matches as data.

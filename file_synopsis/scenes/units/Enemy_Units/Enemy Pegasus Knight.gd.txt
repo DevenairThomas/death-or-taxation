@@ -1,0 +1,19 @@
+FILE: scenes/units/Enemy_Units/Enemy Pegasus Knight.gd
+
+1. CLASS
+No class_name. extends Battlefield_Unit. Concrete enemy unit definition (flying lance cavalry). The only enemy script here that also configures stats and movement penalties.
+
+2. WHAT IT DOES
+Spawn config for a flying unit: base setup, idle anim, sets a couple of UnitStats fields, and — uniquely — customizes the full terrain movement-penalty profile to model flight (cheap over most terrain, but forbidden over sea/mountain via -99). Gives it an Iron Lance and the pegasus combat scene. Note it does NOT set is_ally=false here.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation="Idle"; sets UnitStats.name="Soldier" and UnitStats.pegasus=true (comment says this is placeholder to be set on level load); sets UnitMovementStats penalties: defaultPenalty 0, forestPenalty -1, fortressPenalty -1, hillPenalty -2, riverPenalty 0, seaPenalty -99, mountainPenalty -99, ruinsPenalty -2; unit_portrait_path/unit_mugshot = red soldier portrait; appends Item.WEAPON_TYPE.LANCE, adds Iron Lance; combat_node = preload("Enemy Pegasus Knight Combat.tscn"). Touches Battlefield_Unit, $Animation, UnitStats, UnitMovementStats, UnitInventory, Item enum.
+
+4. POSSIBLE IMPROVEMENT
+- Missing UnitMovementStats.is_ally=false (likely bug — treated as ally by AI/movement gating).
+- pegasus flag is set on UnitStats AND the terrain penalties are hand-tuned to emulate flight — flight is now expressed in two places; unify (flight is a movement-domain rule).
+- Penalty sign convention (-99 = impassable, negatives as costs) is opaque; use named terrain costs/flags.
+- UnitStats.name="Soldier" is a placeholder acknowledged in-comment; real stats belong in data.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE to data; keep flying as a movement class. A flyer (ignores ground terrain move cost, crosses otherwise-impassable tiles) is a valid Advance-Wars-style movement type and enriches tactics. In DoT this is a /data unit-type with a "flying" movement profile (terrain move-cost table + impassable set) rather than a script; fictionally re-skin as a Crown airborne unit or a flying construct summoned by the mage. Keep the terrain-cost concept (it pairs with DoT's terrain-defense values used in the damage formula), but express move rules as data and derive flight from a movement-class field, not scattered penalties. Drop pegasus/UnitStats FE fields and the Lance.

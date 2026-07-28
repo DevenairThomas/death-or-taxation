@@ -1,0 +1,24 @@
+FILE: scenes/units/Unit_Scripts/Unit_Movement.gd
+
+1. CLASS
+class_name Unit_Movement, extends Node. Per-unit movement/pathing state container. Created by Battlefield_Unit._ready() as a child node named "UnitMovementStats".
+
+2. WHAT IT DOES
+Holds everything needed to compute and store a unit's movement on the grid: its current tile, the cached sets of reachable/attackable/healable tiles, movement point budget (movementSteps), a queued movement path, the ally/enemy flag, and per-terrain movement penalties. The grid/reachability algorithm (elsewhere) reads movementSteps and the *Penalty fields to flood-fill allowedMovement, and writes the result arrays here; the mover consumes movement_queue.
+
+3. FUNCTIONS
+- Fields: currentTile; allowedMovement / allowedAttackRange / allowedHealRange (arrays of cells the UI highlights); movementSteps; movement_queue (path to walk); is_ally (true = player-controlled, set false by enemy unit _ready scripts); and terrain penalties defaultPenalty, mountainPenalty, hillPenalty, forestPenalty, fortressPenalty, buildingPenalty, riverPenalty, seaPenalty, ruinsPenalty.
+- _init(): Defaults movementSteps=5, all penalties to 0 except hillPenalty=1, is_ally=true. (Individual units override penalties in their _ready — e.g. Enemy Pegasus Knight sets sea/mountain to -99 to forbid, forest/fortress -1, hill -2.)
+- clear_arrays(): Clears allowedMovement, allowedAttackRange, allowedHealRange, and movement_queue — called to reset highlight/range state between selections or turns.
+
+5 is below.
+
+4. POSSIBLE IMPROVEMENT
+- ruinsPenalty is declared but not initialized in _init() (left null while siblings are 0) — latent bug; several unit scripts do set it.
+- Penalty semantics are inverted/ad hoc: some values are positive costs, some are negative (-99 = impassable). Encode terrain cost as an explicit per-terrain dictionary (or "impassable" flag) instead of magic negatives.
+- This is data + scratch state fused; the reachable-tile arrays are transient compute output and don't belong in the same object as the persistent config. Split config (in /data) from per-turn scratch.
+- Untyped fields; add types and docstrings.
+- Extends Node purely to be a child; a RefCounted/struct would be lighter and headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP the model, move to /sim as pure RefCounted. Movement range, per-terrain movement cost, path queue, and reachable-tile computation are core tactics that DoT needs and that must be deterministic + headless-testable — a perfect fit for /sim. The is_ally flag maps to unit ownership (player Generals/summons vs. Crown forces). Convert penalties into data-driven terrain move-cost tables in /data (terrain is already a first-class data concept in DoT, tied to the (1 − terrain_def) combat term). Drop the Node inheritance and the highlight arrays from the sim class — highlighting (allowedMovement/AttackRange/HealRange rendering) is view-layer in /scenes. Note DoT terrain defense values (forest 0.2, mountain 0.4, etc.) live alongside these move costs in the same terrain data.

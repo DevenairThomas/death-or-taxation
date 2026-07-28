@@ -1,0 +1,33 @@
+SYNOPSIS — scenes/events/level_1/L1_event_part_30.gd
+
+1. CLASS
+class_name L1_Event_Part_30, extends Event_Base.
+Concrete scripted cutscene beat — Level 1, final intro beat (Seth + Eirika rally, party marches to start positions, hand off to gameplay). One .gd per beat.
+
+2. WHAT IT DOES
+Plays the "prepare for battle" scene that ends Level 1's intro: reveals all enemies, shows the Seth/Eirika resolve-to-fight dialogue in the top textbox, then cinematically walks the whole player squad (Natasha, Ewan, Neimi, Gilliam, Vanessa, Colm) to their deployment tiles, then places the player cursor and completes — transferring control to actual gameplay.
+
+3. FUNCTIONS
+- var ewan/natasha/neimi/gilliam/vanessa/colm: cached unit references.
+- var dialogue (Array): the rally lines ("Name@portrait@text"; Japanese commented out).
+- _init(): sets event_name = "Prepare for Battle", event_part = "Part 30".
+- start():
+  * Caches the six ally units from BattlefieldInfo.ally_units.
+  * Makes all BattlefieldInfo.enemy_units visible.
+  * Connects message_system.no_more_text -> move_actor (march begins after dialogue).
+  * Connects movement_system_cinematic.unit_finished_moving_cinema -> move_cursor (cursor placed after march).
+  * Sets box to Messaging_System.TOP, enable_text(dialogue).
+- move_cursor(): sets BattlefieldInfo.cursor.position = Vector2(64,208), then event_complete() (emits event_done; Event_System advances — queue empties, gameplay starts).
+- move_actor(): makes every ally visible; builds AI paths (movement_calculator.get_path_to_destination_AI) for all six units to specific grid tiles; nulls each unit's currentTile.occupyingUnit; appends all six to movement_system_cinematic.unit_to_move_same_time; sets is_moving = true to run the simultaneous cinematic march.
+
+Coupling: BattlefieldInfo, movement_calculator, movement_system_cinematic, message_system, cursor. Queued by event_loader_L1; when this beat's event_done leaves the queue empty, Event_System.start_events_queue calls start_level()/resume to begin play.
+
+4. POSSIBLE IMPROVEMENT
+- Six near-identical unit references + six near-identical path/null/append lines beg for a data-driven loop over a [(unit_name, target_tile)] table instead of copy-paste.
+- Magic grid coordinates and cursor Vector2(64,208) are unnamed literals; deployment marks should be map data.
+- Signal connections never disconnected (double-connect risk on replay).
+- Depends entirely on BattlefieldInfo and live nodes — not headless-testable.
+- Duplicates the same march-then-place-cursor logic that L2_Event_Part_40 repeats almost verbatim; a shared "march squad to marks" routine (ideally data-driven) would remove the duplication across levels.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as a script; extract the pattern. This is the clearest evidence for DoT's data-driven mandate: the same "walk N named units to N tiles then start play" logic is hand-duplicated per level, which is exactly the copy-per-map cost DoT bans. In DoT, deployment positions belong to map data, not a cutscene script, and the intro scene is a /data VN scene the generic stub plays. Runner requirement confirmed: a data scene may end by yielding control to gameplay (the last beat's completion starts the mission). For the gray-box prototype the cinematic squad march is not required at all — units can simply appear at data-defined deployment tiles; the VN stub only owns the text. So keep the sequencing/handoff concept, scrap the imperative per-unit staging and the placeholder FE content.

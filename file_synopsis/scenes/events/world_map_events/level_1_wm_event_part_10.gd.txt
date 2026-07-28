@@ -1,0 +1,32 @@
+SYNOPSIS: scenes/events/world_map_events/level_1_wm_event_part_10.gd
+
+1. CLASS
+class_name Level1_WM_Event_Part10. extends World_Map_Event (-> Node).
+The concrete overworld event that opens the game and launches Chapter 1/2.
+
+2. WHAT IT DOES
+Plays the game's intro on the world map: sets narration about post-war banditry and King Terenas dispatching Eirika and Seth, places castle/fort/village markers, moves the Eirika overworld token from an initial to a final position while the narration scrolls, and when the text ends, transitions to the "Chapter Background" scene and starts the chapter (map res://scenes/battlefield/chapter_2.tscn, titled "Victims of War"). This is the world-map-event -> chapter-start gate for the first mission.
+
+3. FUNCTIONS
+_init():
+- Fills text_array with 3 intro narration lines.
+- Connects WorldMapScreen node "Eirika/Eirika Tween" "tween_completed" -> after_eirika_move, and "Message System" "no_more_text" -> after_text.
+- Sets textbox position (Messaging_System.TOP).
+- Appends one castle, one fort, one village waypoint (magic Vector2s).
+run():
+- Sets Eirika token to eirika_initial, awaits a 2s timer (comment says 1.5s — stale comment), then starts narration (Message System.start(text_array)) and calls WorldMapScreen.move_eirika(eirika_final, 5) to animate the token.
+build_map():
+- Iterates the three waypoint arrays calling WorldMapScreen.place_castle_waypoint / place_fort_waypoint / place_village_waypoint.
+after_text():
+- The chapter-start gate: awaits 0.5s, calls SceneTransition.change_scene_to_file("res://scenes/chapter/Chapter Background.tscn", 0.1), calls WorldMapScreen.exit(), awaits SceneTransition.scene_changed, then SceneTransition.get_tree().current_scene.start("1","Victims of War", level, 2) to begin the chapter, then queue_free()s itself.
+Interactions: autoloads WorldMapScreen (node paths Eirika/Eirika Tween, Message System), SceneTransition (change_scene_to_file + scene_changed signal), and the Messaging_System. The Chapter Background scene's start(id,title,mapPath,?) actually loads the battle map.
+
+4. POSSIBLE IMPROVEMENT
+- Connecting signals inside _init() (before the node is in the tree / before await works) is risky; do wiring in _ready/run.
+- Legacy Godot-3 "Eirika Tween" child node + tween_completed(object,key) callback; port to Godot 4 create_tween/finished.
+- Hardcoded node paths ("Eirika/Eirika Tween","Message System") tightly couple the event to WorldMapScreen's internal tree.
+- All positions, timings, marker coords, target map, chapter id/title are magic values in code — should be data.
+- Comment/code mismatch (2s vs "1.5 second pause"); the empty after_eirika_move (inherited stub) is connected but does nothing.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap the class; this is the archetype of DoT's mission-select -> cutscene -> deployment/battle transition, and it's exactly what must become data-driven. In DoT: mission-select picks a mission -> a generic overworld/cutscene runner reads /data (intro lines, marker placements, token move) -> plays the minimal VN stub -> on completion transitions into deployment then the gray-box battle map. Keep as the reference for WHAT the transition must do: play narration, then hand off (scene id, title, map path) to a chapter/battle bootstrap. DoT should replace the SceneTransition + WorldMapScreen node-path coupling with a clean signal-driven handoff, and never hardcode per-chapter start() calls.

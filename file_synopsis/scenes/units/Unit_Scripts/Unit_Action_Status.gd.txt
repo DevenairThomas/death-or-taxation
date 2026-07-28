@@ -1,0 +1,23 @@
+FILE: scenes/units/Unit_Scripts/Unit_Action_Status.gd
+
+1. CLASS
+class_name Unit_Action_Status, extends Node. Tiny state machine tracking how much a unit can still do this turn. Created by Battlefield_Unit._ready() as child "UnitActionStatus".
+
+2. WHAT IT DOES
+Encodes the FE per-turn action gating: a unit starts able to MOVE (do everything), then after moving is limited to one ACTION (attack/heal/cast/item), TRADE, or DONE (spent). Turn/selection logic reads current_action_status to decide what menus to offer and to grey out spent units; end-of-turn resets everyone to MOVE.
+
+3. FUNCTIONS
+- enum {MOVE, ACTION, TRADE, DONE}: The four states.
+- var current_action_status with property getter get_current_action / setter set_current_action.
+- _init(): Initializes to MOVE.
+- get_current_action() / set_current_action(action): Property accessors (setter simply stores the value).
+- set_current_action_index(index): Maps an int 0-3 to the matching enum via a match, defaulting to MOVE — used when a status arrives as a raw index (e.g. from save data / UI).
+
+4. POSSIBLE IMPROVEMENT
+- The getter/setter pair adds no logic over a plain var; either add real behavior (e.g. emit a signal on change so the view greys the unit) or drop the property indirection.
+- enum is anonymous (unnamed) so values leak as bare ints; name it (enum ActionStatus {...}) and type current_action_status accordingly for clarity and safety.
+- set_current_action_index duplicates the enum ordering; since the index already equals the enum value, it could be a direct cast/validation.
+- Extends Node only to be a child; RefCounted would be lighter and testable headless.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP, move to /sim. Per-unit "has this unit acted this turn" state is exactly the kind of deterministic turn bookkeeping DoT needs, and belongs in the pure sim so tests can assert turn flow. DoT likely simplifies the states: TRADE is probably unnecessary (inventory/convoy trading is FE flavor not central to Advance-Wars-style skirmish), so a MOVE/ACTION/DONE (or even just can_act boolean + moved boolean) model may suffice. Wire the state change to a signal the view listens to for greyscale (Battlefield_Unit.turn_greyscale_on) instead of the view polling. Turn reset ties into the turn_changed sim signal.

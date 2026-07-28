@@ -1,0 +1,25 @@
+FILE: engine/systems/game_settings.gd
+
+1. CLASS
+No class_name. Extends Control. An options/settings screen scene script (music & sound volume sliders driven by keyboard).
+
+2. WHAT IT DOES
+Plays settings-menu music, lets the player move up/down between setting rows and left/right to change values with an acceleration ramp when a key is held, and applies music volume to the audio bus. Most persistence/reset functions are unimplemented stubs.
+
+3. FUNCTIONS
+- _ready(): plays $"Settings Music" and populates all_node_settings with the Music Volume and Sound Volume UI nodes.
+- start() / exit(): empty stubs.
+- _process(delta): while ui_left/right held, ramps step_increment via a key_timer for faster scrubbing.
+- _input(event): ui_left/right adjust the current setting node's value (+ ramp) then call node.update() and update_settings(); ui_up/ui_down move current_setting_index with wraparound.
+- update_settings(): match on index — index 0 writes the music volume label and sets AudioServer.set_bus_volume_db(0, ...) with a hand-tuned mapping; index 1 updates the sound label only. Prints the bus volume.
+- get_new_volume(value): returns 0 — non-functional placeholder.
+- reset_settings_to_default() / reset() / save() / load_settings(): all empty stubs.
+
+4. POSSIBLE IMPROVEMENT
+- Volume mapping is a magic-number formula ((100 - value)/2 * -1) on hardcoded bus index 0; use AudioServer.get_bus_index by name and linear_to_db for a correct perceptual curve.
+- Sound (index 1) never actually applies to a bus — only the label updates; it's half-wired.
+- save/load/reset are unimplemented; settings do not persist. get_new_volume is dead.
+- Reads raw Input in both _process and _input plus is_action_pressed — mixing polling and events; consolidate.
+
+5. RELATION TO DEATH OR TAXATION
+Keep as pure /ui, rebuild cleanly. This is a menu with zero game rules, so it maps straight to DoT's /ui layer and touches nothing in /sim. It has no bearing on combat determinism, currencies, or tiers. When rebuilt: finish real persistence (settings config file), address audio buses by name, and drive it with the project's input actions. Low priority relative to the skirmish loop, but a legitimate reference for how the reference project structured a keyboard-navigated menu.

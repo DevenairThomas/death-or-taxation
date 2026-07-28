@@ -1,0 +1,35 @@
+SYNOPSIS — scenes/events/level_2/L2_event_part_10.gd
+
+1. CLASS
+class_name L2_Event_Part1, extends "res://scenes/events/event_base.gd" (Event_Base).
+Concrete scripted cutscene beat — Level 2 (Eirika steps outside, she and Seth talk, then soldiers spot the enemy).
+
+2. WHAT IT DOES
+Plays the second L2 beat: starts an "Unfulfilled" music track, plays a door-open sound and waits 1s on a Timer, walks Eirika out to a mark, then plays the Seth/Eirika conversation in the top textbox; when dialogue ends it fades the music out and pans the camera south, completing the beat. Demonstrates timer-gated sequencing (sound -> pause -> move -> talk -> camera).
+
+3. FUNCTIONS
+- var dialogue (Array): the Seth/Eirika exchange ending on "Almyryan soldiers!", "Name@portrait@text".
+- var eirika: cached unit.
+- _init(): sets debug name/part and path.
+- start():
+  * Plays music_player "Unfufilled" at volume_db -5.
+  * Reveals + caches Eirika.
+  * Connects message_system.no_more_text -> move_camera; movement_system_cinematic.unit_finished_moving_cinema -> start_dialogue; event_system's child "Timer" timeout -> move_actor.
+  * Calls play_door_sound().
+- play_door_sound(): plays extra_sound_effects "Open Door", sets the Event_System "Timer" wait_time = 1.0 and starts it (the 1s pause before Eirika moves).
+- move_actor(): (fired by Timer timeout) paths Eirika to grid[9][6], nulls her tile, appends her to unit_to_move_same_time, is_moving = true.
+- start_dialogue(): (fired when Eirika arrives) sets box TOP, enable_text(dialogue).
+- move_camera(): (fired when dialogue ends) tweens music_player "Unfufilled" volume_db down to -80 (fade out) and tweens main_game_camera to Vector2(0,190); connects tween_all_completed -> event_complete.
+
+Coupling: BattlefieldInfo (music_player, extra_sound_effects, event_system's Timer node, main_game_camera+Tween), message_system, movement_system_cinematic, movement_calculator. Advanced by Event_System.
+
+4. POSSIBLE IMPROVEMENT
+- Uses a Timer child node on the Event_System just for a 1s delay; Godot 4 idiom is `await get_tree().create_timer(1.0).timeout`.
+- Deprecated child-"Tween"-node interpolate_property for both music and camera.
+- Volume interpolate_property passes literal 0 as "from" instead of the current -5, so the fade jumps — a latent bug typical of hand-scripted beats.
+- Magic literals: grid[9][6], camera Vector2(0,190), volume numbers, node path strings ("Unfufilled" — also misspelled).
+- Reaches through event_system.get_node("Timer") — tight coupling to another system's child node.
+- Signals never disconnected; not testable headless.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as script; note the timing requirement. This beat shows a scene needs sequenced timed steps (sound, delay, move, talk, camera) chained on callbacks. A DoT data scene format should allow ordered steps that wait for completion — but the DoT gray-box VN stub only owns text advancement (click/space), so door SFX, music fades, timed pauses, unit walk-on, and camera pans are all out of scope for the prototype and would be optional stage directions at most. The misplaced "from=0" fade bug is a good argument for declarative data (a fade directive computes from current value) over imperative per-beat scripting. Content is FE placeholder, replaced by DoT writing.

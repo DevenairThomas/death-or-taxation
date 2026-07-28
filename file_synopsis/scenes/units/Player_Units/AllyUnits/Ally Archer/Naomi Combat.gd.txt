@@ -1,0 +1,37 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Archer/Naomi Combat.gd
+
+1. CLASS
+No class_name. `extends "res://scenes/units/Unit_Scripts/Combat Unit.gd"` (base class Combat_Unit,
+a Node2D). This is the combat-animation controller attached to the archer's battle-scene (Naomi
+Combat.tscn), used only during the full-screen combat animation.
+
+2. WHAT IT DOES
+Overrides a couple of the base Combat_Unit audio hooks so the archer's battle animation plays
+bow-specific sounds. The AnimationPlayer in the combat scene calls these functions as method-track
+keyframes to sync SFX and dodge cues with the sprite animation.
+
+3. FUNCTIONS
+- signal play_enemy_dodge_anim: emitted to tell the opposing combatant's node to play its dodge
+  animation on a miss (handled by the Combat_Screen / enemy combat node wiring).
+- play_attack_sound(): overrides base; plays the "Bow Shoot" node under BattlefieldInfo.weapon_sounds
+  (autoload holding pooled AudioStreamPlayers) instead of the generic melee attack sounds.
+- play_miss_sound(): plays a randomly chosen "Attack Miss 1..2" clip from BattlefieldInfo.battle_sounds
+  and emits play_enemy_dodge_anim. Uses randf_range for SFX/anim variety only (cosmetic RNG, not
+  combat math).
+
+4. POSSIBLE IMPROVEMENT
+- randf_range(1,3) cast to int yields only 1 or 2 (never 3) because randf_range is exclusive at the
+  top for the int cast in practice — an off-by-one that silently under-uses the sound set; use
+  randi_range(1, N).
+- Reaching into BattlefieldInfo.weapon_sounds/battle_sounds by get_node(string) is stringly-typed
+  and fragile; a sound-bank API or an @export AudioStream per action would decouple it.
+- The whole class exists only to swap one sound; this could be a data field ("attack_sfx": "Bow
+  Shoot") on the weapon/unit instead of a subclass.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP as-is. DoT is gray-box (placeholder ColorRects, no art, no music yet) and combat resolution
+is deterministic sim math surfaced through signals to a thin view — there is no scripted per-unit
+combat-animation scene and no "miss" (no dodge/hit-chance exists). Cosmetic RNG for SFX is allowed
+in the VIEW layer but there is currently nothing to attach it to. Keep only the idea that the view
+plays a per-unit/per-weapon sound cue in response to a sim signal (e.g. unit_damaged); implement it
+as data, not a Combat_Unit subclass.

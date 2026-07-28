@@ -1,0 +1,19 @@
+FILE: scenes/units/Enemy_Units/Bandit.gd
+
+1. CLASS
+No class_name. extends Battlefield_Unit. Concrete enemy unit definition (axe-wielding bandit).
+
+2. WHAT IT DOES
+Per-unit spawn config for a bandit: base setup, enemy flag, idle anim, bandit portrait/mugshot, an Iron Axe loadout, and the bandit combat-cutscene scene.
+
+3. FUNCTIONS
+- _ready(): super._ready(); sets $Animation.current_animation="Idle"; UnitMovementStats.is_ally=false; unit_portrait_path and unit_mugshot = bandit mugshot art (a commented-out line shows a prior normal-soldier portrait); appends Item.WEAPON_TYPE.AXE to UnitInventory.usable_weapons and adds a preloaded Iron Axe; combat_node = preload("Bandit Combat.tscn"). Touches Battlefield_Unit base, $Animation, UnitInventory, Item enum.
+
+4. POSSIBLE IMPROVEMENT
+- Same as the other enemy scripts: content-as-code; belongs in a data resource.
+- Leftover commented portrait line is dead code.
+- No stats/AI set here (uses Unit_Stats placeholder defaults).
+- Hardcoded asset paths and $Animation child name.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE / possibly SCRAP the archetype. Bandits are generic FE fantasy filler and don't obviously fit DoT's Revolutionary-War fiction (redcoats + the mage's constructs). Either re-skin as a Crown irregular/loyalist raider or drop it. Mechanically it collapses to a /data unit-type (SQUAD, HP, damage-table row, range, faction) like every other enemy; the Iron Axe is irrelevant since DoT damage is table-driven. The distinct portrait/combat scene concept survives as data + gray-box view.

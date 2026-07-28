@@ -1,0 +1,61 @@
+SYNOPSIS: scenes/gui/Damage Preview/Healing Preview.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The healing-forecast counterpart to Damage Preview: pick a wounded ally in
+   staff range and preview the heal before confirming.
+
+2. WHAT IT DOES
+   Near-clone of Damage Preview but for healing staves. After a healing item is
+   chosen, it finds reachable wounded allies, lets the player cycle them, and
+   shows a preview box with the healer, the target, and the heal amount. Confirm
+   launches the healing combat phase. Uses BattlefieldInfo, Combat_Calculator
+   (calculate_healing / player_healing_total), Calculators, and Combat_Screen.
+
+3. FUNCTIONS
+   - _ready(): Inactive, parks preview RIGHT_SIDE, connects Action Selector
+     Screen's menu_moved to set_menu_position.
+   - _input(event): Accept -> process_selection (prints debug line), cancel ->
+     go_back (to Healing Select), up/right & down/left cycle the target and
+     refresh preview.
+   - start(item): Stores the staff, sets combat_player_unit to current unit,
+     builds reachable ally list, resets selection, updates cursor + box, turns on.
+   - get_reachable_enemies() [misnamed - actually finds allies]: BFS from the
+     healer's tile up to staff max_range; collects allied-occupied tiles (not the
+     healer itself) that are within min_range AND below max_health into
+     reachable_allies_list. Uses Calculators.get_distance_between_two_tiles.
+   - process_selection(): Turns off and calls
+     BattlefieldInfo.combat_screen.start_combat(Combat_Screen.player_healing).
+   - update_preview_box(): Sets combat_ai_unit to the chosen ally, calls
+     Combat_Calculator.calculate_healing(), then writes both sides' name/icon/HP
+     and the heal total (player_healing_total). No crit/hit/arrows (healing).
+   - set_menu_position(new_position): LEFT/RIGHT box repositioning (author flags
+     this as hacky, "works ~85% of the time").
+   - update_enemy_chosen(): Moves the "Cursor Select" highlight to the new target.
+   - go_back(): Turns off, reopens sibling "Healing Select".
+   - turn_on_red_tiles()/turn_off_red_tiles(): Toggle highlight tiles' Red overlay
+     (note: highlight_tiles is never populated here, so these currently no-op).
+   - turn_on()/turn_off(): Show/hide box, manage tiles/cursor, 0s Timer to defer
+     is_active.
+   - _on_Timer_timeout(): is_active = true.
+
+4. POSSIBLE IMPROVEMENT
+   - Massive duplication with Damage Preview; the two should share a base class or
+     a common target-finding/range helper. The misleading function name
+     get_reachable_enemies (returns allies) should be renamed.
+   - highlight_tiles is declared and toggled but never filled here, so the red-
+     tile calls do nothing - dead code to remove or fix.
+   - The author's own comment admits set_menu_position is unreliable; drive box
+     placement off the actual cursor rect instead of a left/right guess.
+   - Debug print in _input should be removed.
+
+5. RELATION TO DEATH OR TAXATION
+   LIKELY SCRAP / DEFER. DoT's three tiers are Squads/Singles/Generals with a
+   deterministic damage model and a soul/budget economy; the design spec centers
+   on the skirmish combat loop, not FE staff healing. Healing-as-a-staff-item is
+   not part of DoT's locked ruleset and there is no per-item durability/staff
+   system (items and weapon triangle are FE constructs being cut/simplified). If
+   any support/repair mechanic is ever added, it must be deterministic and route
+   through the single sim function like damage does. For the gray-box prototype,
+   drop this screen; if a heal preview is later needed it should be a thin reuse
+   of the one forecast popup, not a parallel implementation.

@@ -1,0 +1,28 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Thief/Ally Thief.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the thief unit
+(character Colm).
+
+2. WHAT IT DOES
+Populates the Battlefield_Unit base fields for Colm on spawn: name, portrait/mugshot, sword
+proficiency + an Iron Sword and a Killing Edge, combat-animation scene, and a death quote. No
+thief-specific mechanics (steal/lockpick) are wired here — only stats/inventory/visuals.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation = "Idle"; UnitStats.name = "Colm"; preload
+  portrait -> unit_portrait_path reused as unit_mugshot; append SWORD to UnitInventory.usable_weapons
+  and add_item(Iron Sword) + add_item(Killing Edge); combat_node = "Colm Combat.tscn"; death_sentence
+  one-line quote (jokes about "thieving days"). Configuration only.
+
+4. POSSIBLE IMPROVEMENT
+- Content-in-code; convert to a unit data resource.
+- The Killing Edge is a crit-focused weapon; combat crit is inherently RNG-flavored in FE — worth
+  noting as out-of-spec for the target game (see below).
+- No thief role behavior present, so the "Thief" identity is purely cosmetic here.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE, and flag. A generic melee = DoT SQUAD/SINGLE from /data. Critically, the Killing Edge and
+any crit-based item are OUT OF SPEC for DoT: combat is 100% deterministic, no crit/dodge/luck. Do
+not port crit weapons. Utility roles (steal) are not part of DoT's cut-down skirmish loop either.
+Scrap the script; keep only the notion of a unit-type-as-data record, minus any RNG/crit gear.

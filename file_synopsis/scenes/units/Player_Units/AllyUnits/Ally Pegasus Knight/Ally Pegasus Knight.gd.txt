@@ -1,0 +1,30 @@
+FILE: scenes/units/Player_Units/AllyUnits/Ally Pegasus Knight/Ally Pegasus Knight.gd
+
+1. CLASS
+No class_name. `extends Battlefield_Unit`. Per-character configuration script for the pegasus
+knight unit (character Vanessa).
+
+2. WHAT IT DOES
+Fills the Battlefield_Unit base fields for Vanessa on spawn: name, the `pegasus` flag (drives flying
+movement/terrain-cost and anti-fliers effectiveness elsewhere), portrait/mugshot, lance proficiency
++ an Iron Lance, combat-animation scene, and a death quote.
+
+3. FUNCTIONS
+- _ready(): super._ready(); $Animation.current_animation = "Idle"; UnitStats.name = "Vanessa";
+  UnitStats.pegasus = true (read by movement cost and by Calculators for effective damage vs fliers);
+  preload portrait -> unit_portrait_path reused as unit_mugshot; append LANCE to
+  UnitInventory.usable_weapons and add_item(Iron Lance) (bound to a local var, then added); combat_node
+  = "Vanessa Combat.tscn"; death_sentence one-line quote. Configuration only.
+
+4. POSSIBLE IMPROVEMENT
+- Content-in-code; convert to a unit data resource.
+- `pegasus` is another ad hoc trait boolean (cf. `armor` on the knight); fold flying + all traits
+  into a typed unit-class record so movement/terrain rules read one field set.
+- The intermediate `var lance = ...; add_item(lance)` is pointlessly different from siblings that
+  inline the call — cosmetic inconsistency.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE. A flier maps to a DoT SQUAD/SINGLE unit type defined in /data; flying becomes terrain-cost
+data + table matchups, not a scattered boolean. DoT combat is deterministic (no dodge/effectiveness
+RNG). Scrap the per-unit script; keep unit-type-as-data. If a founding father were a flier General,
+still a GENERAL data entry (lvl 1-5, souls), never a subclass.

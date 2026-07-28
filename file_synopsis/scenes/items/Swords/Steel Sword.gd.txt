@@ -1,0 +1,32 @@
+SYNOPSIS: scenes/items/Swords/Steel Sword.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete weapon
+script for Steel Sword.tscn.
+
+2. WHAT IT DOES
+A heavier, higher-damage sword than Iron. _ready() sets uses/max_uses 30, might 8,
+weight 10, hit 75, crit 0, range 1-1, worth 480, strong_against AXE, icon steel_Sword.png,
+weapon_string_name "sword". Trades durability/accuracy/weight for more might vs the Iron
+Sword. NOTE: not present in Item_Dict.all_items, so it is content not exposed by the
+default registry.
+
+3. FUNCTIONS
+- _ready(): assigns stats on spawn.
+- special_ability(_holder, _target): returns 1 (no bonus); damage-multiplier hook called
+  by combat_calculator.
+- draw_attack_sound() / put_away_attack_sound(): play "Draw Weapon"/"Put Away Weapon" from
+  BattlefieldInfo.weapon_sounds.
+
+4. POSSIBLE IMPROVEMENT
+- Pure data in code; convert to Resource/data row. The whole file differs from Iron Sword
+  only in numbers.
+- Add it to (or remove it from) the Item_Dict registry to fix content/registry drift.
+- Copy-paste comment "# Steel Sword stats" is correct here but the same header is wrongly
+  reused in other files — a symptom of duplication that data-driving removes.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED. Same reasoning as Iron Sword: no durability/hit/crit/weight/weapon-triangle in
+DoT. At most this represents a heavier damage profile that, in DoT, would just be a
+different TYPE row (or the same type at different HP%) in the deterministic damage table.
+No literal reuse.

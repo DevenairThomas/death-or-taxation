@@ -1,0 +1,28 @@
+FILE: engine/systems/events_system.gd
+
+1. CLASS
+class_name Event_System. Extends Node. The runtime director for scripted sequences (intro/mid/outro cutscene beats) built on a queue of Event_Base nodes.
+
+2. WHAT IT DOES
+Owns a queue of events plus a list of mid-level event listeners, tracks a state (starting/middle/ending), and pumps events one at a time. Each event runs, signals event_done, and the system advances. When the queue drains it transitions the game: start the level, resume gameplay, or end the level depending on state. Also serializes its pending events for saving.
+
+3. FUNCTIONS
+- _ready(): registers itself as BattlefieldInfo.event_system (global singleton wiring).
+- start_events_queue(): the pump. Disables the cursor (BattlefieldInfo.cursor.disable_standard). If queue empty: frees current_event, emits all_events_completed, and branches on current_state -> start_level()/resume_gameplay()/end_level(). Otherwise pops the next event, connects its event_done back to start_events_queue, and calls event.start(). Re-entrant via the event_done signal.
+- add_event(event: Event_Base) / add_mid_event(event): append to queue_of_events or mid_level_events and add_child. Called by level setup and by save_load_system on load.
+- remove_event(event): erase from queue.
+- resume_gameplay() / pause_ui(): enable/disable BattlefieldInfo.cursor standard input.
+- start_level(): sets BattlefieldInfo.turn_manager.turn = Turn_Manager.WAIT, calls BattlefieldInfo.start_level(), advances state to middle_events.
+- clear(): frees and empties both event lists, resets state to starting_events. Called by save_load on load.
+- end_level(): empty stub (level transition handled elsewhere, e.g. turn_manager/level_container).
+- save(): returns a dict of starting_events and mid_events, each element from event.save(). Consumed by SaveLoadSystem.save_current_events.
+Signal all_events_completed emitted when the queue empties.
+
+4. POSSIBLE IMPROVEMENT
+- Registers itself into the BattlefieldInfo global from _ready — hidden global coupling; inject instead.
+- Events are Nodes added as children and driven by signals; a pure data-driven event list interpreted by one director would be lighter and testable. Directly manipulates BattlefieldInfo.cursor and turn_manager, blending director logic with view/turn concerns.
+- end_level() is an empty stub while start_level does real work — asymmetric; the ending path silently does nothing.
+- current_state enum and the match are fine, but there is no guard against re-entrancy overlap if an event emits event_done synchronously during start().
+
+5. RELATION TO DEATH OR TAXATION
+Keep the pattern, decouple and data-drive. A cutscene/mission-beat director is needed for the VN textbox and scripted intros/outros. Under DoT: the sequence content lives in /data (cutscene records), the director logic can be a mostly-pure sequencer, and it must communicate to the view via signals only — which this already leans on (event_done, all_events_completed). Remove direct pokes at cursor/turn_manager in favor of emitting signals the /scenes and turn layer react to. Remember DoT's rule: dead Generals still appear in cutscenes and no death-variant scenes exist, so the director must never branch event content on General death. Good conceptual seed for /sim-adjacent mission flow; rebuild without the Node-per-event + global-singleton coupling.

@@ -1,0 +1,28 @@
+FILE: scenes/gui/Unit Selectors/Unit Select.gd
+
+1. CLASS
+No class_name. extends Control. The pre-battle deployment roster screen: a MULTI-select list to choose which allies deploy (up to 8/6), with over/under-cap warning dialogs, then it places chosen units onto the map's swap-point tiles.
+
+2. WHAT IT DOES
+Shown from the preparation screen. Lists all ally units, lets the player multi-select who deploys (Eirika is force-selected and locked), enforces a max count with "too many units" and "fewer than max, proceed?" Yes/No dialogs, and on exit actually assigns the selected units to the deployment swap tiles (and moves the rest to "not in battle"). Owns a small state machine (SELECT, EXCESS, LESS, OFF).
+
+3. FUNCTIONS
+- _ready(): Hides scroll bar, disables input.
+- _input(event): Per state — SELECT: cancel -> exit_check(); LESS (under-cap confirm): left/right move Yes/No hand, accept Yes -> exit() / No -> back to SELECT; EXCESS (over-cap warning): any key -> back to SELECT.
+- start(select_mode_value): Sets list select_mode, reset(), populate_selected_units(), set_text(), fade in, enable input.
+- exit_check(): If under max -> LESS confirm dialog; if over max -> EXCESS warning; if exactly max -> exit().
+- place_allies(): Clears swap-point occupancy; merges not-in-battle into ally_units; resets non-Eirika unit tiles/positions; for each selected unit finds a free swap point and assigns position/currentTile/occupyingUnit; any unit left without a tile is moved into ally_units_not_in_battle and erased from ally_units.
+- exit(): State OFF, removes Eirika from selection set, place_allies(), stops input, fades out, then BattlefieldInfo.preparation_screen.turn_on_without_anim().
+- set_text(): BBCode unit-count label colored yellow/green/red by count vs max.
+- populate_selected_units(): Merges rosters, lists all allies, force-selects+disables Eirika, and re-selects units already sitting on swap tiles.
+- reset(): Clears selection set + list, parks dialogs off-screen, resets state/max.
+- _on_Unit_List_multi_selected(index, selected): Adds/removes from units_selected (never Eirika), plays SFX, updates count text.
+
+4. POSSIBLE IMPROVEMENT
+- Deployment placement (grid/tile mutation) lives in a view widget — mixes UI with battlefield state changes; belongs in a sim/deployment service.
+- max_units is 8 in one const but text/cap logic uses "6" strings and max_units_select_possible=8 vs max_units_currently_number=8 — inconsistent/confusing cap variables and a stray literal in unit_number string.
+- Hardcoded "Eirika" lock is content in code; should be a data flag ("is_forced/commander").
+- units_selected is a dict keyed by name text (dup-name collisions).
+
+5. RELATION TO DEATH OR TAXATION
+KEEP THE ROLE, RE-SPEC THE RULES. A deployment/roster-select screen is essential to DoT and lives in /ui. BUT DoT gates deployment by BATTLE BUDGET (each deployed Squad/Single/General costs budget, per-mission, no carry-over), NOT a flat 6/8 unit cap — so the count-cap logic is replaced by a running budget total against the mission budget. The forced-commander lock generalizes to a required-General concept if a mission demands one. Tile/occupancy placement must move to /sim (view forwards the deploy choice; sim owns grid state). Strip Eirika-specific and convoy-adjacent assumptions. Good structural reference for DoT's deployment UI; the selection UX (multi-select + confirm dialogs + colored count) is reusable.

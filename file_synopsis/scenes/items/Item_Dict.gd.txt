@@ -1,0 +1,47 @@
+SYNOPSIS: scenes/items/Item_Dict.gd
+
+1. CLASS
+class_name ALL_ITEMS_REF, extends RefCounted. A lightweight item registry / lookup
+table (name -> scene path). One of the few files in this folder that is already a pure
+RefCounted (headless-capable) rather than a Node.
+
+2. WHAT IT DOES
+Central registry mapping human-readable item ids ("Iron Sword", "Killing Edge", ...) to
+their .tscn resource paths. Instantiated once by BattlefieldInfo (battlefield_info.gd:175
+`item_database = ALL_ITEMS_REF.new()`) and used by shop, convoy, and combat code to look
+up and spawn item nodes by name. `all_items` is a `static var` (not const) specifically
+so add_item/remove_item can mutate it at runtime.
+
+3. FUNCTIONS
+- all_items (static var dict): the default catalogue. Note it lists only 9 items; several
+  scripts in this folder (Steel Sword, Rapier, Gorehowl, Iron Lance is listed) are NOT in
+  the dict, so they are content the registry doesn't expose by default.
+- add_item(item_id, item): inserts a new id->path entry, guarding against duplicate ids
+  (prints an error instead of overwriting).
+- remove_item(item_id): erases an entry, printing an error if absent.
+- get_item(item_id): returns the stored path for an id, prints an error and returns null
+  if missing.
+- create_item(item_id): takes a PATH (misnamed param — callers pass all_items[name], a
+  path), load()s the scene and instantiate()s it, returning a live Item node. Used by
+  Shop UI.gd (create_item(ALL_ITEMS_REF.all_items[...])) to add purchased items to convoy
+  or a unit's inventory. Convoy.gd bypasses this and does load(...).instantiate() inline.
+
+4. POSSIBLE IMPROVEMENT
+- get_item / create_item conflate "item id" and "resource path"; create_item's parameter
+  is actually a path. Unify to a single lookup so callers pass ids consistently.
+- Missing-item paths return null silently after a print; should push_error or return a
+  typed result so callers fail loudly.
+- The registry duplicates knowledge that could live in one data file; and the catalogue
+  omits several existing item scripts (Steel Sword, Rapier, Gorehowl), a drift risk.
+  A directory scan or a single /data manifest would keep registry and content in sync.
+- Print-based error handling should be push_warning/push_error.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE / partially KEEP. The concept of a single data-driven content registry is exactly
+what DoT's "adding a unit = zero code changes" rule wants — but DoT's registry keys are
+unit/General/ability/map ids resolving to /data entries, not weapon .tscn scenes. Keep
+the RefCounted + static-dict pattern and the id->definition lookup; scrap the
+load()+instantiate() scene-spawning (DoT sim units are RefCounted data, not Node2D
+scenes). A DoT analogue would be a /data registry of unit types feeding the damage table
+and a General/ability registry feeding the ability modifier pipeline. This file is the
+cleanest reference in the folder for how to structure that lookup.

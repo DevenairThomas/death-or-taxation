@@ -1,0 +1,30 @@
+FILE: scenes/gui/XP and Level/XP Screen.gd
+
+1. CLASS
+No class_name. extends Control. The in-battle XP bar that fills after combat: computes FE experience earned (from dealing damage, from a kill, or from healing) and animates the XP gauge, triggering the Level Up Screen when it crosses 100.
+
+2. WHAT IT DOES
+After a combat exchange this widget calculates how much XP the acting unit earned using the Fire Emblem (Sacred Stones) experience formulas (based on level difference, class power, class bonuses, boss/thief bonuses, mode coefficient), then animates the XP bar filling at a fixed speed. If XP crosses the next-level threshold it resets the bar and hands off to the Level Up Screen; otherwise it returns control to the battlefield. Separate entry points exist for a damaging hit, a no-damage/miss, a kill, and a heal.
+
+3. FUNCTIONS
+- _process(delta): State machine (damage/no_damage/death/heal/progress/wait). The action states set final_xp_earned and switch to progress; progress calls move_xp_bar.
+- move_xp_bar(delta): Adds SPEED*delta to combat_player_unit.current_xp, decrements final_xp_earned, updates the gauge. On crossing NEXT_LEVEL_XP: caps at level 20, allows only one level per exchange (clamps to 99 if already leveled), else resets current_xp to 0 and flags has_unit_leveled_up. When done, if leveled -> show/start Level Up Screen; else start Return timer.
+- start(): Reset; calculate_damage_xp(); state=damage. (damage-dealt case)
+- start_no_damage_or_miss(): final_xp_earned=1; state=no_damage.
+- start_death(): calculate_damage_xp + calculate_base_defeat + calculate_total_defeat; state=death (kill case).
+- start_heal_xp(): final_xp_earned=HEAL_XP(15); state=heal.
+- set_gui_box(): Sizes the xp_full_bar region_rect by current_xp/NEXT_LEVEL_XP and writes the numeric label.
+- calculate_damage_xp(): FE formula [31 + (enemyLvl+enemyClassBonusA) - (lvl+classBonusA)] / class_power, min 1.
+- calculate_base_defeat(): FE kill base XP with mode_coefficient doubling when result <=0.
+- calculate_total_defeat(): damage_xp + base_defeat + 20 + boss_bonus + thief_bonus, min 1.
+- _on_Return_timeout(): Idle anim, set unit action DONE, greyscale, then Item Broke Screen or emit done_adding_xp.
+Signal: done_adding_xp. Reads BattlefieldInfo.combat_player_unit / combat_ai_unit and Unit_Stats constants.
+
+4. POSSIBLE IMPROVEMENT
+- XP math and bar animation are fused in one node; the formulas should be pure functions (testable) separate from the gauge view.
+- set_gui_box has a precedence bug risk: `current_xp / Unit_Stats.NEXT_LEVEL_XP` — if both are ints this integer-divides to 0 until full; the float cast wraps the whole expression too late. Worth verifying types.
+- Long chain get_parent().get_parent().get_parent().broke_item is fragile.
+- Mixed float/int current_xp accumulation then int() rounding invites off-by-one; keep an int model + float animation separately.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAP OUTRIGHT (core design conflict). DoT has NO per-kill EXP and NO in-battle leveling — this entire widget's reason to exist is cut. Experience/souls are awarded only on MISSION COMPLETION (base 100 + up to 50 secondary; 40% on farm replays) and spent only BETWEEN missions to level (30/60/100/150/210) or revive (18xlevel) Generals. There is also no damage/kill/heal-XP distinction and no boss/thief/class-power FE math in DoT. So there is nothing to port mechanically. Any surviving idea (an animated resource-gain bar) is repurposed to the mission-complete/souls-award summary or the camp screen, and must be deterministic (no RNG, which this file avoids anyway). Rebuild fresh; do not carry FE XP formulas into DoT.

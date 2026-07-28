@@ -1,0 +1,30 @@
+SYNOPSIS: scenes/gui/Weapon Select/Weapon Select Slot.gd
+
+1. CLASS
+   No class_name, extends Control.
+   A single dynamically-instanced row in the Weapon/Healing Select lists.
+
+2. WHAT IT DOES
+   Displays one weapon's uses, name, and icon, and tags itself into a group so
+   the parent list can bulk-free all slots when the menu closes. Instantiated at
+   runtime by Weapon Select and Healing Select (preload + instantiate).
+
+3. FUNCTIONS
+   - _ready(): Empty pass stub.
+   - start(item): Sets uses text, item_name text, icon texture, and calls
+     add_to_group(GroupNames.ITEM_SLOT_GROUP_NAME) so turn_off() can find and
+     queue_free it later.
+
+4. POSSIBLE IMPROVEMENT
+   - Remove the empty _ready.
+   - Using a global group purely for cleanup is fragile (any stray group member
+     gets freed); prefer the parent tracking its instantiated children in a local
+     array or a dedicated container it can free.
+   - No equipped-highlight here (unlike Item Select Slot), so the two nearly
+     identical slot widgets diverge; unify into one configurable slot component.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP as a weapon widget; keep the generic row idea. It renders weapon fields
+   (uses/name/icon) that don't exist in DoT's model. A single, parent-owned,
+   decoupled list-row component would serve DoT /ui menus. Drop the group-based
+   lifecycle in favor of explicit ownership. No DoT rule maps to this content.

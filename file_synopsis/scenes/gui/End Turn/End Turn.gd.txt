@@ -1,0 +1,25 @@
+FILE: scenes/gui/End Turn/End Turn.gd
+
+1. CLASS
+No class_name. extends CanvasLayer. The top-level in-battle system menu opened by pressing accept on an empty tile: options Unit / Status / Suspend / End (turn).
+
+2. WHAT IT DOES
+A small fixed-option menu that ends the player turn, opens the mission status screen, suspend-saves the game, or (stub) shows unit status. It's the "pause/turn" menu of the battle HUD.
+
+3. FUNCTIONS
+- _ready(): Registers self as BattlefieldInfo.end_turn.
+- _input(event): When is_active: ui_accept->process_selection, ui_cancel->go_back, ui_up/down->movement. Plays hand SFX.
+- movement(direction): Moves hand cursor up/down over the fixed menu_items array, clamps index, updates current_option_selected.
+- process_selection(): "Unit" -> print stub. "Status" -> StatusScreen.start() (autoload/global) then turn_off. "Suspend" -> BattlefieldInfo.save_load_system.save_game(), awaits saving_complete. "End" -> sets every BattlefieldInfo.ally_units unit's UnitActionStatus to DONE + Idle anim, turn_off, then fires BattlefieldInfo.turn_manager "check_end_turn" to advance the turn.
+- go_back(): Re-enables the cursor (BattlefieldInfo.cursor.back_to_move + turn_on_ui), turn_off.
+- start(): turn_on, resets hand to original_hand_place, disables cursor (Cursor.WAIT).
+- turn_on()/turn_off(): is_active + visibility of "End Turn" node.
+
+4. POSSIBLE IMPROVEMENT
+- Menu items are a hardcoded array with a parallel hand-position constant; a small data-driven menu component (shared with Action Selector, which duplicates this exact up/down/hand pattern) would remove copy-paste.
+- "Unit" is a dead print stub presented as a menu option (violates "no TODO stubs presented as done").
+- Reaches into StatusScreen, BattlefieldInfo.save_load_system, turn_manager, cursor directly; would be cleaner via signals.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP, TRIM TO SPEC. An End-Turn / battle system menu is core to DoT's turn loop and lives in /ui. "End" (mark all units done + advance turn) maps straight onto DoT's turn manager. KEEP Status (mission objective/turn/roster overview) and End. "Suspend"/save-load is a system feature to keep if DoT supports mid-mission suspend (note: souls are NOT spent mid-mission, so no economy in this menu). "Unit" stub should be built or dropped. This widget renders sim turn state and forwards a "end turn" intent to the /sim turn manager via signal — no rules live here, which already matches DoT architecture.

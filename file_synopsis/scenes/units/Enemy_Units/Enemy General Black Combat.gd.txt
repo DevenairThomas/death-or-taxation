@@ -1,0 +1,23 @@
+FILE: scenes/units/Enemy_Units/Enemy General Black Combat.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (Combat_Unit subclass). Enemy-side combat-cutscene actor for the boss (Enemy General; its Enemy General Black Combat.tscn). Byte-for-byte equivalent to the other enemy *Combat scripts.
+
+2. WHAT IT DOES
+AI-side audiovisual glue for the boss duel: attack/hit/draw/put-away/miss/crit/death sounds and death-anim signal. Reads BattlefieldInfo.combat_ai_unit for weapon SFX, declares play_player_dodge_anim for miss handling. No boss-specific presentation despite representing the villain.
+
+3. FUNCTIONS
+- signal play_player_dodge_anim.
+- play_attack_sound()/play_hit_sound(): Random "Attack N"/"Attack Hit N".
+- play_draw_sound()/put_away_attack_sound(): BattlefieldInfo.combat_ai_unit.UnitInventory.current_item_equipped SFX.
+- play_miss_sound(): Random "Attack Miss N" + emits play_player_dodge_anim.
+- play_crit_sound(): Random "Critical Hit N".
+- play_death_sound(): "Death".
+- death_anim_signal(): Emits death_anim_done. Driven by AnimationPlayer method tracks.
+
+4. POSSIBLE IMPROVEMENT
+- Identical clone; a boss's combat scene arguably should have unique SFX/shake/quotes, but this file adds none over the shared base. Consolidate and let data drive any boss-specific flourish.
+- Global BattlefieldInfo.combat_ai_unit coupling.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE; keep as the boss/enemy-General combat view. Remove miss/crit/dodge (deterministic combat). This is the presentation for DoT's enemy GENERAL tier (the Crown's mage/commander), so it should get distinct gray-box treatment and, importantly, VN dialogue hooks (before-battle and death quotes), remembering DoT never authors death-variant cutscenes and dead Generals still appear later. Drive attack/hit/death SFX + death_anim_done from sim signals; render tier-appropriate (General) visuals. The underlying rules (full damage at any HP, level cap 5) live in /sim + /data, not here.

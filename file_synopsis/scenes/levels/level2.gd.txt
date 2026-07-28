@@ -1,0 +1,92 @@
+SYNOPSIS: scenes/levels/level2.gd
+
+1. CLASS
+extends Node2D. No class_name. This is a battle-map loader script attached to the
+root node of a level scene. It is the runtime bootstrapper that turns an authored
+Tiled-derived scene tree into a playable, grid-backed battlefield.
+
+2. WHAT IT DOES
+This is one of the reference project's battle-map loaders. The level .tscn was built
+from a Tiled .tmx export: it contains child "layer" nodes ($CellInfo, $Allies,
+$Enemies, $SpawnPoints, plus temp placeholders) whose children are marker nodes
+carrying all map/unit content as Godot metadata (get_meta). On _ready() the script
+reads that metadata and constructs the live battlefield: a 2D `grid` of Cell instances
+(terrain), 4-directional cell adjacency, ally unit instances (persisted or freshly
+spawned), enemy unit instances with AI config, and off-map reinforcement spawn points.
+Everything the rest of the game needs is then pushed into the BattlefieldInfo autoload,
+after which the source layer nodes are freed. level2 is distinguished from the other
+loaders by handling SpawnPoints (off-map reinforcement cells with a single on-map
+adjacency) and by clearing UnitMovementStats arrays at start.
+
+3. FUNCTIONS
+_ready() — the only function; runs the entire load pipeline:
+  - Registers self as BattlefieldInfo.current_level; resets each persisted ally's
+    UnitMovementStats via clear_arrays(); sets AllyLevel music volume.
+  - Reads map dims from own metadata: get_meta("height")/get_meta("width") into
+    map_height/map_width; get_meta("Victory_Condition") into BattlefieldInfo.victory_text.
+  - Allocates grid as a map_width x map_height 2D array pre-filled with 0.
+  - Terrain build: iterates $CellInfo children; for each marker instantiates
+    Cell.tscn and calls cell.init(Vector2(pos.x/Cell.CELL_SIZE, pos.y/Cell.CELL_SIZE),
+    get_meta("Avd"), get_meta("Def"), get_meta("MovementCost"), get_meta("TileType")).
+    Stores the Cell into grid at its tile coordinate. Cell.CELL_SIZE converts pixel
+    position to tile index.
+  - Adjacency: double-loops grid, appending left/right/up/down neighbors into each
+    Cell.adjCells (bounds-checked against map_width/map_height). This is the graph the
+    movement/pathfinding uses instead of AStarGrid2D.
+  - Ally load: iterates $Allies markers. If BattlefieldInfo.ally_units already has the
+    identifier (persistent FE character), it just repositions/re-tiles the existing unit
+    (sets position, currentTile, occupyingUnit, visibility, modulate). Otherwise it
+    load()s the unit .tscn from a path built off get_meta("InstanceName"), adds it under
+    BattlefieldInfo.y_sort_player_party, and pours ~35 metadata fields into
+    UnitStats/UnitMovementStats (combat stats, terrain movement penalties, per-stat
+    growth chances, XP/class fields, identifier). Registers into
+    BattlefieldInfo.ally_units and links unit<->tile (currentTile / occupyingUnit).
+  - Sets BattlefieldInfo.Eirika = ally_units["Eirika"] (hardcoded protagonist), then
+    heals all allies to max_health.
+  - Enemy load: iterates $Enemies markers; load()s enemy .tscn; configures AI via
+    newEnemy.get_node("AI").set_ai(get_meta("aiType"), patrol_cell_a, patrol_cell_b),
+    where patrol cells come from optional A_Tile_X/Y and B_Tile_X/Y meta. Pours stats,
+    sets is_ally=false, links currentTile/occupyingUnit, records in all_enemies_location.
+  - Spawn points: iterates $SpawnPoints markers; instantiates plains Cells off-grid,
+    links each to its single on-map adjacent tile (adj_tile_x/adj_tile_y meta), appends
+    to BattlefieldInfo.spawn_points.
+  - Frees $SpawnPoints/$CellInfo/$Allies/$Enemies/$"temp Ally"/$"Temp enemy".
+  - Publishes to BattlefieldInfo: grid, map_height, map_width, enemy_units; then calls
+    BattlefieldInfo.main_game_camera._on_Level_mapInformationLoaded() to hand off.
+Autoloads/classes touched: BattlefieldInfo (autoload state bus), Cell (preloaded scene +
+CELL_SIZE const), per-unit UnitStats/UnitMovementStats components, enemy "AI" node.
+
+4. POSSIBLE IMPROVEMENT
+- ~230-line monolithic _ready doing terrain, adjacency, allies, enemies, spawns, and
+  autoload wiring. Split into build_grid(), build_adjacency(), spawn_allies(),
+  spawn_enemies(), build_spawn_points() — pure/near-pure helpers that would be testable.
+- Massive get_meta copy blocks are duplicated verbatim across level2/Level3/Level5/
+  Level4a. Drive stat assignment from a {meta_key: property} table, or give UnitStats a
+  from_dict()/from_meta() loader, eliminating the repetition and the risk of drift.
+- Content lives as scene-node metadata (untyped, typo-prone, editor-bound). Move to
+  typed Resources or JSON so a map is data, not a scene tree.
+- Uses adjCells adjacency graph + custom Cell nodes instead of AStarGrid2D; Godot 4 has
+  AStarGrid2D with per-cell solid/weight support that would replace this hand-rolled graph.
+- Hardcoded "Eirika" lookup and hardcoded resource path strings are fragile.
+- Cells are Node scene instances added to the tree purely to hold data — heavy; a plain
+  RefCounted/struct-of-arrays terrain model would be lighter and headless-testable.
+
+5. RELATION TO DEATH OR TAXATION
+The Tiled .tmx -> scene-marker -> get_meta pipeline is SCRAPPED per DECISIONS (reference
+only; DoT maps come from /data JSON/Resource with zero code per map). So the LOADING half
+(get_meta reads, layer nodes, frees, InstanceName path building) does not carry over.
+The CONSTRUCTION LOGIC is the valuable reference — a DoT /sim data-driven map loader must
+reproduce, minus Tiled: (a) build a width x height grid where each tile carries terrain
+type + movement cost + DEFENSE value (DoT terrain: Plains/Forest/Mountain/Road/River/
+HQ-Zone); here that maps cleanly to init(...MovementCost, Def, TileType), except DoT's
+"Avd" avoidance is CUT (no RNG combat). (b) Establish tile adjacency/passability — DoT
+does this via AStarGrid2D (set solid for River, per-terrain weights for cost, mountain
+infantry-only) rather than manual adjCells. (c) Place ally deploy positions and enemy
+units with a declared AI flag (DoT: guard/aggressive/balanced + simple/medium/smart) and
+optional patrol/objective anchors. (d) Read map-level metadata: dimensions + victory
+condition/objective (DoT prototype objectives: rout / defend / seize). (e) Provide off-map
+spawn/reinforcement points linked to an on-map entry tile. Keep this as the blueprint for
+sim/GridBuilder; scrap the marker-node substrate, the per-tile Cell scene instancing, the
+combat-RNG stat fields (Avd/bonus_crit/bonus_dodge/growth chances), and per-unit metadata
+dumping. In DoT this belongs in pure /sim (RefCounted, headless-testable), emitting signals
+to the view rather than reaching into a BattlefieldInfo god-object and a camera node.

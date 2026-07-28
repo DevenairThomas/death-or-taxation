@@ -1,0 +1,20 @@
+SYNOPSIS: scenes/combat/item_broke_screen.gd
+
+1. CLASS
+   extends Control (no class_name). The "Your <weapon> broke!" popup shown after combat when an equipped weapon's durability (uses) hits zero. View + a small teardown flow.
+
+2. WHAT IT DOES
+   Displays the broken item's icon and name, plays a sound, removes the item from the unit's inventory, then auto-dismisses via a timer and hands control to the level-up flow.
+
+3. FUNCTIONS
+   start(item, battlefield_unit): sets the item icon/name labels, shows the panel, plays "Item Broke Sound", calls battlefield_unit.UnitInventory.remove_item(item) (MUTATES sim inventory from the view), and starts the "Exit" timer.
+   turn_off(): hides the panel and emits "exit" signal.
+   _on_Exit_timeout(): reaches up three parents to set combat screen's broke_item = false, then triggers the sibling "Level Up Screen" by emitting its "done_leveling_up" signal — i.e. it chains back into the post-combat XP/level-up teardown.
+
+4. POSSIBLE IMPROVEMENT
+   - get_parent().get_parent().get_parent() and get_parent().get_node("Level Up Screen") are brittle tree-walks; use signals up to combat.gd or exported references.
+   - Inventory mutation should be a sim call the view merely reflects, not something the popup performs.
+   - "exit" signal is emitted by turn_off() but the auto-dismiss path uses _on_Exit_timeout() instead — inconsistent exit routing.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. DoT has no weapon durability system: units are Squads/Singles/Generals with HP tiers, not FE inventories of breakable weapons. There is no "item broke" concept, no per-weapon uses, no post-combat item management in the deterministic skirmish design. Delete entirely; nothing to port.

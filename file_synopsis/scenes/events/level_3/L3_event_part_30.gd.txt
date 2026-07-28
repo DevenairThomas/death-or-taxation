@@ -1,0 +1,35 @@
+SYNOPSIS: scenes/events/level_3/L3_event_part_30.gd
+
+1. CLASS
+class_name L3_Event_Part30. extends "res://scenes/events/event_base.gd" (Event_Base -> Node2D).
+A scripted pre-battle beat for Level 3 chaining multiple camera pans around a dialogue.
+
+2. WHAT IT DOES
+The most elaborate Level 3 beat: pan camera to a first position, play a 2-line "Mage" taunt (top textbox), then after the dialogue pan the camera to a second position, and only then complete the event. Choreographs a camera tour (establish enemy -> talk -> reposition) before the battle proper.
+
+3. FUNCTIONS
+_init():
+- Sets event_name ("Level 4 Before battle" — note the label is wrong/copy-pasted; this is a Level 3 file), event_part, path.
+start():
+- Connects message_system "no_more_text" -> move_camera_2 (so dialogue-end triggers the SECOND camera move, not completion directly).
+- Sets textbox to Messaging_System.TOP.
+- Calls move_camera() (first pan).
+move_camera():
+- Targets Vector2(0,192). Connects main_game_camera "Tween" node's "tween_all_completed" -> enable_text_no_array, interpolates position over 1s, starts tween.
+enable_text_no_array():
+- Disconnects its own "tween_all_completed" handler first (to avoid re-fire on later tweens — the one manual guard against the leak seen in Part20), then message_system.start(dialogue).
+move_camera_2():
+- Fired by "no_more_text". Targets Vector2(128,0), connects "tween_all_completed" -> event_complete, interpolates, starts. When this tween ends, event_complete() emits "event_done" and the runner advances.
+Interactions: autoloads BattlefieldInfo.main_game_camera (child "Tween") and BattlefieldInfo.message_system; started by the event runner.
+
+5-ish note on the flow: start -> pan1 -> text -> (on text end) pan2 -> event_complete. A small state machine hand-wired via signal reconnection.
+
+4. POSSIBLE IMPROVEMENT
+- Same legacy Godot 3 Tween-node API as Part20; port to create_tween()/tween_property()/finished.
+- The signal-rewiring dance (connect A, in A connect B, disconnect A) is an implicit, hard-to-follow state machine. Godot 4 await on tween.finished / signal would linearize it: `await pan(...); await dialogue(...); await pan(...)`.
+- event_name mislabels the level ("Level 4 Before battle") — metadata bug.
+- Magic Vector2 camera targets; move to data/waypoints.
+- No docstrings.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap the class. Its value to DoT: it's the concrete argument for making cutscenes an ordered STEP LIST executed by a generic player. Every beat here (pan, dialogue, pan, done) is a step; hand-wiring them through signal reconnection is exactly what a data-driven runner eliminates. DoT's /data cutscene format should let a designer write [pan, dialogue, pan] and the player awaits each step in sequence. Reference this file for the maximal complexity a DoT scene player's step vocabulary must cover (multi-step camera + dialogue interleaving), then never reproduce the manual connect/disconnect approach.

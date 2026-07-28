@@ -1,0 +1,29 @@
+FILE: scenes/messaging/Message System.gd
+
+1. CLASS
+- class_name Messaging_System. extends CanvasLayer.
+- The in-game cinematic dialogue box (VN textbox). Registers itself as BattlefieldInfo.message_system (singleton-like accessor). Header comment: "for in game cinematics ONLY" (a separate system handles battlefield portraits). Owns a dialogue-box texture, portrait, character-name label, scroll animation, and bob animation.
+
+2. WHAT IT DOES
+- Displays a queue of dialogue lines with an optional speaker portrait + name, scrolling the text in, letting the player skip/advance with the accept button, and emitting no_more_text when the queue empties. Lines are authored as "Name@portrait_path@text" strings (or a single string for narrator).
+
+3. FUNCTIONS
+- _ready(): Registers BattlefieldInfo.message_system = self.
+- start(new_text_queue): parse()s the raw lines into arrays, shows the first line, turns the box on, sets state to input. Public entry point for playing a cutscene block.
+- _input(event): Ignores mouse; state machine: in "input" state, accept skips scroll to full visibility and moves to "next"; in "next" state, accept either loads the next line (back to "input") or, if queue empty, turns off, sets state wait, and emits no_more_text. "choice" is a stub.
+- _on_Dialogue_Scroll_animation_finished(_anim): Scroll finished -> state = next.
+- turn_on()/turn_off()/set_position(pos): Box visibility + placement.
+- parse(text_line): Splits each raw string on "@" into [name, portrait, text] (or [text]).
+- next_line(text_line): If one element -> narrator (text only, hide portrait, blank name); else set text, load+show portrait from res:// path, set speaker name. Always resets visible_ratio to 0 and plays the scroll + up/down bob animations.
+- test(): Dev-only sample queue demonstrating BBCode, portraits, narrator lines.
+- Signals: emits no_more_text (callers await/connect to sequence cutscenes). Depends on BattlefieldInfo.message_system; loads portrait textures by path.
+
+4. POSSIBLE IMPROVEMENT
+- BOTTOM/TOP constants are set to the same value (TOP is effectively disabled) — dead/confusing config.
+- Dialogue authored as "@"-delimited strings is brittle; move scenes to structured data (already the DoT plan) — a dict/resource per line with speaker/portrait/text.
+- Portrait textures loaded synchronously by string path each line (possible hitches / leaks with repeated portraits, as the test even asks); cache or preload.
+- enum values scrolling/choice/input/next/wait are global-ish unnamed; "choice"/"input"(text-entry) states are unimplemented stubs.
+- Fragile $"long/node/paths"; use @onready typed refs.
+
+5. RELATION TO DEATH OR TAXATION
+- KEEP as the basis for the DoT VN CUTSCENE STUB, but simplify and data-drive it. DoT spec: minimal VN stub = bottom textbox, speaker name, colored-rect PORTRAIT PLACEHOLDER (no art), advance on click/space, scenes read from /data, and ALL scenes play regardless of who is dead (no death-variant scenes). So: keep the queue + speaker-name + advance-on-accept core and the no_more_text completion signal; REPLACE the portrait Texture load with a ColorRect placeholder; ALSO allow advancing on mouse click (current code ignores mouse) and space; MOVE line authoring out of "@"-delimited strings into /data scene files (structured, so adding a cutscene needs no code). This is a /ui view element; it should not read or gate on sim death-state (all scenes always play). Keep it decoupled: feed it a parsed scene from /data and listen for no_more_text to continue the flow.

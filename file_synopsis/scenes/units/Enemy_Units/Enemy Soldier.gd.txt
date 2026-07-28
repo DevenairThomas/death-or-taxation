@@ -1,0 +1,19 @@
+FILE: scenes/units/Enemy_Units/Enemy Soldier.gd
+
+1. CLASS
+No class_name. extends Battlefield_Unit. A concrete enemy unit definition (basic lance soldier) attached to that unit's scene.
+
+2. WHAT IT DOES
+Configures one enemy-soldier instance at spawn: runs the base _ready, marks it an enemy, sets its idle animation, portrait/mugshot art, gives it a Lance loadout, and preloads the combat-cutscene scene used when it fights. It is essentially data-as-code: a per-unit-type config script.
+
+3. FUNCTIONS
+- _ready(): Calls super._ready() (Battlefield_Unit sets up movement/stats/action/inventory), sets $Animation.current_animation = "Idle", sets UnitMovementStats.is_ally = false (flags it enemy/AI), assigns unit_portrait_path and unit_mugshot to the red soldier portrait, appends Item.WEAPON_TYPE.LANCE to UnitInventory.usable_weapons and adds a preloaded Iron Lance via UnitInventory.add_item(), and sets combat_node = preload("Black Soldier Combat.tscn"). Interacts with: Battlefield_Unit (base components), the $Animation node, the UnitInventory (Unit_Inventory) API, and the Item enum.
+
+4. POSSIBLE IMPROVEMENT
+- This is content encoded as a script — portrait, weapon, combat scene, and enemy flag should be a data resource, so adding a unit needs no new .gd.
+- Stats are never set here, so this soldier uses Unit_Stats placeholder defaults (name "PLACERHOLDER") — likely unintended; stats should come from data.
+- Hardcoded child name $Animation and preloaded paths couple code to scene/asset layout.
+- No AI configuration is set here (the "AI" child referenced in Battlefield_Unit.save() is added elsewhere), so behavior is split across files.
+
+5. RELATION TO DEATH OR TAXATION
+CHANGE to pure data. The enemy roster in DoT is redcoats and the mage's constructs, so an "Enemy Soldier" maps directly to a redcoat line-infantry unit — but per the design it must be defined in /data (unit-type id, tier SQUAD/SINGLE, HP, attack range, the row it uses in the damage base_table, terrain move costs, portrait, combat-view scene, faction=Crown), NOT a per-unit script. The is_ally=false flag becomes an owner/faction field. Drop the FE weapon (Iron Lance) — DoT damage is table-driven, not weapon-driven. Keep the idea of a lightweight spawn-config, but realize it as data the sim reads plus a view that renders the gray-box placeholder.

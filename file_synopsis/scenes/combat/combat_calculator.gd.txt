@@ -1,0 +1,48 @@
+SYNOPSIS: scenes/combat/combat_calculator.gd
+(THE most important reference file for Death or Taxation's /sim skirmish resolver.)
+
+1. CLASS
+   extends Node (no class_name in file; referenced project-wide as the autoload/singleton "Combat_Calculator"). Stateful global that holds every intermediate combat value as member vars and mutates them in place. It is the reference project's skirmish math engine.
+
+2. WHAT IT DOES
+   Computes a Fire Emblem GBA-style duel between BattlefieldInfo.combat_player_unit and BattlefieldInfo.combat_ai_unit: weapon triangle bonus, double-attack (attack-speed gap >= 4), hit chance, crit chance, damage preview, whether each side can counter, and healing. It exposes two separate paths that DO NOT share a function:
+     - PREVIEW path: calculate_damage() -> fills player_damage / enemy_damage (GUI forecast numbers) plus hit/crit rates.
+     - RESOLUTION path: process_player_combat() / process_enemy_combat() -> roll RNG and fill player_first_actual_damage, player_second_actual_damage, enemy_first_actual_damage, enemy_second_actual_damage, and the per-attack hit/crit/miss booleans that combat.gd's state machine consumes.
+   Because preview and resolution are computed by different code, and resolution uses RNG (crit/hit rolls), the forecast can and does diverge from the result. This is exactly the anti-pattern DoT forbids.
+
+3. FUNCTIONS
+   _ready(): calls randomize() — seeds RNG. (RNG use, MUST-REMOVE for DoT.)
+   calculate_damage_and_previews(): thin wrapper, only calls get_weapon_bonus(). Largely vestigial.
+   calculate_double_attack(): sets player/enemy attack_speed via get_attack_speed(); if one side's speed exceeds the other by >=4, that side gets a second attack. Deterministic. Prints debug.
+   calculate_hit_chance(): accuracy = attacker accuracy - defender avoidance, clamped 0..100. Deterministic derivation of a probability that is later rolled against. (Hit-chance concept is out of spec for DoT.)
+   calculate_crit_chance(): crit = skill/2 + weapon crit + bonus_crit - defender luck, floored at 0. (Crit is out of spec for DoT.)
+   calculate_damage(): the PREVIEW orchestrator. reset_stats(); get_special_ability() (effective/"effective against" multiplier); get_weapon_bonus(); calculate_double_attack(); calculate_crit_chance(); calculate_hit_chance(); calculate_damage_amounts(); check_if_units_can_counter(). Called by BattlefieldInfo.start_ai_combat() and by the player attack flow before opening the combat screen.
+   process_player_combat(): RESOLUTION for player. Rolls crit_occurred(player_critical_rate); on crit multiplies base damage x3 (note: uses literal 3, not the CRITICAL_BONUS const declared at top); else rolls hit_occured(player_accuracy). Fills first/second actual damage and hit/crit/miss flags. Called by combat.gd.start_combat().
+   process_enemy_combat(): same for the enemy side. (Has a copy-paste bug: in the second-attack no-crit branch it clamps enemy_first_actual_damage instead of enemy_second_actual_damage, lines ~273-275.)
+   calculate_damage_amounts(): builds base damage = strength (PHYSICAL) or magic (MAGIC) + (might + weapon_bonus) * effective_bonus; defense = def or res + tile.defenseBonus (removed for pegasus/flying). Sets GUI player_damage/enemy_damage = base_damage - base_def, floored at 0 — this is subtractive defense, NOT DoT's multiplicative terrain formula.
+   get_attack_speed(unit): speed - max(weapon.weight - constitution, 0).
+   get_accuracy(unit, weapon_bonus): hit + skill*2 + luck/2 + weapon_bonus*15 + bonus_hit.
+   get_avoidance(unit, attack_speed): attack_speed*2 + luck + tile.avoidanceBonus (0 for flyers) + bonus_dodge.
+   get_special_ability(player, ai): asks each equipped item for special_ability() ("effective against" x-multiplier), stores in effective_bonus.
+   crit_occurred(crit_chance) / hit_occured(accuracy_chance): RNG GATES. Return true if >=100, false if <=0, else int(randf_range(0,100)) <= chance. THESE ARE THE RNG CORE — hit/crit/dodge/luck. MUST-REMOVE for DoT.
+   reset_stats(): zeroes/false-resets all the member vars before a new calculation. Necessary only because state lives on the singleton rather than in a returned value/struct.
+   check_if_units_can_counter(): uses Calculators.get_distance_between_two_tiles() to test whether each unit's equipped weapon min/max range covers the opponent; disables counter for "Unarmed" and HEALING weapons. Deterministic and directly reusable.
+   get_weapon_bonus(): weapon-triangle. If either weapon is NO_WEAKNESS, no bonus; else if attacker's weapon is strong_against defender's weapon_type, attacker +1 / defender -1. Deterministic.
+   calculate_healing(): player_healing_total = staff might + magic.
+
+4. POSSIBLE IMPROVEMENT
+   - This should be a pure RefCounted that returns an immutable result object, not a Node singleton that mutates ~50 member vars in place. reset_stats() only exists because state is global; a pure function has nothing to reset.
+   - Collapse preview and resolution into ONE function that returns the full outcome (damage numbers + who-counters + double), so the GUI shows exactly what will resolve. Today they are two divergent code paths.
+   - Remove randomize()/randf_range()/crit_occurred()/hit_occured() entirely — RNG is the whole reason forecast != result.
+   - CRITICAL_BONUS constant is declared but never used (x3 is hardcoded in three places); either use it or delete it. Dead constant.
+   - Fix the enemy_first_actual_damage clamp bug in process_enemy_combat's second attack.
+   - Replace the enormous repeated BattlefieldInfo.combat_x_unit.UnitInventory.current_item_equipped.* dot-chains by passing unit/weapon args in — trivially testable, no autoload needed.
+   - Subtractive defense (dmg - def, min 0) allows 0-damage; DoT requires min 1 and multiplicative terrain.
+
+5. RELATION TO DEATH OR TAXATION
+   CHANGE (this is the direct ancestor of DoT's /sim Skirmish resolver, but heavily rewritten):
+   - KEEP the structural ideas: attacker-strikes-then-defender-counters ordering, the range check for whether a counter is possible (check_if_units_can_counter maps to DoT "defender counters if alive and in range"), and the clean helper decomposition.
+   - SCRAP all RNG: crit_occurred, hit_occured, randomize, accuracy, avoidance, luck, dodge, critical_rate. DoT combat is 100% deterministic — no hit/crit/dodge/luck anywhere. Flag every one of these as MUST-REMOVE.
+   - REPLACE the damage math with DoT's formula: base_table[attacker_type][defender_type] * attacker_hp_percent (squads only; singles/generals always 100%) * (1 - terrain_defense), floor, minimum 1. Subtractive def and the strength/magic-vs-def/res split go away; damage comes from a data-driven type-vs-type table.
+   - RECONSIDER double-attack: DoT's tiers (squad/single/general) and "one strike then counter" skirmish model have no speed-based follow-up; double-attack is FE-specific and should be dropped unless a General ability re-introduces it deterministically.
+   - MANDATE the single-source rule: the DoT resolver must be ONE pure function that backs both the pre-attack forecast and the resolved skirmish, extracted into /sim as a RefCounted, headless-testable, feeding the canonical damage examples in /tests. This file's split preview/resolution design is the exact architecture DoT calls "broken — fix the architecture."

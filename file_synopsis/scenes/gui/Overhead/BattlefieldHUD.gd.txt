@@ -1,0 +1,68 @@
+SYNOPSIS: scenes/gui/Overhead/BattlefieldHUD.gd
+
+1. CLASS
+   No class_name, extends CanvasLayer.
+   The persistent overhead battlefield HUD: unit-info box, terrain-info box, and
+   victory/objective box, repositioned so they never hide the cursor.
+
+2. WHAT IT DOES
+   Driven by cursor movement, it shows the hovered unit's portrait, name, and HP
+   bar; the hovered tile's name and terrain avoidance/defense bonuses; and the
+   mission victory text. It listens to screen-quadrant Area2D triggers to move the
+   info boxes to the opposite corner from the cursor, and shows/hides itself in
+   sync with cursor state and turn phase. This is the main always-on battle HUD.
+   Registers itself as BattlefieldInfo.battlefield_ui and reads
+   BattlefieldInfo.grid, current_Unit_Selected, turn_manager, cursor, victory_text.
+
+3. FUNCTIONS
+   - _ready(): Wires up signals: Cursor.cursorMoved -> update_battlefield_ui,
+     Cursor.turn_off_ui / turn_on_ui -> the corresponding toggles; the four
+     GameCamera/Areas quadrant Area2Ds' body_entered -> quadrant setters; Action
+     Selector Screen.selected_wait -> turn_on_battlefield_ui. Sets initial
+     quadrant, victory text, and registers itself on BattlefieldInfo.
+   - set_victory_text(): Copies BattlefieldInfo.victory_text into the V Name label.
+   - update_battlefield_ui(cursor_direction, cursor_position): Master refresh -
+     victory text, unit box, box repositioning, and terrain box for the cursor.
+   - update_unit_box(): If a unit is hovered, plays the fade-in anim and shows the
+     Unit Info box; else plays fade-out.
+   - _on_unit_box_fade(): Anim callback that hides the Unit Info box.
+   - update_terrain_box(cursor_position): Looks up the cell in BattlefieldInfo.grid
+     using cursor_position / Cell.CELL_SIZE; if a unit is selected, sets its name
+     and calls calculate_health_values; sets the tile name and the avoidance /
+     defense bonus values.
+   - bottom_left/bottom_right/top_left/top_right(body): Quadrant callbacks from the
+     Area2D triggers; set cursor_quadrant and call move_gui_boxes.
+   - move_gui_boxes(): Match on quadrant to hard-position the three boxes into
+     corners that avoid the cursor.
+   - turn_off_battlefield_ui(): Hides the HUD, refreshes, re-updates the unit box
+     (works around a glitch when cursor regains control).
+   - turn_on_battlefield_ui(): Shows the HUD only on PLAYER_TURN or cursor PREP
+     state; refreshes; hides the unit frame if no unit is selected.
+   - calculate_health_values(): Sets "current / max" HP text, sizes the HP bar via
+     region_rect using current_health/max_health * full_bar_width, and sets the
+     portrait texture.
+
+4. POSSIBLE IMPROVEMENT
+   - Reaches across the tree with many get_parent().get_node("...") lookups and
+     hard-coded deep node paths ("Battlefield HUD/Unit Info/..."); cache node
+     references (@onready) and connect via exported NodePaths to reduce fragility.
+   - The grid lookup does integer division on a float position without bounds
+     checks; off-map cursor positions could index out of range.
+   - move_gui_boxes uses magic pixel coordinates per quadrant with commented-out
+     fade lines; a data-driven anchor table would be cleaner.
+   - Quadrant detection via four physics Area2Ds is heavy for what is simple math
+     on the cursor position vs. screen center.
+
+5. RELATION TO DEATH OR TAXATION
+   KEEP THE ROLE, ADAPT THE CONTENT. DoT needs exactly this always-on overhead
+   HUD: hovered-unit panel (name + HP), hovered-tile terrain panel, and mission
+   objective text. It is a pure view that reads sim state and forwards nothing but
+   input/cursor - a good fit for /scenes once decoupled. Adapt the content to DoT:
+   the unit panel shows tier (Squad/Single/General) and HP (which for Squads also
+   signals their damage scaling), and the General panel would surface level (1-5).
+   The terrain panel must show the tile's DEFENSE value that feeds the
+   deterministic damage formula (1 - terrain_def) - keep def, but DROP "avoidance"
+   (FE dodge/RNG, cut in DoT). All displayed numbers must come from sim state via
+   signals (unit_damaged, turn_changed, etc.), never be computed in the HUD.
+   Replace deep node-path coupling and physics-area quadrant detection with clean
+   references and simple math.

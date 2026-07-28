@@ -1,0 +1,42 @@
+SYNOPSIS: scenes/items/Bows/Iron Bow.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete weapon
+script for Iron Bow.tscn.
+
+2. WHAT IT DOES
+Basic FE bow — a ranged, counter-safe weapon. _ready() sets uses/max_uses 45, might 6,
+weight 5, hit 85, crit 0, range 2-2 (min AND max 2, so it only fires at exactly 2 tiles and
+cannot counter at melee), worth 540, weapon_type BOW, strong_against NO_WEAKNESS (outside
+the triangle), icon "iron bow.png", weapon_string_name "bow". Registered in Item_Dict.
+This is the ONE item in the folder with a functioning special ability.
+
+3. FUNCTIONS
+- _ready(): assigns stats including the 2-2 range that defines bow behavior.
+- special_ability(unit_holding_this_item, unit_that_is_being_attacked): returns 3 if the
+  target is a flier (checks unit_that_is_being_attacked.UnitStats.pegasus), else 1. This is
+  a REAL damage multiplier — anti-air effectiveness — consumed by
+  combat_calculator.get_special_ability (player_effective_bonus/enemy_effective_bonus).
+  It's the working reference example of how the ability hook is meant to be used.
+- draw_attack_sound(): plays the "Bow" sound from BattlefieldInfo.weapon_sounds.
+- put_away_attack_sound(): pass (no put-away SFX for bows).
+
+4. POSSIBLE IMPROVEMENT
+- The "3" and the pegasus flag are magic values; effectiveness should be data (a
+  type-vs-type multiplier table) rather than a hardcoded branch reading a bool named
+  `pegasus`.
+- Reaching into unit_that_is_being_attacked.UnitStats.pegasus is tight coupling; a
+  capability/tag system (unit has trait FLYING) would generalize.
+- Data-drive stats as with all weapons.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED as an item, but the MOST INSTRUCTIVE file for DoT's ability system. The pattern
+special_ability(holder, target) -> multiplier is exactly the shape DoT's General abilities
+take: a modifier applied multiplicatively inside the single deterministic damage pipeline.
+In DoT: (a) "triple damage vs fliers" becomes a type-vs-type value in base_table (no
+per-weapon branch); (b) any conditional bonus becomes a /data-defined General ability
+(unlocked L3/L5) that returns a multiplier the pipeline applies after base × hp% ×
+(1−terrain_def). Range 2-2 and Riflemen (range 2) / Cannon Crew (range 2-3) show DoT keeps
+min/max range as a unit-TYPE property. Keep: range fields on the unit type, the ability
+multiplier hook. Scrap: might/weight/hit/durability, the shop economy, and the hardcoded
+pegasus check.

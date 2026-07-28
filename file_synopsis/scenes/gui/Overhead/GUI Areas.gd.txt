@@ -1,0 +1,24 @@
+SYNOPSIS: scenes/gui/Overhead/GUI Areas.gd
+
+1. CLASS
+   No class_name, extends Node2D.
+   Placeholder/empty script - originally a test container for the camera's
+   quadrant Area2D nodes.
+
+2. WHAT IT DOES
+   Nothing at runtime. The body is only two comments ("Areas for the Camera",
+   "Was a test script"). Any real quadrant behavior lives in BattlefieldHUD.gd,
+   which connects directly to the GameCamera/Areas/* Area2Ds. This node is inert.
+
+3. FUNCTIONS
+   None. No _ready, no _process, no methods.
+
+4. POSSIBLE IMPROVEMENT
+   - Delete the script (and detach it from its node) since it is explicitly dead
+     test code; an empty script only adds noise and a class the engine must load.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP. Empty, self-described test script with zero behavior. Nothing to carry
+   into DoT. If HUD-repositioning quadrant detection survives at all, prefer plain
+   math on the cursor position over screen-area nodes; this file should simply be
+   removed.

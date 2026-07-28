@@ -1,0 +1,25 @@
+FILE: scenes/units/Enemy_Units/Bandit Combat.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (Combat_Unit subclass). Enemy-side combat-cutscene actor for the Bandit (its Bandit Combat.tscn). Functionally identical to Black Soldier Combat.gd.
+
+2. WHAT IT DOES
+AI-side audiovisual glue for the duel animation: attack/hit/draw/put-away/miss/crit/death sounds, plus camera-shake helpers (this variant also defines shake_camera_crit/shake_camera_regular, which several other enemy combat scripts omit and inherit). Declares play_player_dodge_anim so a miss triggers the player actor's dodge.
+
+3. FUNCTIONS
+- signal play_player_dodge_anim: Emitted on miss.
+- play_attack_sound()/play_hit_sound(): Random "Attack N"/"Attack Hit N" from BattlefieldInfo.battle_sounds.
+- play_draw_sound()/put_away_attack_sound(): Read BattlefieldInfo.combat_ai_unit.UnitInventory.current_item_equipped weapon SFX.
+- play_miss_sound(): Random "Attack Miss N" + emits play_player_dodge_anim.
+- play_crit_sound(): Random "Critical Hit N".
+- shake_camera_crit()/shake_camera_regular(): get_parent().get_parent().shake(...) — big shake for crit, small for regular (redeclared here identically to the base).
+- play_death_sound(): "Death".
+- death_anim_signal(): Emits death_anim_done. All driven by AnimationPlayer method tracks.
+
+4. POSSIBLE IMPROVEMENT
+- Duplicate of Combat Unit.gd / the other enemy *Combat scripts; the redeclared shake_* methods are exact copies of the inherited ones (pure redundancy). Consolidate to one enemy combat base.
+- Global BattlefieldInfo.combat_ai_unit coupling; inject the actor instead.
+- get_parent().get_parent().shake() assumes fixed ancestry.
+
+5. RELATION TO DEATH OR TAXATION
+LARGELY SCRAP; keep trimmed view actor. Remove miss/crit/dodge (deterministic combat). Keep gray-box attack/hit/death SFX + shake + death_anim_done as /scenes presentation driven by sim signals. Since the Bandit archetype itself is questionable for DoT's fiction, this combat scene likely folds into the shared, data-parameterized enemy combat-view rather than existing as a bespoke script.

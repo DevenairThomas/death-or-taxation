@@ -1,0 +1,38 @@
+SYNOPSIS: scenes/items/Unarmed/Unarmed.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete script for
+Unarmed.tscn — the null/fallback "weapon" a unit holds with no real item equipped.
+
+2. WHAT IT DOES
+Represents having no weapon. _ready() sets uses = 999999999 (effectively infinite; note
+max_uses is left unset/null here, which would break get_selling_cost's uses/max_uses),
+might 0, weight 0, hit 0, crit 0, range 0-0 (cannot reach anyone), strong_against AXE
+(vestigial), icon Unarmed.png, item_name "Unarmed", weapon_string_name "unarmed". Ensures
+a unit's equipped-item reference is never null so combat_calculator can always call
+into it.
+
+3. FUNCTIONS
+- _ready(): assigns the "does nothing" stat block.
+- special_ability(_holder, _target): returns 0 — UNIQUELY among all items (every other
+  returns 1). As a damage multiplier this zeroes out output, enforcing that an unarmed unit
+  deals no damage. Consumed by combat_calculator.get_special_ability.
+- No sound overrides (inherits the empty base hooks).
+
+4. POSSIBLE IMPROVEMENT
+- max_uses is never set, so get_selling_cost / any uses/max_uses math on this item divides
+  by null; set max_uses = 999999999 too, or exempt Unarmed.
+- The "never-null via a sentinel node" pattern is fine, but a null-object could be a plain
+  data record rather than a full scene node.
+- Returning 0 from a "special ability" (meant to be a multiplier) is a semantic hack for
+  "no attack"; a can_attack/valid-target check upstream would be cleaner than relying on a
+  0 multiplier.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED as an item, but note the DIRECT CONFLICT with a DoT locked rule: DoT mandates
+"zero-damage attacks must be impossible" (damage floored to minimum 1). Unarmed's entire
+purpose — forcing a 0-damage result — is exactly what DoT's min-1 rule forbids, and DoT
+handles "can't attack here" via range/targeting validity in /sim, not a 0 multiplier. So
+the null-object idea (a unit always has a valid state, no null refs) is a mild positive to
+carry into DoT's sim design, but the 0-damage mechanism must NOT be ported. Everything
+else (uses, might, hit) is gone.

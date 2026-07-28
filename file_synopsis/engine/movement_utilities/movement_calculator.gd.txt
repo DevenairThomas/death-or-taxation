@@ -1,0 +1,34 @@
+FILE: engine/movement_utilities/movement_calculator.gd
+
+1. CLASS
+class_name MovementCalculator. Extends RefCounted (already a pure-ish logic object). The FE-style range/pathfinding engine: computes reachable (blue), attackable (red), and healable (green) tiles, and shortest paths via A*.
+
+2. WHAT IT DOES
+Given a unit and the grid, it runs a cost-limited BFS to find movable tiles (respecting terrain penalties, movement budget, unit blocking by faction), then dilates that set to compute attack and heal ranges from weapon/heal range. It also does A* pathfinding to a destination (separate player and AI variants) and builds the ordered movement_queue the movement systems consume. It additionally reaches into tile scene nodes to toggle range highlight colors.
+
+3. FUNCTIONS
+- _init(p_battlefield): stores battlefield reference (used for grid resets).
+- calculatePossibleMoves(Unit, AllTiles): clears the unit's allowedMovement/allowedAttackRange/allowedHealRange, resets grid, runs processTile then processAttackTile then processHealingTile, then turn_on_all_tiles. Central entry for player selection.
+- highlight_enemy_movement_range(Unit, AllTiles): computes moves then repaints everything "Purple" — enemy threat-range display.
+- processTile(initialTile, unit_movement, moveSteps, unit): cost-bounded BFS over adjCells; subtracts movementCost and getPenaltyCost; blocks on enemy-occupied tiles but passes through same-faction units; fills allowedMovement and sets parentTile links.
+- processAttackTile(Unit): dilates allowedMovement outward by (MAX_ATTACK_RANGE-1) to fill allowedAttackRange. Returns early if range is -1 (no weapon).
+- processHealingTile(Unit): same dilation using MAX_HEAL_RANGE for allowedHealRange.
+- getPenaltyCost(Unit, move_stats, cell): returns per-class terrain movement penalty via a match on cell.tileName (Plain/Road/Mountain/Forest/etc.); pegasus/flying units bypass terrain cost. Also called by A* and heuristic.
+- turn_on_all_tiles / turn_off_all_tiles / turn_off_purple: iterate the three ranges and call AllTiles[x][y].get_node("MovementRangeRect").turnOn/turnOff with a color string. Pure view mutation living inside the calculator.
+- get_path_to_destination(Unit, target, _AllTiles): player path — just calls create_pathfinding_queue off existing parentTile links (relies on the BFS having set parents). A full A* player version is commented out below it.
+- get_path_to_destination_AI(Unit, target, AllTiles): real A* using HashSet (closed) + PriorityQueue (open), gCost/hCost, getPenaltyCost, and a movementCost>=100/101 wall threshold that differs by whether the unit has an "AI" child node. Builds movement_queue. Comment says reuse for cinematics.
+- calculate_hCost(initial, destination, unit, all_tiles): Manhattan-style heuristic summing real movementCost+penalty along the L-shaped path.
+- create_pathfinding_queue(destination_cell, unit): walks parentTile links backward from destination to start, push_front into unit.UnitMovementStats.movement_queue.
+- check_if_move_is_valid(destination_cell, unit): destination must be in allowedMovement and not occupied by another unit.
+- reset_grid_values(): clears isVisited across grid. reset_parent_tile_values(): nulls parentTile across grid.
+
+4. POSSIBLE IMPROVEMENT
+- Split responsibilities: pathfinding/range math should be 100% node-free, but the turn_on/turn_off/highlight functions call get_node on tile scenes — move all coloring to the view layer. This is the single biggest violation.
+- Attack/heal dilation is duplicated (processAttackTile and processHealingTile are near-identical); factor a shared range-dilate helper. The code itself twice comments "Find a better way of optimizing this."
+- Grid state (isVisited, parentTile, gCost, hCost) is stored ON the tiles and mutated in place, so the calculator is stateful and not reentrant; prefer local per-search maps.
+- Player get_path_to_destination depends on parentTile left over from the last BFS rather than pathfinding to arbitrary targets — fragile; unify on the A*.
+- Godot-4: `AStarGrid2D` exists and CLAUDE.md explicitly names it as the intended pathfinding API for DoT.
+- Duplicated position/grid indexing and string-keyed terrain match (should be data-driven terrain records, not a hardcoded name match).
+
+5. RELATION TO DEATH OR TAXATION
+Keep the algorithms, re-home and purify. Reachable/attack range and pathfinding are core to the DoT skirmish loop and belong in /sim as pure RefCounted returning plain data (sets of coords + parent map), fully headless-testable — this is exactly what CLAUDE.md wants. Strip every get_node/turnOn call to /scenes. Replace the hardcoded terrain-name match with /data terrain records (movement cost + the (1 - terrain_def) defense value DoT's damage formula needs). Reuse the same range function for the AI threat scan and the pre-move preview. No RNG here, so nothing to remove on that front; the pegasus/flying special-case is a content flag that should be data-driven. CLAUDE.md's steer toward AStarGrid2D applies directly.

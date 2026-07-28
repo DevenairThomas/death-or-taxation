@@ -1,0 +1,29 @@
+FILE: scenes/convoy/item_list_scene.gd
+
+1. CLASS
+- No class_name. extends ColorRect.
+- A single weapon-type list panel used inside the convoy (one instance per category: Sword, Lance, Axe, etc.). Child of the convoy scene; holds a title label, an ItemList node, and an "Item Tree" node that parents the actual Item objects. Holds a back-reference to its owning convoy.
+
+2. WHAT IT DOES
+- Manages one scrollable category of stored items: adding items (into both an internal array, the visual ItemList, and the Item Tree), selecting/highlighting an item and pushing its stats string to the convoy's shared stats label, and transferring/deleting the selected item while keeping index/focus consistent.
+
+3. FUNCTIONS
+- _ready(): Hides the ItemList's scrollbar (mouse filter + transparent), disables input.
+- start(p_convoy): Stores convoy ref, becomes visible, grabs input focus; if non-empty, selects index 0 and writes item stats to convoy.item_stats_label, else resets convoy's item text.
+- exit(): Hide + disable input.
+- add_item(item): Parents the Item under item_tree_node, appends to item_list array, and adds a row (name + icon) to the ItemList node.
+- set_text(text): Sets the panel's title label.
+- get_item_selected(): Returns item_list[item_index].
+- transfer_item(): Removes the selected item from array/ItemList/tree, fixes up the selected index, returns the removed item (used when giving an item to a unit).
+- delete_item(): Like transfer but discards (used when selling); disables input if the list empties.
+- allow_input()/disable_input(): Toggle focus_mode/grab_focus/select and set_process_input on the ItemList node.
+- _on_Item_List_item_selected(index): On selection change, plays a move sound and refreshes convoy.item_stats_label with the item's stats stringify.
+- Interactions: called by convoy.gd (start/activate_list, add_item_to_convoy, transfer_item, delete_item). Writes to convoy.item_stats_label. Depends on Item objects providing get_stats_stringify()/save()/icon/item_name.
+
+4. POSSIBLE IMPROVEMENT
+- Reaches into convoy.item_stats_label (parent's child) to write text — tight coupling; emit a signal (item_focused(item)) and let the convoy update its own label.
+- Mixes a data model (item_list array + Item Tree nodes) with the view (ItemList); the model should be plain data, not scene nodes.
+- Untyped everything; add types and a small ItemEntry model.
+
+5. RELATION TO DEATH OR TAXATION
+- SCRAPPED as an item-economy component (DoT has no FE items/weapons). The reusable kernel is the generic "scrollable selectable list panel that shows details for the highlighted row." That widget pattern could be repurposed for the DoT DEPLOYMENT screen (list of purchasable squads/singles/Generals with a cost/stat preview against the battle budget) or the CAMP screen (list of Generals with level/soul-cost preview). If reused, keep it strictly view-layer, feed it plain data from /data, and have it emit selection signals rather than writing into a sibling's label. Do not carry over weapon-type categories, selling, or convoy semantics.

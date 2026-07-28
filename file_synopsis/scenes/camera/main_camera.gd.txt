@@ -1,0 +1,28 @@
+FILE: scenes/camera/main_camera.gd
+
+1. CLASS
+- class_name MainCamera. extends Camera2D.
+- The primary battlefield camera. Registers itself as BattlefieldInfo.main_game_camera (singleton-like accessor used across battlefield code, e.g. AI and Preparation Screen set its position). Lives in the battle map scene.
+
+2. WHAT IT DOES
+- Follows the cursor (and units) tile-by-tile with edge-scroll logic, clamps itself to map bounds, and provides a decaying screen-shake effect for battle impact. Emits camera_moved so dependent UI can track it.
+
+3. FUNCTIONS
+- _ready(): Registers BattlefieldInfo.main_game_camera = self; connects BattlefieldInfo.cursor "cursorMoved" -> _on_Cursor_cursorMoved; enables _process for shake.
+- _on_Cursor_cursorMoved(direction, cursor_position): When the cursor nears a screen edge (within CELL_SIZE * factor), nudges the camera one cell in that direction and emits camera_moved(position); then clamps.
+- _on_unit_moved(direction, unit_position): Same edge-follow logic keyed to a moving unit (capitalized directions), uses an extra differential constant.
+- _on_Level_mapInformationLoaded(): Once map dims are known (BattlefieldInfo.map_width/height), sets limit_right/limit_bottom and computes RIGHT_CLAMP_MAX/BOTTOM_CLAMP_MAX from CAMERA_WIDTH/HEIGTH.
+- clampCameraPosition(): Clamps position.x/y within [0, max]. Called by AI/Preparation after repositioning.
+- _process(delta): Runs the screen-shake: lerps intensity down over remaining time, applies noise-based offset, resets offset when done. Uses randf_range (cosmetic-only RNG).
+- shake(duration, frequency, amplitude): Starts a shake (ignored if one is active), seeds noise vars, enables _process.
+- Signals: emits camera_moved; handles cursor.cursorMoved. Depends on BattlefieldInfo (cursor, map_width/height, main_game_camera), Cell.CELL_SIZE.
+
+4. POSSIBLE IMPROVEMENT
+- _on_Cursor_cursorMoved and _on_unit_moved are near-duplicate 4-way blocks; unify into one direction-normalized helper.
+- CAMERA_HEIGTH typo in the constant name.
+- Manual tile-nudge follow could use Godot 4 Camera2D position smoothing / limits + drag margins instead of hand-rolled edge logic.
+- Shake math is fine but could be a reusable component; note it uses RNG (allowed — purely visual, not combat).
+- Untyped signal params.
+
+5. RELATION TO DEATH OR TAXATION
+- KEEP (view-layer). DoT is still a grid/tile tactics game with a cursor, so a clamped, cursor-following battlefield camera with optional shake is directly reusable and correctly lives in /scenes. Adapt constants to DoT's viewport/cell size. IMPORTANT: the shake RNG is fine (cosmetic view effect) and does NOT violate the "no RNG in combat" rule — that rule is about damage/hit resolution in /sim, not camera jitter. Keep camera_moved as a view signal. Drop nothing essential; just modernize with Camera2D built-ins where possible.

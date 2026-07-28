@@ -1,0 +1,38 @@
+SYNOPSIS: scenes/gui/Item Screen/Item Select Slot.gd
+
+1. CLASS
+   No class_name, extends Node2D.
+   A single row widget inside the Item Screen list: shows one item's icon, name,
+   and remaining uses.
+
+2. WHAT IT DOES
+   Renders one inventory line. It can be filled with an item's data or blanked
+   into an empty slot, and it highlights green when it holds the unit's currently
+   equipped item. Purely presentational; owned/positioned by Item Screen.
+
+3. FUNCTIONS
+   - start(item): Populates the row - uses count, item_name, icon (made visible),
+     then calls set_green_equipped(item) and caches current_item.
+   - empty_slot(): Blanks the row (clears name and uses text, hides icon) for
+     unused slots.
+   - set_green_equipped(item): If this item equals
+     BattlefieldInfo.current_Unit_Selected.UnitInventory.current_item_equipped,
+     plays the "equipped" green animation; otherwise stops it and resets the name
+     font color to white.
+
+4. POSSIBLE IMPROVEMENT
+   - set_green_equipped reaches into the BattlefieldInfo autoload to decide its
+     own color; the equipped flag should be passed in by the parent so the slot
+     stays a dumb view with no global coupling (improves testability/reuse).
+   - Duplicate "equipped highlight" logic exists here and inline in Item Screen /
+     Weapon Select; consolidate into this one slot component and reuse it.
+   - extends Node2D for a UI row is unusual; a Control-based slot would layout
+     better in containers.
+
+5. RELATION TO DEATH OR TAXATION
+   SCRAP as an item widget; the row/slot pattern is reusable. DoT has no in-battle
+   item inventory, so "item uses / equipped weapon" content is cut. A generic,
+   decoupled list-row component (icon + label + selected highlight, fed entirely
+   by the parent, no autoload access) would be useful in DoT's /ui menus - e.g.
+   deployment unit picker or between-missions General list. Rebuild it to receive
+   all display data and its highlight state as arguments.

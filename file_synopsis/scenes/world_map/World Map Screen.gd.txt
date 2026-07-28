@@ -1,0 +1,31 @@
+FILE: scenes/world_map/World Map Screen.gd
+
+1. CLASS
+- No class_name. extends Node2D.
+- Used as the AUTOLOAD SINGLETON "WorldMapScreen" (referenced as WorldMapScreen.current_event, WorldMapScreen.connect_to_scene_changer(), get_node("/root/WorldMapScreen"); SceneTransition.change_scene_to_packed(WorldMapScreen)). Persistent node that stays in the tree hidden until shown. Owns a world-map camera, an "Eirika" overworld avatar, tweens, world-map music, and waypoint marker containers.
+
+2. WHAT IT DOES
+- The between-chapters overworld map (FE-style). It displays the campaign map, places castle/fort/village waypoint markers, moves the "Eirika" avatar and camera along scripted paths, and runs a per-chapter "event" object (current_event) that builds the map and animates the journey to the next battle. Coordinated by SceneTransition's scene_changed signal.
+
+3. FUNCTIONS
+- _ready(): Stays hidden (visible=false) and disables its camera so it doesn't hijack other scenes; connects Eirika tween "tween_completed" -> set_eirika_idle; plays Eirika Idle.
+- start(): Reveals the map, assigns current_event.world_map=self, adds the event as a child, enables the world-map cam, clears+builds the map (current_event.build_map()), fades in, starts world-map music, runs current_event.run(), then disconnects itself from SceneTransition.scene_changed. This is the method that SceneTransition triggers via scene_changed.
+- place_castle_waypoint / place_fort_waypoint / place_village_waypoint(position): Instantiate a marker scene at a position and track it in the matching waypoints array.
+- place_eirika(pos): Show + position the avatar, play Idle.
+- move_eirika(next, seconds=1): Tween the avatar to a new position, choosing a left/right walk animation; (uses Godot-3-era Tween.interpolate_property).
+- set_camera_position(pos) / move_camera(next, seconds=1): Position/tween the world-map camera.
+- set_eirika_idle(_object,_key): Tween-completed callback -> play Idle.
+- stop_main_camera(): Disable the world-map cam.
+- exit(): Fade out, tween music volume down, stop music, clear current_event and the map.
+- connect_to_scene_changer(): Connects SceneTransition.scene_changed -> start (called by Intro Screen before requesting the scene change).
+- clear_map(): queue_free all waypoint markers, clear arrays, reset Eirika off-screen.
+- Interactions: SceneTransition (connect/disconnect scene_changed), per-chapter event objects (build_map/run), Level1_WM_Event_Part10 set by Intro Screen.
+
+4. POSSIBLE IMPROVEMENT
+- Uses deprecated Godot-3 Tween.interpolate_property/start API; Godot 4 uses create_tween()/tween_property. This code likely doesn't run as-is on 4.6.
+- Hard-coded "Eirika" avatar and named node paths bake FE content into a systems file; generalize the avatar/marker set as data.
+- Connects and disconnects a shared global signal by name inside start()/connect_to_scene_changer() — fragile lifecycle; prefer one-shot awaits.
+- Mixed responsibilities (map rendering, avatar animation, music, event running); split.
+
+5. RELATION TO DEATH OR TAXATION
+- CHANGE -> becomes the DoT MISSION-SELECT / CAMPAIGN MAP (screen flow between missions). DoT's flow is linear (Map1 -> camp -> Map2 -> camp -> Map3 -> victory), so a full FE overworld with waypoints and a walking avatar is overkill; reduce to a simple gray-box campaign/mission-select node that shows current progress and launches the next map. Keep the "persistent hidden node revealed on scene_changed" pattern if convenient, but drop the Eirika avatar, waypoint markers, and world-map music (no art/music in gray-box phase). Campaign progress (which map is next, souls, mode flag) is sim/save state read from the single JSON save, not owned by this view node. Data-drive any per-mission intro so adding a map needs no code changes.

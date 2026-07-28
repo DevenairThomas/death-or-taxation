@@ -1,0 +1,26 @@
+SYNOPSIS: scenes/events/special_events/spawn_enemies.gd
+
+1. CLASS
+class_name Spawn_Event. extends "res://scenes/events/event_base.gd" (Event_Base -> Node2D).
+An abstract base class for turn-triggered enemy reinforcement events (a "special event" distinct from dialogue events).
+
+2. WHAT IT DOES
+Provides the skeleton for events that spawn enemies during a battle in response to the enemy turn advancing. It subscribes to the turn manager's per-enemy-turn signal and defines an overridable hook where a concrete subclass would create units on a given turn number. As written it is a base/stub: process_spawning_event is empty (pass), so no enemies actually spawn — subclasses are expected to override it.
+
+3. FUNCTIONS
+_ready():
+- BattlefieldInfo.turn_manager.connect("enemy_turn_increased", process_spawning_event) — wires this node so that each time the enemy turn increments, process_spawning_event(turn_number) is called. (Uses _ready, so this must be instanced as a live node in the scene tree, unlike the dialogue events which are new()'d objects.)
+process_spawning_event(turn_number):
+- Empty stub; intended override point. A subclass checks turn_number and spawns units when it matches.
+done_spawning_enemies():
+- self.queue_free() — removes this event node once spawning is finished; also declares signal done_spawning (never emitted here — for subclasses).
+Interactions: autoload BattlefieldInfo.turn_manager and its "enemy_turn_increased" signal drive this; the declared done_spawning signal is the intended handshake back to whatever awaits reinforcements.
+
+4. POSSIBLE IMPROVEMENT
+- process_spawning_event is a TODO-stub presented as a member; base class should either be abstract-by-documentation or push_error if not overridden, so a forgotten override fails loudly.
+- done_spawning signal is declared but never emitted anywhere in this file; either emit it in done_spawning_enemies() or document the contract.
+- Mixing paradigms: dialogue events are RefCounted-ish new()'d objects run by an event runner, while this is a scene-tree Node reacting to signals in _ready — two different event models in one system. Unify.
+- No docstrings; turn-number spawn conditions will inevitably be magic numbers in subclasses — should be data.
+
+5. RELATION TO DEATH OR TAXATION
+Change/keep-as-reference. DoT explicitly needs turn-triggered mid-battle beats (the L3 loader's mid_level_events prove reinforcement/timed triggers are part of the design), and enemy reinforcements are compatible with DoT's FE-tier AI (dormant until threatened). But DoT bans RNG and wants data-driven content, so reinforcement waves belong in /data as {turn, unit stats, spawn tile} entries consumed by a generic trigger, with spawning handled in /sim (pure) and only rendered via signals in /scenes. Keep this file as reference for the ONE useful idea — "on enemy_turn_increased, evaluate spawn conditions" — but reimplement it as a data-driven trigger, not a hand-coded subclass per wave. Note it must never introduce randomness into who/where spawns.

@@ -1,0 +1,39 @@
+SYNOPSIS: scenes/items/Staves/Heal.gd
+
+1. CLASS
+No class_name; extends "res://scenes/items/Item.gd" (Item / Node2D). Concrete magic-item
+script for Heal.tscn — a support staff, not a weapon.
+
+2. WHAT IT DOES
+Basic FE healing staff. _ready() sets uses/max_uses 40, might 10 (here "might" means heal
+amount, not damage), weight 0, hit 100, crit 0, range 1-1, worth 600, weapon_type HEALING,
+strong_against HEALING (self-referential placeholder — staves are outside the triangle),
+item_class MAGIC, icon heal.png, weapon_string_name "staff". Listed in Item_Dict.all_items.
+Represents the healer/support archetype where the "attack" action restores an ally's HP.
+
+3. FUNCTIONS
+- _ready(): assigns stats; note item_class MAGIC and weapon_type HEALING; might repurposed
+  as heal power.
+- special_ability(unit_holding_this_item, unit_that_is_being_attacked): returns 1 (params
+  unused); the shared damage/effect-multiplier hook, unused for healing.
+- draw_attack_sound() / put_away_attack_sound(): standard draw/put-away SFX from
+  BattlefieldInfo.weapon_sounds.
+
+4. POSSIBLE IMPROVEMENT
+- Overloading `might` to mean heal amount is confusing; a distinct `heal_power` field (or a
+  CONSUMABLE/support item subtype) would be clearer.
+- strong_against = HEALING is a meaningless placeholder; healing items shouldn't carry a
+  triangle relation at all.
+- use_consumable() from the base class is the natural home for staff behavior but is left
+  empty here.
+- Data-drive stats.
+
+5. RELATION TO DEATH OR TAXATION
+SCRAPPED as-is, but the underlying capability — a support action that restores HP — is
+worth noting against DoT design. DoT's design doc centers on the deterministic attack loop;
+if any "restore/repair" ability exists it would be a GENERAL ability defined in /data
+(unlocked L3/L5) applied through the sim, deterministically, with no staff item, no hit
+stat, no durability. Squads degrade with HP%, so a healing/repair effect would meaningfully
+restore squad damage output — a plausible ability to model, but as data, not an item.
+Keep the concept as a possible General ability; scrap the item, the might-as-heal overload,
+and all FE stat fields.

@@ -1,0 +1,31 @@
+FILE: scenes/gui/Action Selector/Action Selector.gd
+
+1. CLASS
+No class_name. extends CanvasLayer. A HUD/context-menu widget: the "what does this unit do now?" action list that pops up after a unit finishes moving (Attack / Heal / Convoy / Item / Trade / Visit / Seize / Shop / Wait).
+
+2. WHAT IT DOES
+After a unit's move is confirmed, this menu is shown listing only the actions that unit can legally take from its landing tile. It dynamically computes the valid options (checks weapon reach to an enemy, healing reach to a wounded ally, adjacency for Trade, throne tile for Seize, tile type for Visit/Shop, Eirika's Convoy access) and routes the chosen option to the correct sub-screen. It also flips its own screen position to the opposite corner so it never sits under the cursor.
+
+3. FUNCTIONS
+- _ready(): Wires four Area "corner" body_entered signals (BottomLeft/Right, TopLeft/Right on the GameCamera) to left_side/right_side so the menu repositions away from the cursor. Connects BattlefieldInfo.unit_movement_system "action_selector_screen" signal to start() — i.e. the movement system tells this menu to open when a unit stops moving.
+- start(): Shows the "Action Menu" node, calls get_menu_items(), builds the menu, starts a 0s Timer that flips is_active on (defers input by one frame).
+- _input(event): When is_active, maps ui_accept->process_selection, ui_cancel->go_back, ui_up/down->movement. Plays Hand Selector SFX.
+- movement(direction): Moves the hand cursor up/down the list, clamps index, tracks current_option_selected.
+- build_menu(menu_items): Lays out the pre-existing menu item nodes (children of "Action Menu") vertically from the "Top" cap, parks unused ones OFF_SIDE, positions "Bottom" cap and the hand on item 0. Menu items are hardcoded child nodes, not generated.
+- get_menu_items(): The heavy logic. Reads BattlefieldInfo.current_Unit_Selected. Uses a BFS over Cell.adjCells budgeted by weapon.max_range to test if an attackable enemy / healable ally is reachable (via Calculators.get_distance_between_two_tiles and min_range). Special-cases name=="Eirika" for Convoy; adds Trade/Convoy on ally adjacency; adds Seize on Throne tile when BattlefieldInfo.victory_text=="Seize"; adds Visit/Shop by tileName. Always appends "Wait".
+- process_selection(): match on the chosen option; opens sibling screens (Weapon Select, Convoy UI, Healing Select, Item Screen, Trade Screen), or for Wait sets the unit's UnitActionStatus to DONE, greyscales it, emits selected_wait, and fires BattlefieldInfo.turn_manager "check_end_turn". Visit/Seize/Shop are print-only stubs.
+- go_back(): Cancels: if action already DONE/TRADE plays invalid SFX and blocks; otherwise snaps the unit and camera and cursor back to BattlefieldInfo.previous_position/previous_camera_position via Calculators.update_unit_tile_info, resets action to MOVE, re-enables the cursor.
+- left_side/right_side(body): Emits menu_moved and sets new_menu_position to the opposite corner.
+- hide_action_menu(): Hides menu, parks children OFF_SIDE, is_active=false.
+- _on_Timer_timeout(): is_active=true.
+Signals: selected_back (declared, unused here), selected_wait (Cursor listens -> enable_standard), menu_moved (damage-preview screen listens).
+
+4. POSSIBLE IMPROVEMENT
+- get_menu_items() reaches deep into a global singleton (BattlefieldInfo.current_Unit_Selected.UnitInventory...) and duplicates a nearly identical BFS twice (attack vs heal). Extract a pure `can_reach_target(unit, weapon, predicate)` helper — testable and DRY.
+- Hardcoded name=="Eirika" checks are content in code; should be a unit flag/data field.
+- Menu options are fixed scene child nodes; a data-driven list + instanced rows would remove the OFF_SIDE parking hack.
+- Deep get_parent().get_node("...") sibling coupling and string node paths are brittle; use exported NodePaths or signals.
+- Node-path magic strings ("Action Menu/Hand Selector/Accept") everywhere — cache @onready refs.
+
+5. RELATION TO DEATH OR TAXATION
+KEEP THE PATTERN, REBUILD THE CONTENT. A per-unit action menu is exactly DoT's turn-loop UI after a Squad/Single/General moves. In DoT it must live in /ui or /scenes and only render sim state + forward input: the "which actions are legal" query (can this unit attack/reach a target) belongs in /sim as a pure function the view calls, not a BFS embedded in a CanvasLayer. Options change: DROP Heal/Convoy/Trade/Item/Shop/Visit (no in-battle economy, no convoy/inventory shopping per design — CUT items). KEEP Attack and Wait; add DoT-specific ones only if in spec (e.g. an ability). Attack selection must forward to a forecast that calls the SAME sim damage function as resolution (design rule). Eirika/name special-cases become General data flags. No RNG anywhere in this path.

@@ -1,0 +1,24 @@
+FILE: scenes/units/Enemy_Units/Black Soldier Combat.gd
+
+1. CLASS
+No class_name. extends "res://scenes/units/Unit_Scripts/Combat Unit.gd" (a Combat_Unit subclass). The combat-cutscene actor for the enemy/AI side of a duel (used by Enemy Soldier via its Black Soldier Combat.tscn). Enemy-side counterpart to "Ally Combat Script.gd".
+
+2. WHAT IT DOES
+Provides the AI-side audiovisual hooks for the zoomed-in combat animation: attack/hit/draw/put-away/miss/crit/death sounds and the death-anim signal. Nearly a verbatim clone of the Combat_Unit base, differing only in that draw/put-away sounds read BattlefieldInfo.combat_ai_unit (the enemy actor) instead of combat_player_unit, and it declares play_player_dodge_anim so a miss makes the PLAYER actor dodge.
+
+3. FUNCTIONS
+- signal play_player_dodge_anim: Emitted on a miss so the opposing player actor plays its dodge.
+- play_attack_sound()/play_hit_sound(): Random "Attack N"/"Attack Hit N" from BattlefieldInfo.battle_sounds.
+- play_draw_sound()/put_away_attack_sound(): Delegate to BattlefieldInfo.combat_ai_unit.UnitInventory.current_item_equipped weapon SFX.
+- play_miss_sound(): Random "Attack Miss N" + emits play_player_dodge_anim.
+- play_crit_sound(): Random "Critical Hit N".
+- play_death_sound(): Plays "Death".
+- death_anim_signal(): Emits death_anim_done (inherited). All called from AnimationPlayer method-call tracks.
+
+4. POSSIBLE IMPROVEMENT
+- Almost entirely duplicated from Combat Unit.gd and from the other four enemy *Combat scripts (Bandit/Dark Mage/General/Pegasus are byte-for-byte equivalent). Collapse into one shared enemy-side base (or one parameterized Combat_Unit) — this is copy-paste proliferation.
+- Depends on the global BattlefieldInfo.combat_ai_unit "who is fighting" state instead of an injected reference.
+- No docstrings; behavior is driven by invisible animation tracks.
+
+5. RELATION TO DEATH OR TAXATION
+LARGELY SCRAP; keep a trimmed view actor. Miss/crit/dodge are invalid in DoT (deterministic, no hit/crit/dodge), so play_miss_sound, play_crit_sound, and play_player_dodge_anim are removed. What remains is legitimate /scenes gray-box combat presentation (attack/hit/death SFX + death_anim_done) for an enemy unit, driven by sim signals (unit_damaged/unit_destroyed) rather than global current-unit lookups. The five near-identical enemy combat scripts should be a single reusable enemy combat-view scene parameterized by unit-type data.

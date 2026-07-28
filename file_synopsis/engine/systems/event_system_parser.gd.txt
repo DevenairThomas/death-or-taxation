@@ -1,0 +1,18 @@
+FILE: engine/systems/event_system_parser.gd
+
+1. CLASS
+No class_name. Extends Node. An unfinished stub intended to load level event data from a file.
+
+2. WHAT IT DOES
+Declares a parsing_events_complete signal and an event_data array, and begins a load_event_data() that opens a file — but the function body is empty after opening the file. Effectively dead/incomplete: it reads nothing and emits nothing.
+
+3. FUNCTIONS
+- load_event_data(file_location) -> void: opens file_location with FileAccess.READ into new_file and then... does nothing with it. No parsing, no populating event_data, never emits parsing_events_complete.
+Signal parsing_events_complete is declared but never emitted.
+
+4. POSSIBLE IMPROVEMENT
+- It is a TODO stub presented as a file; either finish it (parse into event_data, close the file, emit the signal, handle open failure) or delete it. As written it leaks an unclosed FileAccess handle conceptually and does nothing.
+- If kept, define the event file schema and return parsed data rather than mutating a member.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap as-is; keep the intent. DoT wants cutscene/event content in /data as data files (data-driven: adding a cutscene = zero code changes), loaded by a real parser. Rebuild this as a proper data loader that returns structured event/cutscene records for the VN textbox and scripted mission beats. Note the design rule that dead Generals still appear in cutscenes and there are no death-variant scenes — the event schema must reference Generals by persistent identity, not by alive/dead branches. An empty stub violates the "no TODO stubs presented as done" convention and should not be ported verbatim.

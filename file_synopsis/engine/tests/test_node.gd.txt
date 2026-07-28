@@ -1,0 +1,16 @@
+FILE: engine/tests/test_node.gd
+
+1. CLASS
+No class_name. Extends Node. A minimal input-probe scaffold.
+
+2. WHAT IT DOES
+Prints a line when the ui_accept action is pressed. A trivial manual check that input events reach a Node script.
+
+3. FUNCTIONS
+- _input(event): on ui_accept just-pressed, print("pressed from Node"). No signals, no autoloads, no game logic.
+
+4. POSSIBLE IMPROVEMENT
+- Delete or replace with a real test. It is manual, print-based, and asserts nothing. Also note _input receives `event` but re-polls via Input.is_action_just_pressed rather than testing the passed event.
+
+5. RELATION TO DEATH OR TAXATION
+Scrap. Disposable input-probe scaffolding with no reuse value. DoT input handling belongs in /scenes and /ui and should be validated through the app, while logic is covered by headless sim tests. Nothing to carry forward.

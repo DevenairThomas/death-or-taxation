@@ -1,0 +1,47 @@
+SYNOPSIS: scenes/walkable/Colm Walk.gd
+
+1. CLASS
+extends CharacterBody2D. No class_name. An NPC party-member avatar in the walkable camp map.
+Unlike the other NPC scripts, Colm PATROLS (moves back and forth) rather than standing idle.
+
+2. WHAT IT DOES
+Colm is a walking NPC in the camp/overworld: he paces vertically between two points, animates
+his facing direction, halts when the player (Eirika) bumps his trigger area, and delivers a
+scripted dialogue when the player talks to him. Content is hardcoded: talk_name "Colm" and a
+4-line `dialogue` array in the "Name@portrait_path@text" format the message system consumes.
+
+3. FUNCTIONS
+_ready() — plays "Idle"; sets position = start_position (100,100); initializes move_dir down
+  (0,1) to begin patrolling.
+set_sprite_direction() — match on move_dir -> sprite_dir string (Left/Right/Up/Down/Idle).
+animation_switch() — chooses animation from sprite_dir, using the "<dir> no sound" variant for
+  movement, "Idle" when still.
+_physics_process(delta) — velocity = move_dir.normalized() * speed(100), move_and_slide();
+  reverses move_dir at the patrol bounds (flips to down at start_position.y top, to up at
+  end_position.y bottom); updates sprite direction/animation. Vertical patrol between y=100 and
+  y=215.
+start_dialogue() — calls BattlefieldInfo.message_system.start(dialogue) to show Colm's lines.
+_on_Area2D_body_entered(body) — if body.name == "Eirika Walk", stashes current move_dir into
+  prev_dir and stops (move_dir = 0) so he pauses to talk.
+_on_Area2D_body_exited(body) — if body.name == "Eirika Walk", restores move_dir = prev_dir to
+  resume patrolling.
+Autoloads/classes touched: BattlefieldInfo.message_system; interacts with the "Eirika Walk"
+avatar by node name; Eirka_Walk calls this start_dialogue() when talked to.
+
+4. POSSIBLE IMPROVEMENT
+- Hardcoded dialogue, patrol points, speed, and the string comparison body.name == "Eirika
+  Walk" are all magic values; dialogue/patrol should be data, and player detection should use
+  groups or has_method rather than a name string.
+- Duplicates set_sprite_direction()/animation_switch() verbatim from Eirka_Walk and the other
+  NPCs — factor a shared WalkNPC base class.
+- Portrait paths embedded in dialogue strings couple content to asset layout; move to data.
+
+5. RELATION TO DEATH OR TAXATION
+Camp NPC flavor + patrol movement, not tactical-grid logic — outside the grid-builder mandate
+and SCRAP as-is for DoT. The only transferable notion is content-as-data: DoT stores all
+cutscene/VN dialogue in /data, so an NPC's lines and a General's personality belong in data
+files, not embedded arrays with hardcoded portrait paths. The patrol behavior and CharacterBody
+walking are unneeded for DoT's gray-box menu/VN camp. If a walkable camp is ever built, use a
+shared data-driven NPC base and detect the player via a group, not a hardcoded node name.
+Nothing here informs /sim. (Tone note for any DoT rewrite: DoT's register is the lich's
+earnest fury over Taxation without Representation, not FE-style pleasantries.)

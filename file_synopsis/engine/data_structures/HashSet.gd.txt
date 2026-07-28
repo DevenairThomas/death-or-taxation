@@ -1,0 +1,22 @@
+FILE: engine/data_structures/HashSet.gd
+
+1. CLASS
+class_name HashSet. Extends nothing (implicitly RefCounted). A tiny value-set helper backed by a plain Array.
+
+2. WHAT IT DOES
+Provides set semantics (no duplicate membership) for the pathfinder. Used by MovementCalculator's A* as the "closed list" of already-processed cells. Despite the name it is NOT a hash set: every operation is a linear array scan.
+
+3. FUNCTIONS
+- add(value) -> bool: appends value if not already present; returns false if it was a duplicate. Called by get_path_to_destination_AI() (and the commented-out player A*) in movement_calculator.gd to mark cells as closed.
+- remove(value) -> bool: removes first occurrence via array.find/remove; returns false if absent. Not currently called anywhere in the read scope.
+- contains(value) -> bool: array.has() membership test. Called by the A* loop to skip closed cells.
+- clear() -> void: empties the backing array.
+No signals, no autoload access; pure data structure.
+
+4. POSSIBLE IMPROVEMENT
+- The header comment claims native code would be faster and admits this is not optimized; a true O(1) set is trivial in GDScript by using a Dictionary keyed on value (or the built-in that Godot 4 offers). Every add/contains is currently O(n), making the A* effectively O(n^2).
+- Add `extends RefCounted` explicitly and type the `array` member (`var array: Array = []`).
+- remove() calls array.find(value, 0) then array.remove() (should be remove_at in Godot 4) — verify it is not silently broken; there is a latent Godot-3-ism here.
+
+5. RELATION TO DEATH OR TAXATION
+Keep the concept, rewrite. A grid pathfinder in /sim will want a closed-set; back it with a Dictionary for O(1) and keep it a pure RefCounted with no node access (it already qualifies). This is exactly the kind of small, pure, headless-testable helper the DoT architecture wants in /sim. Trivial to unit-test. No RNG, no rules — safe to port.
