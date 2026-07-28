@@ -10,10 +10,6 @@ enum {active, wait}
 var current_state = wait
 
 signal event_done
-signal move_camera_done
-signal move_actor_done
-signal enable_text_done
-signal enable_combat_done
 
 # Path for serialization
 var path

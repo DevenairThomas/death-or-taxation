@@ -9,7 +9,6 @@ var grid = [] # Holds all cell data
 var cell = preload("res://scenes/gui/Cell/Cell.tscn")
 
 # Map information has been loaded
-signal mapInformationLoaded
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -45,20 +44,20 @@ func _ready():
 		
 	# Set Adj Cells
 	for cellArray in grid:
-		for cell in cellArray:
+		for grid_cell in cellArray:
 			# Left
-			if cell.getPosition().x - 1 >= 0:
-				cell.adjCells.append(grid[cell.getPosition().x - 1][cell.getPosition().y])
+			if grid_cell.getPosition().x - 1 >= 0:
+				grid_cell.adjCells.append(grid[grid_cell.getPosition().x - 1][grid_cell.getPosition().y])
 			# Right
-			if cell.getPosition().x + 1 < map_width:
-				cell.adjCells.append(grid[cell.getPosition().x + 1][cell.getPosition().y])
+			if grid_cell.getPosition().x + 1 < map_width:
+				grid_cell.adjCells.append(grid[grid_cell.getPosition().x + 1][grid_cell.getPosition().y])
 			# Up
-			if cell.getPosition().y - 1 >= 0:
-				var cellToAdd = grid[cell.getPosition().x][cell.getPosition().y - 1]
-				cell.adjCells.append(cellToAdd)
+			if grid_cell.getPosition().y - 1 >= 0:
+				var cellToAdd = grid[grid_cell.getPosition().x][grid_cell.getPosition().y - 1]
+				grid_cell.adjCells.append(cellToAdd)
 			# Down
-			if cell.getPosition().y + 1 < map_height:
-				cell.adjCells.append(grid[cell.getPosition().x][cell.getPosition().y + 1])
+			if grid_cell.getPosition().y + 1 < map_height:
+				grid_cell.adjCells.append(grid[grid_cell.getPosition().x][grid_cell.getPosition().y + 1])
 	
 	# Load Units Information
 	all_allies_location.clear()
