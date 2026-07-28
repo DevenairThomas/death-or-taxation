@@ -51,8 +51,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "Test Name"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="is broken" type="Label" parent="Item Broke Box"]
 offset_left = 43.5106
@@ -63,8 +63,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "broke!"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Exit" type="Timer" parent="."]
 wait_time = 1.5

@@ -169,8 +169,8 @@ scale = Vector2( 0.23239, 0.29381 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Chapter 1: Victims of War"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Eirika" type="Panel" parent="UI"]
 anchor_top = 1.0
@@ -194,8 +194,8 @@ theme_override_fonts/font = SubResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "Name"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="ColorRect" type="ColorRect" parent="UI/Eirika"]
 modulate = Color( 0.568627, 0.811765, 0.945098, 0.654902 )
@@ -219,8 +219,8 @@ theme_override_fonts/font = SubResource( 5 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "20 / 20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Empty HP" type="Sprite2D" parent="UI/Eirika"]
 position = Vector2( 44, 28 )
@@ -267,8 +267,8 @@ theme_override_fonts/font = SubResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "Name"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="ColorRect" type="ColorRect" parent="UI/Enemy Commander"]
 modulate = Color( 0.568627, 0.811765, 0.945098, 0.654902 )
@@ -292,8 +292,8 @@ theme_override_fonts/font = SubResource( 5 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 theme_override_colors/font_outline_color = Color( 0, 0, 0, 1 )
 text = "20 / 20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Empty HP" type="Sprite2D" parent="UI/Enemy Commander"]
 position = Vector2( 44, 28 )
@@ -341,8 +341,8 @@ offset_bottom = 65.0
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 9 )
 text = "15"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Player Unit" type="Label" parent="UI/Player Units"]
 anchor_right = 1.0
@@ -354,8 +354,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Player Units"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Enemy" type="Control" parent="UI"]
 anchor_right = 1.0
@@ -380,8 +380,8 @@ offset_bottom = 65.0
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 9 )
 text = "15"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Enemy Units" type="Label" parent="UI/Enemy"]
 anchor_right = 1.0
@@ -393,8 +393,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Enemy Units"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Objective" type="ColorRect" parent="UI"]
 offset_left = 9.97382
@@ -413,8 +413,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Objective"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Objective Desc" type="Label" parent="UI/Objective"]
 anchor_right = 1.0
@@ -425,8 +425,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Defeat all enemies"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Turn" type="Label" parent="UI/Objective"]
 anchor_right = 1.0
@@ -438,8 +438,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Turn"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Money" type="Label" parent="UI/Objective"]
 anchor_right = 1.0
@@ -451,8 +451,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Gold"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Turn Number" type="Label" parent="UI/Objective"]
 anchor_right = 1.0
@@ -464,8 +464,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "10"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Money Amt" type="Label" parent="UI/Objective"]
 anchor_right = 1.0
@@ -477,8 +477,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "10"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Time Played" type="ColorRect" parent="UI"]
 offset_left = 129.407
@@ -497,8 +497,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Play Time:"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -513,8 +513,8 @@ scale = Vector2( 0.15, 0.15 )
 theme_override_fonts/font = ExtResource( 2 )
 theme_override_colors/font_color = Color( 0, 0, 0, 1 )
 text = "10"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Anim" type="AnimationPlayer" parent="."]
 anims/Fade = SubResource( 10 )

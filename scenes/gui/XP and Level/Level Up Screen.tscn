@@ -111,8 +111,8 @@ offset_bottom = 197.0
 scale = Vector2( 0.7, 0.7 )
 theme_override_fonts/font = ExtResource( 7 )
 text = "Pegausus Knight"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 clip_text = true
 
 [node name="Level" type="Label" parent="Level Up Panel/Level Up Background"]
@@ -122,8 +122,8 @@ offset_right = 584.667
 offset_bottom = 143.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Level Arrow" parent="Level Up Panel/Level Up Background/Level" instance=ExtResource( 8 )]
 visible = false
@@ -136,8 +136,8 @@ offset_right = 318.0
 offset_bottom = 303.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="HP Arrow" parent="Level Up Panel/Level Up Background/HP" instance=ExtResource( 8 )]
 visible = false
@@ -150,8 +150,8 @@ offset_right = 644.667
 offset_bottom = 303.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Luck Arrow" parent="Level Up Panel/Level Up Background/Luck" instance=ExtResource( 8 )]
 visible = false
@@ -164,8 +164,8 @@ offset_right = 318.0
 offset_bottom = 383.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Str Arrow" parent="Level Up Panel/Level Up Background/Str" instance=ExtResource( 8 )]
 visible = false
@@ -178,8 +178,8 @@ offset_right = 644.667
 offset_bottom = 383.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Def Arrow" parent="Level Up Panel/Level Up Background/Def" instance=ExtResource( 8 )]
 visible = false
@@ -192,8 +192,8 @@ offset_right = 318.0
 offset_bottom = 463.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Skill Arrow" parent="Level Up Panel/Level Up Background/Skill" instance=ExtResource( 8 )]
 visible = false
@@ -206,8 +206,8 @@ offset_right = 644.667
 offset_bottom = 463.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Res Arrow" parent="Level Up Panel/Level Up Background/Res" instance=ExtResource( 8 )]
 visible = false
@@ -220,8 +220,8 @@ offset_right = 318.0
 offset_bottom = 543.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Spd Arrow" parent="Level Up Panel/Level Up Background/Spd" instance=ExtResource( 8 )]
 visible = false
@@ -234,8 +234,8 @@ offset_right = 644.667
 offset_bottom = 543.333
 theme_override_fonts/font = ExtResource( 7 )
 text = "20"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Con Arrow" parent="Level Up Panel/Level Up Background/Con" instance=ExtResource( 8 )]
 visible = false

@@ -95,6 +95,13 @@ modulate = Color( 1, 1, 1, 0 )
 offset_right = 40.0
 offset_bottom = 40.0
 
+[node name="Menu BG" type="ColorRect" parent="Options"]
+offset_left = 138.0
+offset_top = 84.0
+offset_right = 217.0
+offset_bottom = 139.0
+color = Color(0, 0, 0, 0.9)
+
 [node name="New Game" type="Label" parent="Options"]
 offset_left = 150.629
 offset_top = 88.9829
@@ -102,9 +109,11 @@ offset_right = 437.629
 offset_bottom = 138.983
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = ExtResource( 4 )
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 24
 text = "New Game"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Load Game" type="Label" parent="Options"]
 offset_left = 150.071
@@ -113,10 +122,12 @@ offset_right = 451.071
 offset_bottom = 207.604
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = ExtResource( 4 )
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 24
 text = "Load Game
 "
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Options" type="Label" parent="Options"]
 offset_left = 159.416
@@ -125,10 +136,12 @@ offset_right = 364.416
 offset_bottom = 228.385
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = ExtResource( 4 )
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 24
 text = "Options
 "
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Hand Selector" parent="Options" instance=ExtResource( 5 )]
 offset_left = 130.824

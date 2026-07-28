@@ -27,8 +27,8 @@ offset_bottom = 89.6711
 scale = Vector2( 1, 1.1 )
 theme_override_fonts/font = SubResource( 1 )
 text = "Killing Edge"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Uses" type="Label" parent="Background"]
 offset_left = 363.0
@@ -38,8 +38,8 @@ offset_bottom = 90.0
 scale = Vector2( 1, 1.1 )
 theme_override_fonts/font = SubResource( 1 )
 text = "99"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Icon" type="TextureRect" parent="Background"]
 offset_left = 35.7441

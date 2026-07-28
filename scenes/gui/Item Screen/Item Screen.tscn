@@ -130,8 +130,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 0.156863, 0.864053, 0.130719, 1 )
 text = "Killing Edge"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -145,8 +145,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Uses" type="Label" parent="Item Menu/Mugshot/Item Stats/Background"]
 offset_left = 49.3363
@@ -157,8 +157,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Uses"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -172,8 +172,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -187,8 +187,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Damage"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -202,8 +202,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -217,8 +217,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Crit"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -232,8 +232,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "99"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -247,8 +247,8 @@ scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 1 )
 theme_override_colors/font_color = Color( 1, 1, 1, 1 )
 text = "Hit"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }

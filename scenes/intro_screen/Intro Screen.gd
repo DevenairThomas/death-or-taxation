@@ -11,21 +11,47 @@ var current_option
 var current_option_number = 0
 
 
+# --- TEMPORARY input debug overlay ---
+var _dbg: Label
+var _dbg_count := 0
+var _dbg_last := "-"
+
+func _make_debug():
+	var cl := CanvasLayer.new()
+	cl.layer = 128
+	var lbl := Label.new()
+	lbl.add_theme_color_override("font_color", Color(1, 1, 0))
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	lbl.add_theme_constant_override("outline_size", 4)
+	lbl.position = Vector2(3, 3)
+	cl.add_child(lbl)
+	add_child(cl)
+	_dbg = lbl
+
+func _update_debug():
+	if _dbg:
+		_dbg.text = "state=%d  keys=%d  last=%s" % [current_state, _dbg_count, _dbg_last]
+
 func _ready():
 	# Start music
 	$"Intro Song".play(0)
-	
+
 	current_state = INTRO
-	
+
 	current_option = options[current_option_number]
-	
+
 	# Anim signal
 	$"Anim".connect("animation_finished", Callable(self, "allow_selection"))
-	
+
 	# No 3 houses
 	$"Intro Background".texture = no_text_background
+	_make_debug()
 
 func _input(event):
+	# TEMPORARY: count every key event so we can see if input is reaching the intro
+	if event is InputEventKey and event.pressed:
+		_dbg_count += 1
+		_dbg_last = str(event.keycode)
 	match current_state:
 		INTRO:
 			# Any key
@@ -60,7 +86,7 @@ func _input(event):
 				
 
 func _process(_delta):
-	pass
+	_update_debug()
 
 func allow_selection(_anim_name):
 	current_state = GAME_SELECT

@@ -174,3 +174,9 @@ Diagnosed by capturing an in-engine screenshot (`get_viewport().get_texture().ge
 
 ### M14 — GDScript warning cleanup (batch 4)
 `special_ability` unused params (`Iron Sword`, `Rapier`, `Silver Lance`, `Steel Sword`) underscore-prefixed.
+
+### M15 — Reverted the align/valign "fix" (it regressed the UI)
+M13 converted `align`/`valign` to `horizontal_alignment`/`vertical_alignment` preserving the authored (mostly centre) values. That was wrong for this project: 153 Labels across 31 scenes use oversized rects scaled to ~0.2, and these layouts were authored/tested against Godot 4 *ignoring* the old `align` (i.e. rendering left/top). Centering pushed text out of place — most visibly the title menu vanished (confirmed by comparing to the user's working commit `8fc0340`). Reset all `horizontal_alignment`/`vertical_alignment` to `0` (left/top) across every scene: valid Godot 4, no load warnings, and byte-equivalent to how `8fc0340` rendered. Proper per-screen alignment is a later UI-tuning task, out of scope for "make it run". The title `Fog` stays hidden (M13).
+
+### M16 — Title menu readability (dark backing panel)
+Diagnosed with an in-engine screenshot: the option Labels render fine, but they are white text positioned over the brightest part of the title art (the lit statue), so they wash out. At `8fc0340` the (disliked) `Fog` overlay darkened the background enough to read them; hiding the fog (M13) removed that. Added a semi-opaque black `ColorRect` ("Menu BG", alpha 0.9) behind the option Labels inside the `Options` control — it restores local contrast without the fog's noise. Cursor/text sizes are unchanged (`hand.png` is 15×12; option Labels are scale 0.2 as authored). If preferred, alternatives are: repositioning the menu into the dark right/lower area, or re-enabling the fog.

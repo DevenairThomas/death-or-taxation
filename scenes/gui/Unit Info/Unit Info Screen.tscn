@@ -69,8 +69,8 @@ offset_bottom = 141.613
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Name"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Class" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 10.8446
@@ -80,7 +80,7 @@ offset_bottom = 155.968
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Class"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Level" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 10.7175
@@ -90,7 +90,7 @@ offset_bottom = 172.906
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Level"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Level Number" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 49.8017
@@ -100,8 +100,8 @@ offset_bottom = 172.53
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "99"
-horizontal_alignment = 2
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="E" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 70.8417
@@ -111,7 +111,7 @@ offset_bottom = 172.831
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Exp"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Exp num" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 99.9536
@@ -121,7 +121,7 @@ offset_bottom = 172.769
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="HP Logo" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 10.7811
@@ -131,7 +131,7 @@ offset_bottom = 193.309
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "HP"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Current HP" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 37.0
@@ -141,7 +141,7 @@ offset_bottom = 193.0
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "99"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Slash" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 57.5545
@@ -151,7 +151,7 @@ offset_bottom = 192.832
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "/"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Max HP" type="Label" parent="Unit Info Container/Portrait and Name Container"]
 offset_left = 67.0775
@@ -161,7 +161,7 @@ offset_bottom = 193.376
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "99"
-vertical_alignment = 1
+vertical_alignment = 0
 
 [node name="Inventory" type="Control" parent="Unit Info Container"]
 offset_left = 119.747
@@ -177,8 +177,8 @@ offset_bottom = 55.0
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Inventory"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Item Slot Container" type="Control" parent="Unit Info Container/Inventory"]
 offset_left = -0.737915
@@ -227,8 +227,8 @@ offset_bottom = 149.755
 scale = Vector2( 0.25, 0.25 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Statistics"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Str Mag" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 10.9521
@@ -238,8 +238,8 @@ offset_bottom = 166.916
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Str"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Def Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 101.376
@@ -249,8 +249,8 @@ offset_bottom = 166.583
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Res Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 100.763
@@ -260,8 +260,8 @@ offset_bottom = 179.875
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Move Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 101.156
@@ -271,8 +271,8 @@ offset_bottom = 193.1
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Con Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 101.016
@@ -282,8 +282,8 @@ offset_bottom = 204.729
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Str Mag Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 46.3388
@@ -293,8 +293,8 @@ offset_bottom = 167.333
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Skill Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 46.0989
@@ -304,8 +304,8 @@ offset_bottom = 180.29
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Spd Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 46.2516
@@ -315,8 +315,8 @@ offset_bottom = 192.806
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Luck Num" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 46.4156
@@ -326,8 +326,8 @@ offset_bottom = 204.783
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "00"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Def" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 70.0942
@@ -337,8 +337,8 @@ offset_bottom = 166.916
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Def"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Res" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 70.0942
@@ -348,8 +348,8 @@ offset_bottom = 180.296
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Res"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Move" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 67.2345
@@ -359,8 +359,8 @@ offset_bottom = 192.745
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Mov"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Cons" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 66.8909
@@ -370,8 +370,8 @@ offset_bottom = 204.903
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Con"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Skill" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 10.6756
@@ -381,8 +381,8 @@ offset_bottom = 180.28
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Skill"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Spd" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 10.8748
@@ -392,8 +392,8 @@ offset_bottom = 193.451
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Spd"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Luck" type="Label" parent="Unit Info Container/Inventory/Stats"]
 offset_left = 10.8749
@@ -403,8 +403,8 @@ offset_bottom = 204.562
 scale = Vector2( 0.2, 0.2 )
 theme_override_fonts/font = SubResource( 2 )
 text = "Luck"
-horizontal_alignment = 1
-vertical_alignment = 1
+horizontal_alignment = 0
+vertical_alignment = 0
 
 [node name="Anim" type="AnimationPlayer" parent="Unit Info Container"]
 anims/Fade = SubResource( 3 )
