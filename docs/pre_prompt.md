@@ -77,13 +77,12 @@ No production, no economy, no strategic-layer AI. Do not build anything smarter 
 
 Explicitly cut — implementing any of these is a spec violation
 
-
-❌ Hit/crit/dodge/RNG of any kind in combat
-❌ In-battle unit production, capture/income economy, economic AI
-❌ Per-kill EXP (souls arrive on mission completion only)
-❌ Budget carry-over between missions
-❌ Mid-mission soul spending
-❌ Death-variant cutscene writing
+Hit/crit/dodge/RNG of any kind in combat
+In-battle unit production, capture/income economy, economic AI
+Per-kill EXP (souls arrive on mission completion only)
+Budget carry-over between missions
+Mid-mission soul spending
+Death-variant cutscene writing
 </locked_design_spec>
 
 

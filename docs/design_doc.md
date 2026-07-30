@@ -1,5 +1,5 @@
 PROJECT: DEATH OR TAXATION
-Backlog Design Document — v1.3
+Backlog Design Document — v1.4
 
 1. High Concept
 
@@ -29,6 +29,44 @@ SquadsSingle UnitsGenerals (Named)FantasyMassed troopsMonsters/war-engines (e.g.
 
 Combat resolution: When two units interact, a skirmish resolves — both sides deal damage (attacker first, defender counters with remaining strength). Deterministic: guaranteed hits, no hit/crit RNG. Damage = lookup table (attacker type × defender type) × terrain modifier × (remaining HP% for squads), rounded down, minimum 1 damage on any legal attack (no zero-damage hits).
 
+The damage pipeline: (single source of truth; the forecast shown to the player and the damage applied are the same computation):
+
+```
+base  = damage_table[attacker_type][defender_type]     # role matchup
+base *= armament_triangle[attacker_arm][defender_arm]  # §3.1
+base *= attacker_power_mult                            # General level package; 1.0 otherwise
+base *= ability modifiers                              # multiplicative, in data-declared order
+hp_f  = attacker_hp / attacker_max_hp                  # squads only; 1.0 for singles and Generals
+terr  = 1.0 - terrain_defense[defender_tile]
+damage = floor(base * armament * power * abilities * hp_f * terr)
+damage = max(damage, 1)                                # minimum 1 on any legal attack
+```
+Rounded down; minimum 1 damage on any legal attack — zero-damage hits are impossible.
+
+3.1 The Armament Triangle
+```
+        RIFLE ──strong vs──▶ MELEE
+          ▲                    │
+          │                strong vs
+      strong vs                │
+          │                    ▼
+        MUSKET ◀───────────────┘
+```
+
+Rifle — rifles and handguns. Skirmishers, marksmen, riflemen. Strong against melee.
+Melee — swords, axes, sabers, bayonet charges, and melee monsters. Strong against musket.
+Musket — muskets and cannon. Massed line infantry and artillery. Strong against rifle.
+
+Multipliers (data, in `armament_triangle.json`; starting values, tunable):
+
+| Attacker vs. defender | Multiplier |
+| --- | --- |
+| Advantage | ×1.50 |
+| Neutral | ×1.00 |
+| Disadvantage | ×0.50 |
+
+Player-facing readability. The forecast popup must show the matchup state — advantage, neutral, disadvantage — alongside the exact damage numbers. Because combat is deterministic, the forecast is a promise, and the triangle is only a meaningful decision if the player can see it before committing.
+
 4. The Two Currencies
 
 Battle Budget (per-mission, does not carry over): Each mission grants a fresh budget. Spent on the pre-battle deployment screen to buy squads, single units, and to field Generals (Generals cost budget too — stronger Generals cost more). Composition is the pre-battle puzzle: heroes + chaff vs. balanced army.
@@ -49,10 +87,10 @@ Levels: 5 per character, hard cap. Significant cost, significant gain.
 Levels 1, 2, 4: chunky stat packages (+15–20% effective power each, visibly changes skirmish math)
 Levels 3, 5: unlock an ability (active skill, aura affecting adjacent squads, movement upgrade) and trigger a character cutscene
 
-
-
 Ability budget: 2 abilities × ~7 Generals = ~14 abilities total.
 Level-gated scenes: One VN scene at level 3 and level 5 per General (~14 scenes, 300–500 words each). The scene is the story of the ability. FE-support-style favor content, fused to the economy.
+Stretch goal (not scope): one secret scene or bonus mission for maxing the full roster.
+
 Stretch goal (not scope): one secret scene or bonus mission for maxing the full roster.
 
 
@@ -88,28 +126,47 @@ Cutscenes: VN-style text with character portraits (2–3 expressions each), no V
 
 8. Campaign — Major Battles of the Revolutionary War
 
-Mission list drawn from the war's major engagements (~14 missions, slightly above the original 12 — accepted; the historical sequence is worth it). Roughly 20–25 min/mission ≈ 5+ hours.
+Mission list drawn from the war's major engagements (~14 missions). Roughly 20–25 min/mission ≈ 5+ hours.
+The thirteen colonies are the canvas those chapters sit on, not the selector itself.
 
+8.1 The campaign map
 
-Lexington & Concord (tutorial — squads only)
-Bunker Hill (introduce singles; defend objective)
-Siege of Boston (first Generals unlock; siege objective)
-Long Island (first hard loss-lesson map; retreat/survive objective)
-Trenton (low-budget raid mission; small elite force)
-Princeton (momentum follow-up; turn-limit objective)
-Brandywine (wide map, multi-front defense)
-Germantown (fog of war introduction)
-Saratoga (mid-campaign climax; 3rd General slot unlocks)
-Monmouth (enemy Generals begin mirroring player abilities)
-Siege of Charleston (naval/coastal mission)
-Camden (designed setback — brutal composition puzzle)
-Cowpens / Guilford Courthouse (combined; attrition mastery test)
-Yorktown (finale — everything test, combined siege + field battle)
+A single illustrated map of the eastern seaboard with the thirteen colonies drawn and labeled as visible geography. This is the between-mission navigation screen, in the Fire Emblem world-map idiom.
 
+Battle nodes sit at their historical locations on that map — one node per chapter, connected along the campaign route so the war's progress reads as a line moving down the coast.
+Colonies are context, not buttons. They give the player a sense of place, of how far the war has spread, and of which region a mission is fought over. They are not individually selectable and they are not chapters.
+-Node states are visible:** cleared, current, and locked-but-visible future chapters, so the player can see the shape of the war ahead. Selecting a node opens its briefing (objective, budget, known enemy composition), then deployment, then battle.
+Cleared story nodes become replayable as farming skirmishes at reduced soul yield.
+Optional flavor, cheap to build: each colony carries a liberation state that tints as its battles are cleared, turning the map into a progress readout. Purely visual — no mechanical effect.
+
+8.2 Chapter list
+
+Drawn from the war's major engagements — ~14 missions
+
+| # | Chapter | Colony / Region | Role |
+| --- | --- | --- | --- |
+| 1 | Lexington & Concord | Massachusetts | Tutorial — squads only |
+| 2 | Bunker Hill | Massachusetts | Introduce singles; defend objective |
+| 3 | Siege of Boston | Massachusetts | First Generals unlock; siege objective |
+| 4 | Long Island | New York | First hard loss-lesson map; retreat/survive |
+| 5 | Trenton | New Jersey | Low-budget raid; small elite force |
+| 6 | Princeton | New Jersey | Momentum follow-up; turn-limit objective |
+| 7 | Brandywine | Pennsylvania | Wide map, multi-front defense |
+| 8 | Germantown | Pennsylvania | Fog of war introduction |
+| 9 | Saratoga | New York | Mid-campaign climax; 3rd General slot unlocks |
+| 10 | Monmouth | New Jersey | Enemy Generals begin mirroring player abilities |
+| 11 | Siege of Charleston | South Carolina | Naval / coastal mission |
+| 12 | Camden | South Carolina | Designed setback — brutal composition puzzle |
+| 13 | Cowpens / Guilford Courthouse | South Carolina / North Carolina | Combined; attrition mastery test |
+| 14 | Yorktown | Virginia | Finale — combined siege and field battle |
 
 Objectives vary FE-style: seize, defend, escape, survive-X-turns, rout. No in-battle economy or capture/income loop.
 
 Challenge content (all asset reuse): the farming skirmish battles above, plus optional score-attack (turn-count) medals on story maps.
+
+8.3 Data shape
+
+Chapters are data, not code. Each chapter node declares: `id`, name key, colony, position on the campaign map, prerequisite chapter ids, battle map file, battle budget, intro and debrief scene ids, base soul award, secondary objectives with their bonuses, and anything it unlocks (a General slot, a roster addition). Adding or reordering a chapter is a data edit.
 
 9. Systems Explicitly Cut
 
@@ -121,6 +178,8 @@ Budget carry-over between missions
 Death-variant cutscene writing
 Voice acting
 
+No per-unit inventory, no weapons as items, no durability or weapon uses, no equipping, no consumables, no convoy, no shops, and **no trading between units**. Armament is a fixed property of a unit type in data, not a carried object. The two currencies (§4) are the entire economy. This is listed explicitly because the Fire Emblem reference project implements all of it, and none of it carries over.
+Weapon-level stats — might, weight, hit, crit, avoid.
 
 10. Engine & Scope
 
@@ -131,6 +190,8 @@ Scope estimate (solo, part-time): ~6–9 months
 ComponentEstimateCore tactics engine (grid, movement, skirmish resolution, turns)2–3 monthsEnemy AI (FE-tier: dormant-until-approached + target scoring + squad-degradation awareness)3–5 weeksDeployment screen, soul/level UI, fog of war3–5 weeksCampaign content: 14 maps designed & tuned, ~40 mission scenes + 14 character scenes, damage table2–3 monthsMenus, save/load, farming mode, No-Revive mode, polish, playtesting1–2 months
 
 Riskiest remaining work: (1) the skirmish damage table across three tiers, (2) pricing deployment costs and the soul economy, (3) mission design carrying the whole difficulty curve. All design-side, all spreadsheet-shaped, all prototypable with gray boxes before any art exists.
+
+Architecture and coding standards are specified separately and bindingly in `conventions.md`. The short version: pure `/sim` logic with no nodes and no RNG, a view layer that holds no rules, all content in `/data`, and one function backing both the damage forecast and the resolved skirmish.
 
 11. Economy Starting Numbers (tune later, verify on one spreadsheet)
 
@@ -145,16 +206,23 @@ Farming yield: 30–50% of story missions
 
 12. Open Decisions for Pre-Production
 
-Resolved in v1.1: player side (Continentals), nemesis (the isekai'd mage), enemy faction structure, and the Arnold mid-boss recommendation — see §7.
+Resolved in v1.1: player side (Continentals), nemesis (the isekai'd mage), enemy faction structure, the Arnold mid-boss recommendation — see §7.
 
+Resolved in v1.4:
 
-Final General roster (which 7–8 figures) and their 14 abilities
-Exact squad/single unit type list (target ~8–10 types total across tiers)
-Deployment costs per unit/General
-"HD 2D" definition: high-res 2D sprites (recommended for a flat tactics grid) vs. Octopath-style 2.5D depth (≈3× art cost)
-Character design direction (the anime girl conversation — separate session)
-The mage's identity, magic school, and personality — the rival CO deserves as much design as any player General
-Confirm or reject the Arnold-as-corrupted-lieutenant arc
+- Matchup system — the armament triangle, rifle → melee → musket → rifle, with `arcane` as a neutral fourth class (§3.1)
+- "HD 2D" definition — high-resolution flat 2D sprites, not Octopath-style 2.5D (§14)
+- Chapter select structure — battles are chapters, the colonies are the map (§8)
+- Item/inventory/trading economy — cut (§9)
+
+Still open:
+
+1. Final General roster (which 7–8 figures), their 14 abilities, and each one's armament class.
+2. Exact squad/single unit type list — target ~8–10 types total across tiers — each with an armament class assigned.
+3. Deployment costs per unit and per General.
+4. Character design direction (the anime girl conversation — separate session).
+5. The mage's identity, magic school, and personality. The rival CO deserves as much design as any player General.
+6. Confirm or reject the Arnold-as-corrupted-lieutenant arc.
 
 
 13. Budget & Production Analysis (Honest Version)
@@ -189,6 +257,30 @@ One portrait artist for the entire cast. Mixed styles read as an asset flip even
 Gray-box before commissioning. Prove the skirmish loop is fun with rectangles first — art is the last money spent, because post-art design changes are the most expensive kind.
 Money goes where players look: portraits first, music second, everything else packs until revenue argues otherwise.
 
+14. Presentation Specification
+
+Locked in v1.4. These numbers exist because map design, UI layout, camera behavior, and every art commission depend on them, and changing them later invalidates finished work.
+
+Direction: HD 2D — high-resolution flat 2D sprites, drawn for a flat tactics grid. Explicitly not 2.5D.** Octopath-style layered depth was priced at roughly 3× the art cost for a genre that reads top-down anyway, and it complicates every camera and overlay decision on a grid. Rejected. This is not a pixel-art game either: sprites are high-resolution and filtered, not snapped.
+
+| Parameter | Value |
+| --- | --- |
+| Base viewport | 1920 × 1080 |
+| Stretch mode | `canvas_items` |
+| Stretch aspect | `expand` |
+| Logical tile size | **96 × 96 px** |
+| Terrain art authoring size | 96 × 96 (or 192 × 192 for a future 4K/zoom pass) |
+| Unit sprite authoring size | 192 × 192 — 2× tile, so units may overhang their tile for readability |
+| Portrait authoring size | ~1024 × 1024, displayed up to ~700 px tall in VN scenes |
+| Texture filter | Linear, mipmaps on |
+| Frame rate target | 60 fps |
+
+Camera. Fits maps up to 16 tiles wide without scrolling; pans for anything larger; centers on the acting unit during enemy phase.
+
+Fonts. One UI font covering Latin + Latin Extended at minimum. The final locale list (§12, item 12) determines whether Cyrillic and CJK stacks are needed; CJK is a separate font with separate metrics and is decided deliberately or not at all.
+
+Gray-box phase. Until the skirmish loop is proven fun, all of the above is honored *dimensionally* with ColorRects, polygons, and text labels: units are tinted rectangles with a type initial and HP number, movement range is a blue tile overlay, attack range is red, portraits are colored rectangles. Art drops into the same dimensions later with no relayout. No art money is spent before the loop is fun.
 
 
-End of document (v1.2). Next session suggested focus: the General roster + abilities (open decision #1), or the character design conversation — the narrative frame is now fully resolved and content design can begin.
+
+End of document (v1.4). Next session suggested focus: the General roster + abilities (open decision #1), or the character design conversation — the narrative frame is now fully resolved and content design can begin.
