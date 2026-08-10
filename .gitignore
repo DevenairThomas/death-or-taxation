@@ -8,6 +8,11 @@ export_presets.cfg
 
 # Other crap
 claude.md
+.agents
+.claude
+.scratch
+file_synopsis/
+
 
 # Mono-specific ignores
 .mono/

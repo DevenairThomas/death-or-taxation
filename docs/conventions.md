@@ -2,7 +2,7 @@
 
 **Version 1.0 · Locked**
 
-This document is the mechanical rulebook for the codebase. `design_doc.md` says *what the game is*; this says *how the repo is written*. Where the two disagree, `design_doc.md` wins on design and this document wins on structure.
+This document is the mechanical rulebook for the codebase. `design_doc.md` says *what the game is*; this says *how the repo is written*. Where the two disagree, `design_doc.md` wins on design and this document wins on structure. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries; where they disagree with `design_doc.md` on a design rule, `design_doc.md` wins (ruled 2026-08-02, grilling issue 01).
 
 The purpose of freezing these rules now is that every one of them is expensive to retrofit. A naming rule applied on day one costs nothing; applied in month six it is a repo-wide rename. Treat every rule here as non-negotiable unless it is amended here first.
 
@@ -114,7 +114,7 @@ res://
 │  ├─ units/                 sim unit state, tiers, armament, abilities
 │  ├─ ai/                    dormancy, target scoring, decision output
 │  ├─ mission/              objectives, win/lose evaluation, turn order
-│  ├─ campaign/              souls, general roster, chapter unlocks, budget
+│  ├─ campaign/              souls, general roster, chapter unlocks, deployment slot caps
 │  └─ battle_sim.gd          the single signal surface + command surface
 │
 ├─ data/                     JSON only — no code, no logic
@@ -125,7 +125,7 @@ res://
 │  ├─ maps/                  one file per battle map
 │  ├─ chapters/              campaign graph + per-chapter definitions
 │  ├─ scenes/                VN cutscene timelines
-│  └─ economy.json           budgets, level costs, revival rate, soul awards
+│  └─ economy.json           level costs, revival rate, soul awards, slot-bonus tuning
 │
 ├─ scenes/                   the view — renders sim, forwards input
 │  ├─ battle/                battle_view.tscn + camera, cursor, overlays, unit views
@@ -190,14 +190,14 @@ Every user-visible string goes through `tr()` from the first line of UI written.
 - **Never concatenate translated strings.** Use `tr("ui.souls_count").format({"count": n})` with named placeholders. Word order differs between languages.
 - **Never position UI with pixel offsets.** Containers and anchors only. German runs ~40% longer than English and will break any hand-placed layout. The reference project's `+= 18` cursor arithmetic is the exact anti-pattern.
 - Every `Label` and `Button` must survive a string three times its English length without clipping the layout. Test this with a pseudo-locale before shipping any screen.
-- Font choice must cover the target locale set. Latin + Latin Extended + Cyrillic is one font stack; CJK is a separate decision with separate metrics, made deliberately or not at all.
+- Font choice must cover the target locale set — ruled English-only (2026-08-06, grilling issue 15; design_doc §14): Latin + Latin Extended suffices. CJK remains a separate decision with separate metrics, made deliberately or not at all.
 
 ---
 
 ## 7. Saves and user files
 
 - **All writes go to `user://`. Never `res://`.** `res://` is read-only in an exported build; a save system that writes there works in the editor and silently fails for every player. The reference project has this bug.
-- Two files, separate concerns: campaign meta save, and settings. A mid-mission suspend, if built, is a third.
+- Two files, separate concerns: campaign meta save, and settings. The mid-mission suspend is a third (ruled built — 2026-08-03, grilling issue 05: a single slot, written on mid-mission quit, deleted on resume; no save-scumming).
 - Every save file's first key is `schema_version` (integer). A migration function exists from version 1 onward, even when it is a no-op, because writing it later means guessing at old formats.
 - Saves are serialized from `/sim` data structures directly. Never by walking the scene tree, never by asking nodes to serialize themselves.
 - A corrupt or unreadable save produces a clear message and a safe state, never a crash.

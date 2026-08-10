@@ -29,16 +29,22 @@ Plain headless runner (`tests/run_tests.gd`) executed with `godot --headless --s
 ## Combat math
 
 ### D7 — Damage formula (single source of truth)
+Canonical statement: `design_doc.md` §3 (per ruling G1 below). Mirror:
 ```
 base  = damage_table[attacker.damage_type][defender.damage_type]
+base *= armament_triangle[attacker.armament][defender.armament]  # design_doc §3.1; three classes, no arcane
 base *= attacker.power_mult            # general level package; 1.0 for squads/singles
 base *= ability modifiers              # e.g. command_aura x1.20, multiplicative, pre-floor
 hp_f  = attacker.hp / attacker.max_hp  if tier == squad else 1.0
 terr  = 1.0 - terrain[defender.tile].defense
-dmg   = floor(base * hp_f * terr)
+defn  = 1.0 - defender.defense         # per-unit stat, 0.0 neutral (G16)
+dmg   = floor(base * hp_f * terr * defn)
 dmg   = max(dmg, MIN_DAMAGE)           # MIN_DAMAGE = 1
 ```
-Verified vs. the three locked worked examples: `6x0.7x0.8=3.36 -> 3`; `2x0.1x0.6=0.12 -> 0 -> 1`; `8x1.0x1.0=8`.
+Verified vs. the five canonical worked examples (design_doc §3.2). The original three are armament-neutral (x1.0): `6x0.7x0.8=3.36 -> 3`; `2x0.1x0.6=0.12 -> 0 -> 1`; `8x1.0x1.0=8`. Triangle examples: advantage `6x1.5=9`; disadvantage `6x0.5x0.7x0.8=1.68 -> 1`.
+
+Update 2026-08-02 (ruling G2): a per-unit `defense` stat was ruled into existence (issue 02, Q2=B); its pipeline term was pending grilling issue 16.
+Update 2026-08-10 (ruling G16): the defence term landed — multiplicative `(1 − defender.defense)`, stacking independently with terrain, uncapped. Canonical examples now number seven (design_doc §3.2), examples 6–7 exercising defence.
 
 ### D8 — Squad degradation uses current/max HP
 HP-degradation factor is `current_hp / max_hp`, exactly as the worked examples imply. Only `tier == squad` degrades; singles and generals use `1.0`.
@@ -58,12 +64,15 @@ Modeled generically as `counter_ranges` on the unit def. Cannon Crew = `[2,3]`; 
 
 ### D12 — `power_mult` is the level stat package
 Levels 1/2/4 grant a `power_mult` (and small `hp_bonus`) that multiplies the table value pre-floor — the spec's "+15–20% effective power." Levels 3/5 grant an ability instead of a stat bump, and set a character-scene flag.
+Update 2026-08-10 (ruling G16, Q4=B): level packages may additionally grant a `defense` bump (design_doc §5).
 
 ### D13 — Generals do not degrade
 Generals use `tier:"general"` => no HP-degradation multiplier ("static per level, grows via EXP"). ⚠ TODO — confirm generals need any mechanical presence distinct from singles beyond damage type + `power_mult` + abilities; currently identical to a single otherwise.
+Update 2026-08-02 (ruling G2): Generals are no longer stat-identical to singles — each General sets a per-General base HP and stats in its own data file (issue 02, Q1b=C).
 
 ### D14 — General damage types share archetype rows
 **RECOMMENDED, NEEDS CONFIRMATION.** Generals share archetype rows/columns in the damage table (Washington→`heavy_melee`, Franklin→`arcane_ranged`, Lafayette→`cavalry`) rather than each having a unique row. Yields a ~7x7 matrix instead of 10x10; `power_mult` does per-general individuation; adding General #4 stays data-only. ⚠ TODO — decision pending; if rejected, each general needs its own row/column and the matrix grows.
+Note (G8, 2026-08-03): enemy Generals are on the player scale (level + `power_mult`), so they also need damage-table rows — whichever way this TODO resolves, it now covers both sides' Generals.
 
 ---
 
@@ -71,9 +80,12 @@ Generals use `tier:"general"` => no HP-degradation multiplier ("static per level
 
 ### D15 — One action per unit per turn
 Each unit may move+attack, move only, or attack only — one activation per turn (FE standard). Spec is silent.
+Note (G7, 2026-08-03): Ride Through's move-again-after-attack is a whitelisted ability exemption to this rule (design_doc §5).
+Note (G15, 2026-08-06): confirmed by owner and canonicalized as design_doc §3.7; wait is a distinct action.
 
 ### D16 — Phase-based turn order
 All player units act, then all enemy units (AW/FE phase model), not per-unit initiative. Spec is silent.
+Note (G15, 2026-08-06): confirmed by owner and canonicalized as design_doc §3.7.
 
 ---
 
@@ -84,6 +96,7 @@ Spec says "River (impassable except bridges)" but lists no bridge tile. Added a 
 
 ### D18 — `infantry_only` via `move_class`
 Mountain is `infantry_only`. Units carry a `move_class` (`infantry|mounted|siege|construct`); only `infantry` may enter `infantry_only` terrain. ⚠ TODO — confirm which prototype units count as "infantry-type" for mountain access (Cavalry, Cannon, Death Knight, constructs presumably excluded).
+Update 2026-08-03 (ruling G3): **superseded** — there is no `infantry_only` terrain flag. Each terrain type's data carries a per-`move_class` movement restriction (design_doc §3.4). Mountain's prototype data restricts entry to `infantry`. The ⚠ above becomes data-authoring: assign each unit's `move_class` and each terrain's allowed classes.
 
 ---
 
@@ -113,8 +126,165 @@ View→Sim is method calls returning a validity result (never asserts on bad inp
 - ⚠ **D14** — confirm archetype-shared vs. per-general damage rows (recommended: shared).
 - ⚠ **D13** — confirm generals need any presence distinct from singles beyond damage type.
 - ⚠ **D18** — confirm mountain-access unit list.
-- ⚠ Ability trigger taxonomy (`passive_aura | turn_start | on_attack | active_once`) must cover all 6 prototype abilities; verify each maps cleanly before coding the ability system (Milestone 5/6).
+- ~~⚠ Ability trigger taxonomy~~ — **resolved** (ruling G7, 2026-08-03): the four-trigger vocabulary is locked and all six abilities map; Lightning Rod was ruled once-per-mission to fit `active_once`. Canonical: design_doc §5 "The ability framework".
 - ⚠ Map JSON `legend`/`tiles` ASCII-grid format is provisional; validate it round-trips through `DataLoader` on the first real map (Milestone 1).
+- ⚠ AI tie-break chain (G11 Q6): a deterministic, documented priority chain for equal-scoring AI choices must be logged here when implemented, and asserted by the exact-choice AI test (conventions §8).
+
+---
+
+## Owner rulings (grilling issues)
+
+### G1 — Canonical damage pipeline (grilling issue 01)
+Ruled by owner, 2026-08-02. Issue: `.scratch/design-doc-gap-sweep/issues/01-canonical-damage-pipeline.md`.
+- **Q1 = A:** `design_doc.md` is authoritative on design rules. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries — where they disagree with `design_doc.md` on a design rule, `design_doc.md` wins. (`conventions.md` still wins on repo structure, per its own preamble.)
+- **Q2 = A:** the armament triangle is in the damage pipeline. D7 amended to match `design_doc.md` §3.
+- **Q3 = B:** there is no `arcane` armament class. Every unit type has exactly one of rifle/melee/musket; "arcane" survives only as a damage-table archetype name (see D14 `arcane_ranged`).
+- **Q4 = B:** the three original worked examples are canonically armament-neutral (×1.00) and hold unchanged; two triangle examples (advantage ×1.5, disadvantage ×0.5) added as canonical in `design_doc.md` §3.2.
+
+### G2 — The unit stat block (grilling issue 02)
+Ruled by owner, 2026-08-02. Issue: `.scratch/design-doc-gap-sweep/issues/02-unit-stat-block.md`. Canonical statement: `design_doc.md` §3.3.
+- **Q1a = B:** max HP is a per-unit data field, not a tier constant. Owner's rationale: "We will need to give certain units more hp depending on class and level. This makes units more unique." Prototype values (squads 10, singles 25) are starting data.
+- **Q1b = C:** Generals set per-General base HP and stats in their own data files. Owner's rationale: "Units will have per unit hp and stats."
+- **Q2 = B:** a per-unit `defense` stat exists. Owner's rationale: "Units will have a defense stat." This knowingly reopens the pipeline shape ruled in G1; the term's mathematical form, terrain composition, and revised worked examples are spawned as grilling issue 16 — the G1 pipeline stays canonical until 16 is ruled.
+- **Q3 = C:** per-unit matchup bonuses cut — Cavalry Squad's "bonus vs. Riflemen" removed from the roster.
+- **Q4 = A:** `attack_ranges` and `counter_ranges` are explicit fields on every unit (D9/D11 semantics kept).
+- **Q5 = A:** `move` (points vs. terrain costs) and `move_class` (D18) are standard fields on every unit.
+
+### G3 — Movement and occupancy (grilling issue 03)
+Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/03-movement-and-occupancy.md`. Canonical statement: `design_doc.md` §3.4.
+- **Q1 = A:** allies pass-through; enemies block movement.
+- **Q2 = A:** a unit may never end its move on an occupied tile.
+- **Q3 = A:** no zone of control; threat range stays movement + attack range.
+- **Q4 = other (owner's words):** "No infantry only terrain. Terrain will have a value that restricts movement depending on the class of unit." D18 superseded. Data shape (simplest reading, logged per this file's protocol): each terrain type declares which `move_class` values may enter; a per-class *cost* table was not ruled — correct this entry if that was the intent.
+- **Q5 = B:** Road's −0.1 defence was a typo; Road defence is 0. No negative-defence terrain exists.
+- **Q6 = A:** attack range is a pure distance check; units never block line of fire. Owner note (verbatim): "Terrain might effect range however" — terrain-based range effects are reserved as a possible future mechanic, not currently in the sim.
+
+### G4 — Objective semantics (grilling issue 04)
+Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/04-objective-semantics.md`. Canonical statement: `design_doc.md` §8.2 "Objective semantics".
+- **Q6 = A:** exactly one primary objective per chapter. Owner's words: "One primary + several secondaries." §8.3 schema gains the `objective` field (type + parameters).
+- **Q1 = B:** only a General satisfies seize; wins instantly on arrival. Owner's words: "Only a general satisfies the seize."
+- **Q2 = A:** defend wins at end of turn N; an enemy ending its turn in the zone = immediate loss; player occupation of the zone is not required.
+- **Q3 = C:** escape requires all Generals to exit. Owner's words: "All generals must exit." Simplest readings logged per this file's protocol: "all Generals" = all *surviving deployed* Generals; the mission completes when the last of them exits; non-General units left behind count as lost for secondary bonuses (no soul cost) — correct this entry if a different reading was intended.
+- **Q4 = A:** survive-X = the mission is not lost by end of turn X; loss conditions defer to issue 05.
+- **Q5 = A:** rout counts every enemy that appears, reinforcements included (whether reinforcements exist at all: issue 14); enemy Generals included; no flee mechanic.
+- The chapter table's "siege" / "retreat" / "turn-limit" descriptors remain unmapped onto the five types — deferred to issue 14.
+
+### G5 — Defeat, failure, retry, and the save model (grilling issue 05)
+Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/05-defeat-failure-retry.md`. Canonical statement: `design_doc.md` §6 "Defeat, retry, and saves".
+- **Q1 = C:** mission loss = all player units destroyed, objective instant-loss triggers (§8.2), plus optional chapter-declared loss conditions (§8.3 `loss` field).
+- **Q2 = A:** defeat returns to the pre-battle flow to retry; a voluntary restart behaves identically.
+- **Q3 = A:** retry is a full rollback — deaths from a failed attempt are undone; deaths become permanent only on mission completion.
+- **Q4 = B:** one mid-mission suspend slot, written on quit, deleted on resume; no save-scumming. Resolves conventions §7's "if built" hedge to built; supersedes pre_prompt's "single JSON save file".
+- **Q5 = A:** a failed mission awards nothing; souls stay completion-only.
+- **Q6 = other (owner's words):** "Mission can end without a general. As long as their are units on the map. Generals can be brought back after the battle." General deaths never lose a mission; play continues while player units remain. **Derived composition (flag if wrong):** "brought back after the battle" = normal-mode revival — No-Revive permadeath (locked rule) stands; and since failed attempts roll back (Q3), No-Revive's "losing all Generals = game over" is evaluated when a mission *completes* with zero living Generals.
+
+### G6 — The lich on the battlefield (grilling issue 06)
+Ruled by owner, 2026-08-03 (first submission had Q4 contradictory — A and B both given; re-ruled Q4 = A). Issue: `.scratch/design-doc-gap-sweep/issues/06-the-lich-on-the-battlefield.md`. Canonical statement: `design_doc.md` §7 "The lich on the battlefield".
+- **Q1 = C:** the lich is purely narrative — a voice in cutscenes, never a unit, tile, or commander presence. The three unit tiers remain exhaustive (annotation added at §3).
+- **Q2, Q3:** moot — only applicable had Q1 = A (deployable).
+- **Q4 = A:** HQ tiles are purely geographic; no connection to the lich.
+- **Q5 = A:** the lich delivers briefing/banter/debrief scenes regardless of any battlefield presence.
+
+### G7 — The ability framework (grilling issue 08)
+Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/08-ability-framework.md`. Canonical statement: `design_doc.md` §5 "The ability framework".
+- **Q1 = A:** the four-trigger vocabulary is locked (`passive_aura | turn_start | on_attack | active_once`) and the six abilities force-map. Accepted consequence: Lightning Rod is now once-per-mission (`active_once`); Ride Through and Vive la Liberté map to `on_attack`.
+- **Q2 = B:** targeting-shape grammar is open, not closed at three. Implemented now: single / line / radius; future named shapes (cone, cross, mask) may be added as abilities need them. No specific extra shapes were ruled.
+- **Q3 = B, other (owner's words):** "Other conditions may effect charges. Enemies killed, friendly units killed, etc." — `uses_per_mission` baseline plus data-declared charge-affecting conditions. Cooldowns were not mentioned and are not ruled in. Simplest reading logged: charges reset fresh each mission, farming replays included — correct if wrong.
+- **Q4 = A:** closed exemption whitelist: `no_counter`, move-again-after-attack (see D15 note). Never suspendable: no-RNG, minimum-1 damage, forecast=resolution.
+- **Q5 = A:** per-turn flags (e.g. engaged-this-turn) are sim state reset at turn boundaries; the forecast includes every applicable ability modifier.
+- **Q6 = A:** one symmetric framework; ch10's "mirroring" is the enemy-ability content schedule. §3.3 stat block gained the `abilities` field.
+
+### G8 — Enemy Generals (grilling issue 07)
+Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/07-enemy-generals.md`. Canonical statement: `design_doc.md` §7 "Enemy Generals, mechanically".
+- **Q1 = A:** player-scale stats — level 1–5 + D12 packages; level authored per chapter appearance. Extends D14's row question to enemy Generals (note added there).
+- **Q2 — letter/word mismatch, words applied:** owner wrote "B" but described "Keep them as identical for now. Update after MVP." — G7's identical framework confirmed, flagged for post-MVP revisit.
+- **Q3 = A + C (owner's words: "Boss will retreat in certain events."):** recurring characters, no campaign death-tracking; plus chapter-scripted boss-retreat events. This amends G4's flat "there is no flee mechanic" (§8.2 updated). Simplest reading logged: a General removed by a scripted retreat does not count toward rout — correct if wrong.
+- **Q4 = A:** fixed authored escalation curve; never dynamic scaling. §6 "never stat inflation" upheld.
+- **Q5 = B:** one concept — the champion is the chapter's enemy General. Simplest reading logged: chapters without an enemy General have no champion; Trenton's Bound Golem keeps its kill secondary as a named target without the label — correct if wrong.
+- **Q6 = A:** tier rules side-agnostic; enemy Generals never degrade (§3, D13).
+
+### G9 — Deployment rules; battle budget abolished (grilling issue 09)
+Ruled by owner, 2026-08-06 (initial apply gate-failed on Q4/Q6 ambiguity; owner clarified conversationally and pivoted). Issue: `.scratch/design-doc-gap-sweep/issues/09-deployment-rules.md`. Canonical statement: `design_doc.md` §4 "Deployment Slots".
+- **The pivot (owner's words):** "I am moving away from a starting currency in lieu of this instead." The battle-budget currency is **abolished**. Deployment is constrained by per-chapter, per-category slot caps — `general` / `tank` / `infantry` — shown as placed/max (owner's example: "0/1 general, 2/5 tank, 1/7 infantry"). New stat-block field `slot_category` (§3.3). Owner's category mapping: infantry = versatile squads (Line Infantry, Riflemen); tank = Death Knights, mages, cannons, cavalry; general = Generals. Tank spans tiers — it is a data field, not a tier alias.
+- **Q1 = A (rescoped):** the caps are the unit-count constraint; start tiles are placement. Simplest reading logged: a map provides at least as many start tiles as its total slot cap.
+- **Q2 = moot:** no deployment prices exist. §12.3's "deployment costs" open item superseded.
+- **Q3 = A (rescoped):** force-deployed Generals are free and extra — no general slot consumed.
+- **Q4 = B (owner's words):** "keep the ability to not fill up all the slots which will increase exp earned at the end of the level." **Interpretation logged (flag if wrong):** "exp" = the end-of-mission soul award (the doc's own tier table uses "EXP" loosely for soul progression). "No per-kill EXP" and souls-only progression stand; squads/singles do not level. If a separate EXP resource leveling units was intended, that is a new system requiring its own issue.
+- **Q5 = A:** no minimums; deployment warns (does not block) on seize/escape compositions with zero Generals.
+- **Q6 (owner's words):** "Slot limit is battle/chapter driven." General-category schedule: 2 from ch3, 3 from ch9; tank/infantry caps authored per chapter.
+- **Q7 = A:** start tiles authored per map; the player assigns which unit stands where.
+
+### G10 — Economy exactness (grilling issue 10)
+Ruled by owner, 2026-08-06. Issue: `.scratch/design-doc-gap-sweep/issues/10-economy-exactness.md`. Canonical statements: `design_doc.md` §6 (farming payout) and §11 (constants & statuses).
+- **Q1 = A:** farming yield — design latitude 30–50%, starting constant 40% (tunable data).
+- **Q2 = A:** revival — design latitude 15–20× level, starting constant 18×.
+- **Q3 = A:** secondary bonuses are per-chapter data (§8.3); +25/+15/+10 is an example palette; +50 is an authoring guideline, not an engine cap.
+- **Q4 = B:** farming replays pay base award AND secondary bonuses, both scaled by the yield.
+- **Q5:** pre-ruled by G5 — failed missions pay nothing.
+- **Q6 = B:** already-earned secondaries re-pay on every replay (scaled).
+- **Q7 = A:** every economy constant lives only in `data/economy.json`; §11 and CLAUDE.md are annotated as quoting it (conventions R5 / D1 applied).
+- Optional under-fill slot bonus (G9): not ruled — left to data authoring; §11 carries a placeholder line.
+
+### G11 — Enemy AI: spec home, flags, and the coordinated-AI direction (grilling issue 11)
+Ruled by owner, 2026-08-06 (first submission gate-failed on missing Q6 and undefined Q1/Q3 content; owner reaffirmed Q1/Q3 verbatim and added Q6 — treated as their decision). Issue: `.scratch/design-doc-gap-sweep/issues/11-ai-spec-home-and-gaps.md`. Canonical statement: `design_doc.md` §3.5 "Enemy AI".
+- **Q1 = B:** full flag vocabulary canonical — `guard | aggressive | balanced` + competence axis `simple | medium | smart`. Only guard/aggressive have defined behaviors today; the rest are ⚠ deferred to issue 17.
+- **Q2 = B (owner's words):** "Score is created to how important a particular target is to the AI. If a target is alone with a high likelihood of non death after a target is destroyed it gets a higher score. If a target can be destroyed it has a higher score." Importance-based scoring on the real pipeline; weights are named tuning constants; baseline implementation is `expected_damage − 0.5 × expected_counter + kill_bonus` (kill_bonus a named tuning constant, value at AI milestone).
+- **Q3 (owner's words, reaffirmed):** "I prefer the AI to choose a good strategy for all units depending on how the AI perceives the field… come up with a strategy to move all units in accordance with one another and not each unit have there own AI." The coordinated army-AI is the ruled direction; pre_prompt's "do not build anything smarter than this" cap is **superseded**. Specification spawned as grilling issue 17; §3.5's per-unit model is the buildable baseline until then. (The §10 "3–5 weeks" AI estimate predates this scope growth.)
+- **Q4 = B:** map data may declare activation groups that wake together.
+- **Q5 = A:** sleepy defend/survive maps are resolved by mission design; no engine auto-activation.
+- **Q6 = A ("for now"):** deterministic tie-break chain delegated to a future DECISIONS entry; must exist and be asserted by the exact-choice AI test.
+- Optional (AI use of active abilities): not ruled — parked in issue 17 sub-question 6.
+
+### G12 — Fog of war (grilling issue 12)
+Ruled by owner, 2026-08-06. Issue: `.scratch/design-doc-gap-sweep/issues/12-fog-of-war.md`. Canonical statement: `design_doc.md` §3.6 "Fog of War".
+- **Q5 = A:** fog is specified as a real mechanic; per-chapter flag, introduced ch8 (Germantown).
+- **Q1 = B:** per-unit `sight` radius (new §3.3 field) plus terrain vision effects — concealment (occupants visible only from adjacent tiles) and sight modifiers. Mechanisms canonical; per-terrain values are data authoring.
+- **Q2 = A:** map/terrain always known; fog hides units only; enemy markers vanish outside combined vision, no ghosts.
+- **Q3 = B:** the AI is fogged too — each side perceives only its own vision. Feeds issue 17 sub-question 7 (now live).
+- **Q4 = A:** ambush-stop — a move crossing a hidden enemy stops on the last legal tile and reveals it. Simplest reading logged (correct if wrong): the stopped unit's action is spent. Forecast promise unaffected (visible targets only; committed attacks resolve exactly).
+
+### G13 — Naval missions are coastal flavour (grilling issue 13)
+Ruled by owner, 2026-08-06 (submitted under "12" — applied to 13, whose template the rulings match). Issue: `.scratch/design-doc-gap-sweep/issues/13-naval-missions.md`. Canonical statement: `design_doc.md` §3.4 (Sea terrain + naval-flavour note).
+- **Q5 = A:** naval is flavour, not a system — no water movement, no naval `move_class`, no ship units, no transport. Charleston (ch11) is a land battle on a coastal map; `sea` terrain is impassable scenery.
+- **Q1/Q2:** collapsed by Q5 = A — nothing added to the move_class vocabulary or the tier roster.
+- **Q3 = A:** the five objective types suffice; sink/blockade goals map onto rout/defend/named kill-targets. G4's vocabulary unamended.
+- **Q4 = A:** John Paul Jones's kit (if he joins — roster remains §12 item 1) must stay meaningful on land; no General's design may require naval maps.
+
+### G14 — Chapter schema completeness (grilling issue 14)
+Ruled by owner, 2026-08-06. Issue: `.scratch/design-doc-gap-sweep/issues/14-chapter-schema-completeness.md`. Canonical statement: `design_doc.md` §8.3 (fully consolidated field list).
+- **Q1 = A:** reinforcements exist — turn-triggered spawn events (tiles/edges + unit list) in chapter data; spawned units enter under normal dormancy unless marked active; rout counts them (resolves G4's conditional).
+- **Q2 = B:** mid-mission scenes fire on event triggers: turn number, unit-enters-region, named unit's death or retreat.
+- **Q3, Q6:** pre-collapsed by G4/G5/G9/G11 — objective field, loss conditions, slot caps (chapter data), start tiles + activation groups (map data).
+- **Q4 = A:** the campaign is strictly linear; §8.3's "prerequisite chapter ids" corrected to a singular prerequisite.
+- **Q5 = A:** unlocks fire on first story clear only; farming replays pay souls only.
+- **Q7 = A:** descriptor mapping — "siege" = seize, "retreat/survive" = escape, "turn-limit" = survive-X-turns (chapter table annotated).
+- Simplest reading logged (correct if wrong): on chapters with multiple enemy Generals, chapter data marks which one is the champion (G8's designation now has a schema home).
+
+### G15 — Doc housekeeping (grilling issue 15)
+Ruled by owner, 2026-08-06. Issue: `.scratch/design-doc-gap-sweep/issues/15-doc-housekeeping.md`.
+- **Q1 = B:** "EXP" is defined once as the colloquial name for soul progression (design_doc §3 vocabulary note). One progression currency; no per-kill EXP; no separate EXP resource. The tier table's "grows via EXP" and G9's "exp" bonus now share the definition.
+- **Q2 = A:** locale target is English-only; Latin + Latin Extended font stack; the phantom "§12 item 12" reference replaced (design_doc §14, conventions §6 note). `tr()` keys remain mandatory.
+- **Q3 = B:** no hard map dimension bounds; camera pans; the "16 tiles wide without scrolling" claim struck. No minimum was ruled; the prototype's 12×12–16×16 envelope is authoring practice.
+- **Q4 = A:** turn model confirmed and canonicalized as design_doc §3.7 — phase-based order (D16); one activation per unit with wait as a distinct action (D15, matching the existing `command_wait` contract); attack-then-move impossible bar Ride Through's exemption (G7).
+
+### G16 — The defence term (grilling issue 16)
+Ruled by owner, 2026-08-10. Issue: `.scratch/design-doc-gap-sweep/issues/16-defence-term.md`. Canonical statement: `design_doc.md` §3 pipeline block + §3.2 examples 6–7 + §3.3 defense field. Completes the pipeline G1 canonicalized and G2 left open.
+- **Q1 = A:** multiplicative, terrain-symmetric — `defn = 1.0 − defender_defense`, one new pipeline line, single floor preserved.
+- **Q2 = A:** terrain and unit defense stack as independent multipliers, uncapped; min-1 is the only floor.
+- **Q3 = A:** neutral value 0.0 (terrain's convention); per-unit values are data authoring ("weak defense" = below baseline).
+- **Q4 = B:** all three tiers carry defense; General level packages may also grant defense bumps (D12 amended; design_doc §5 wording updated).
+- **Q5 = B:** examples 1–5 annotated defense = 0 and hold unchanged; examples 6–7 added exercising defence alone (6 × 0.75 = 4.5 → 4) and stacked with degradation + terrain (6 × 0.7 × 0.8 × 0.75 = 2.52 → 2). The 0.25 defense values are authored starting numbers — correct if wanted.
+- **Q6 = B:** the forecast popup shows the defender's defense stat alongside matchup state (§3.1 readability paragraph updated).
+
+### G17 — The coordinated army AI (grilling issue 17)
+Ruled by owner, 2026-08-10. Issue: `.scratch/design-doc-gap-sweep/issues/17-coordinated-ai.md`. Canonical statement: `design_doc.md` §3.5 (now complete). Closes the specification G11 opened; the sweep's last issue.
+- **Q1 = C:** both coordination shapes, staged as competence tiers — `simple` = per-unit baseline, `medium` = greedy shared-state sequencing (deterministic unit order, projected board, emergent focus-fire), `smart` = assignment-based planning (focus-fire packages, chokepoint holders, screens). (The tier packaging was the investigator's synthesis, chosen by the owner.)
+- **Q2 = A:** one enemy phase planned at a time, re-planned from the current board; no persisted plan state (suspend-safe by construction).
+- **Q3 = A:** the exact-choice test asserts the full ordered enemy-phase plan for a fixed board + vision state. Depends on the ⚠ tie-break chain open item (G11) and stable iteration order.
+- **Q4 = A:** flags are posture (guard = never moves/attacks in range/excluded from coordinated movement; aggressive = active turn 1; balanced = default), competence tiers select coordination depth.
+- **Q5 = B:** the coordinator may strategically wake dormant groups — a ruled exception to the threat-range-only dormancy contract; mission design remains the primary pressure tool (G11 Q5 stands as "primary", amended from "only").
+- **Q6 = A:** actives valued in planning when they beat the best normal action; once-per-mission charges held until named-constant thresholds (targets ≥ N, or secures a kill).
+- **Q7 = A:** fogged planning is visible-only — hidden player units do not exist to the evaluation; vision state is part of the test fixture.
 
 ---
 
