@@ -110,6 +110,7 @@ Squads (10 HP): Line Infantry (balanced), Riflemen (range 2, weak defense), Cava
 Singles (25 HP): Death Knight (player; melee wall), Bound Golem (enemy; the mage's construct, melee wall), Arcane Sentinel (enemy; range 2 construct).
 Enemy squads mirror player squads as redcoat recolors (same data, different faction tint).
 (Stat-block note, ruled 2026-08-02, grilling issue 02 — canonical: design_doc.md §3.3. Max HP is a per-unit data field; the 10/25 above are prototype values, and Generals set per-General base HP/stats in their data files. Every unit also carries defense (multiplied in as (1 − defense), 0.0 neutral — ruled 2026-08-10, grilling issue 16; "weak defense" above is that stat, below baseline), attack_ranges, counter_ranges, move, and move_class. Cavalry Squad's former "bonus vs. Riflemen" was cut here per that ruling.)
+(move_class assignments, ruled 2026-08-10, grilling issue 22 — canonical: design_doc.md §3.3/§3.4: Line Infantry, Riflemen, Washington, Franklin = infantry; Cavalry Squad, Lafayette = mounted; Cannon Crew, Death Knight, Bound Golem, Arcane Sentinel = siege. The `construct` move_class was removed — "construct" above is flavor only. Terrain costs are per-class; Mountain severely slows non-infantry instead of banning them.)
 
 
 3 test maps (hand-authored in data, ~12×12 to 16×16):

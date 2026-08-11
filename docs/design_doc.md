@@ -1,5 +1,5 @@
 PROJECT: DEATH OR TAXATION
-Backlog Design Document — v1.4
+Backlog Design Document — v1.5
 
 This document is authoritative on design rules (ruled 2026-08-02, grilling issue 01). `conventions.md` is authoritative on repo structure. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries — where they disagree with this document on a design rule, this document wins.
 
@@ -28,6 +28,8 @@ Ship it. Every decision favors the version that a solo dev can finish. Descope t
 Squads degrade. Singles endure. Generals grow.
 
 The three tiers are exhaustive — the lich (the player character) is purely narrative and never appears as a unit (§7; ruled 2026-08-03, grilling issue 06).
+
+Generals' mechanical presence is likewise closed (ruled 2026-08-10, grilling issue 21): a General differs from a single by exactly the ruled set — tier rule (no degradation, either side), unique damage-table row/column (§3.3, issue 20), per-General base stats and defense (§3.3), level packages and abilities (§5), objective roles (seize/escape, §8.2), the mission-loss exemption (§6), and the campaign layer (general slots, revival, cutscene persistence). No further General-specific battlefield mechanic exists; adding one requires a new ruling.
 
 Vocabulary note (ruled 2026-08-06, grilling issue 15): "EXP" is the colloquial name for soul progression — the tier table's "grows via EXP" and §4's "exp" bonus both mean souls. There is exactly one progression currency; no per-kill EXP and no separate EXP resource exists.
 
@@ -95,11 +97,11 @@ Every unit type is defined entirely in data by the following fields (ruled 2026-
 - max_hp — per-unit value. HP is not a tier constant; certain units get more HP by class and level to make units more unique. The prototype's values (squads 10, singles 25) are starting data, not rules. Generals set a per-General base HP (and stats) in their own data files; the level packages' hp_bonus (DECISIONS D12) stacks on that base.
 - defense — per-unit defensive stat, multiplied into the pipeline as (1 − defense); 0.0 = neutral, stacking independently with terrain (§3; ruled 2026-08-10, grilling issue 16). Values are data authoring ("weak defense" = below baseline). All three tiers carry it; General level packages may grant defense bumps (§5, DECISIONS D12).
 - armament — exactly one of rifle / melee / musket (§3.1).
-- type — the unit's row/column id in the damage table (§3).
+- type — the unit's row/column id in the damage table (§3). Every General, player and enemy alike, carries a unique `type` — its own row and column; Generals do not share archetype rows, and the matrix grows with the roster (ruled 2026-08-10, grilling issue 20; DECISIONS G18).
 - attack_ranges — explicit list of attack distances (e.g. [1], [2], [2,3]).
 - counter_ranges — explicit list of distances the unit counterattacks at (DECISIONS D9/D11 semantics; e.g. Cannon Crew [2,3], melee [1]).
 - move — movement points, spent against terrain movement costs.
-- move_class — one of infantry / mounted / siege / construct; each terrain type's data declares which classes may enter (§3.4 — there is no dedicated infantry-only flag; ruled 2026-08-03, grilling issue 03).
+- move_class — one of infantry / mounted / siege (the former `construct` class was removed — ruled 2026-08-10, grilling issue 22; "construct" survives as flavor only); each terrain type's data declares a movement cost per class, with impassable as a legal cost value (§3.4; supersedes issue 03's allow/deny reading).
 - abilities — optional list of ability ids. One shared framework for both sides (§5; ruled 2026-08-03, grilling issue 08): player Generals gain theirs at levels 3/5; any unit, enemy Generals included, may carry abilities in data.
 - sight — vision radius in tiles, used on fog-of-war chapters (§3.6; ruled 2026-08-06, grilling issue 12).
 - slot_category — one of general / tank / infantry; the deployment slot pool this unit occupies (§4 — battle budget and deploy costs were abolished, ruled 2026-08-06, grilling issue 09).
@@ -113,21 +115,21 @@ Ruled 2026-08-03, grilling issue 03. These are the canonical grid rules:
 - Pass-through: a unit may move through tiles occupied by allies. Tiles occupied by enemies block movement.
 - Occupancy: a unit may never end its move on an occupied tile.
 - No zone of control: moving adjacent to an enemy never halts or restricts movement. Threat range is always movement + attack range.
-- Terrain movement restriction: there is no dedicated "infantry-only" terrain flag. Each terrain type's data carries a movement-restriction value keyed by unit move_class (§3.3) that determines which classes may enter. (Simplest data reading, logged in DECISIONS G3: the terrain declares which move_classes may enter.)
+- Terrain movement cost per class: there is no dedicated "infantry-only" terrain flag. Each terrain type's data carries a movement **cost keyed by unit move_class** (§3.3); impassable is a legal per-class cost value, so a ban is a special case of cost. (Ruled 2026-08-10, grilling issue 22 — this corrects G3's logged allow/deny simplest reading exactly as its correct-if-wrong flag anticipated: the per-class cost table was the intent.)
 - Line of fire: attack range is a pure distance check — units never block ranged attacks. Terrain does not currently affect range; terrain-based range effects are reserved as a possible future mechanic (owner note, G3) and are not in the sim.
 
 Terrain types (data, in `terrain.json`; starting values, tunable):
 
-| Terrain | Defense | Move cost | Notes |
+| Terrain | Defense | Move cost (infantry / mounted / siege) | Notes |
 | --- | --- | --- | --- |
-| Plains | 0 | 1 | |
-| Forest | 0.2 | 2 | |
-| Mountain | 0.4 | 3 | prototype data restricts entry to move_class infantry |
-| Road | 0 | 1 | the original −0.1 defence was ruled a typo → 0 (issue 03, Q5); no negative-defence terrain exists |
-| River | — | impassable | crossable only via Bridge (DECISIONS D17) |
-| Bridge | 0 | 1 | added by DECISIONS D17 |
-| Sea | — | impassable | coastal scenery; no unit traverses it (ruled 2026-08-06, grilling issue 13) |
-| HQ/Zone | 0.3 | 1 | |
+| Plains | 0 | 1 / 1 / 1 | |
+| Forest | 0.2 | 2 / 2 / 2 | |
+| Mountain | 0.4 | 3 / 6 / 6 | severe cost for non-infantry replaces the former infantry-only entry ban (ruled 2026-08-10, grilling issue 22); non-infantry costs are protocol-authored starting data (DECISIONS G20) — correct if wanted |
+| Road | 0 | 1 / 1 / 1 | the original −0.1 defence was ruled a typo → 0 (issue 03, Q5); no negative-defence terrain exists |
+| River | — | impassable (all classes) | crossable only via Bridge (DECISIONS D17) |
+| Bridge | 0 | 1 / 1 / 1 | added by DECISIONS D17 |
+| Sea | — | impassable (all classes) | coastal scenery; no unit traverses it (ruled 2026-08-06, grilling issue 13) |
+| HQ/Zone | 0.3 | 1 / 1 / 1 | |
 
 On fog-of-war chapters, terrain additionally carries vision data — concealment and sight modifiers (§3.6; values are data authoring).
 
@@ -139,13 +141,13 @@ Ruled 2026-08-06, grilling issue 11. This is the canonical AI spec; other docume
 
 - Direction (owner's ruling): the AI plays its army as one strategist — it perceives the field and plans coordinated moves for all its units in accordance with one another, not each unit running its own isolated AI. This supersedes pre_prompt's "do not build anything smarter than this" cap. The coordinator is specified below (ruled 2026-08-10, grilling issue 17); the per-unit model is its `simple` tier and ships first.
 - The coordinator (issue 17): coordination depth is staged as the competence tiers — `simple` = the per-unit model below, no shared state; `medium` = greedy shared-state sequencing — units act in a deterministic order, each picking its best action against a projected board where damage already assigned this phase counts, so focus-fire emerges; `smart` = assignment-based planning — explicit focus-fire packages, chokepoint holders (§3.4 terrain), screens for weakened units — plus active-ability valuation. Planning is one enemy phase at a time, re-planned from the current board; no plan state persists (trivially suspend-safe, §6).
-- Active abilities in planning (issue 17): under `smart`, an active is chosen when it beats the unit's best normal action; once-per-mission charges are held until a threshold — targets hit ≥ N, or it secures a kill — with thresholds as named tuning constants.
+- Active abilities in planning (issue 17): under `smart`, an active is chosen when it beats the unit's best normal action — strictly: an exact value tie keeps the normal action and holds the charge (ruled 2026-08-10, grilling issue 23); once-per-mission charges are held until a threshold — targets hit ≥ N, or it secures a kill — with thresholds as named tuning constants.
 - Fog (issue 17): on fog chapters the coordinator plans over visible player units and the known map only (§3.6) — hidden units do not exist to its evaluation. The vision state is part of any test fixture.
 - Dormancy: enemy units start dormant and activate permanently when a player unit enters their threat range (movement + attack range, §3.4). Map data may declare activation groups that wake together. Reinforcement spawns (§8.3) enter under normal dormancy unless their spawn event marks them active. Ruled exception (2026-08-10, grilling issue 17): the coordinator may strategically wake dormant groups as a deterministic planned action.
 - Target scoring is importance-based, computed with the real damage pipeline (§3) including squad degradation: a target scores higher when it can be destroyed, when the attacker is likely to survive the aftermath, and when it is isolated. Component weights are named tuning constants in data. The baseline implementation is score = expected_damage − 0.5 × expected_counter + kill_bonus (kill_bonus: named tuning constant, value set at the AI milestone).
 - Per-unit AI flags (behaviors ruled 2026-08-10, grilling issue 17): posture — guard = never moves, attacks in range, excluded from coordinated movement; aggressive = active from turn 1; balanced = the default — dormant until threat range, coordinated normally once active. Competence — simple | medium | smart select the coordination tier defined above. Chapters tune difficulty by assigning flags in data.
 - Sleepy objectives: on defend/survive maps the player may never approach — this is resolved primarily by mission design (aggressive flags, activation groups, scripted reinforcements), not by an engine auto-activation rule; the coordinator's strategic waking (above) is an additional AI-side lever, not a replacement.
-- Determinism: no RNG anywhere in the AI. Equal-scoring choices break by a documented deterministic tie-break chain — the exact chain is delegated to a DECISIONS entry. The exact-choice test asserts the full plan (ruled 2026-08-10, grilling issue 17): for a fixed board and vision state, the complete ordered move/attack set of the enemy phase (conventions §8, generalized to army level; requires stable iteration order).
+- Determinism: no RNG anywhere in the AI. Equal-scoring choices break by the documented deterministic tie-break chain (ruled 2026-08-10, grilling issue 23; DECISIONS G21): **units act in chapter-data declaration order** (reinforcements append in spawn order); **target ties** break killable-first → higher expected_damage → lower defender current HP → defender board position; **destination-tile ties** break lowest per-class path cost (§3.4) → highest terrain defense → board position. Board position = (row, col), lowest row then lowest column — a total order guaranteed by the occupancy rule (§3.4); every key is computed from sim state. The exact-choice test asserts the full plan (ruled 2026-08-10, grilling issue 17): for a fixed board and vision state, the complete ordered move/attack set of the enemy phase (conventions §8, generalized to army level; stable iteration order is satisfied by the chain above).
 - No production, no economy, no strategic-layer resource AI (§9 cuts stand).
 
 3.6 Fog of War
@@ -250,7 +252,7 @@ Enemy faction: The mage's forces — redcoat squads plus his summoned constructs
 
 Enemy Generals, mechanically (ruled 2026-08-03, grilling issue 07):
 
-- Stats on the player's scale: an enemy General carries a level (1–5) and reuses the level packages (`power_mult`, `hp_bonus` — DECISIONS D12); each chapter appearance authors the level in chapter data.
+- Stats on the player's scale: an enemy General carries a level (1–5) and reuses the level packages (`power_mult`, `hp_bonus` — DECISIONS D12); each chapter appearance authors the level in chapter data. Each enemy General also has its own damage-table row/column (unique `type`, §3.3 — ruled 2026-08-10, grilling issue 20).
 - Abilities: identical to the player framework (§5, ruled G7) — kept identical for now, revisit after MVP (owner note).
 - Persistence: recurring characters declared per chapter in data, with no campaign death-tracking — killing an enemy General wins that battle's fight only; the same General may appear in a later chapter.
 - Boss retreat: chapter data may script retreat events — on a declared trigger, an enemy General withdraws from the field alive. This is the only exception to "no flee mechanic" (§8.2, amended); a General removed by a scripted retreat does not count toward rout.
@@ -380,9 +382,13 @@ Resolved in v1.4:
 - Chapter select structure — battles are chapters, the colonies are the map (§8)
 - Item/inventory/trading economy — cut (§9)
 
+Resolved in v1.5:
+
+- Damage-table structure — every General, player and enemy alike, has a unique row/column (unique `type`, §3.3); archetype sharing rejected (ruled 2026-08-10, grilling issue 20 — decisions-reconciliation)
+
 Still open:
 
-1. Final General roster (which 7–8 figures), their 14 abilities, and each one's armament class.
+1. Final General roster (which 7–8 figures), their 14 abilities, and each one's armament class. (Each roster addition now also requires authoring its own damage-table row and column — G18.)
 2. Exact squad/single unit type list — target ~8–10 types total across tiers — each with an armament class assigned.
 3. ~~Deployment costs per unit and per General~~ — superseded (ruled 2026-08-06, grilling issue 09: battle budget abolished). Author instead: per-chapter slot caps (general/tank/infantry) and each unit type's `slot_category`.
 4. Character design direction (the anime girl conversation — separate session).
@@ -448,4 +454,4 @@ Gray-box phase. Until the skirmish loop is proven fun, all of the above is honor
 
 
 
-End of document (v1.4). Next session suggested focus: the General roster + abilities (open decision #1), or the character design conversation — the narrative frame is now fully resolved and content design can begin.
+End of document (v1.5). Next session suggested focus: the General roster + abilities (open decision #1), or the character design conversation — the narrative frame is now fully resolved and content design can begin.
