@@ -13,6 +13,9 @@ claude.md
 .scratch
 file_synopsis/
 
+# Fire Emblem reference clone — untracked local study material (G22, 2026-08-11)
+fe_reference/
+
 
 # Mono-specific ignores
 .mono/

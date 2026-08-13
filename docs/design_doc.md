@@ -78,6 +78,8 @@ These three classes are exhaustive — there is no fourth armament class (ruled 
 
 Player-facing readability. The forecast popup must show the matchup state — advantage, neutral, disadvantage — alongside the exact damage numbers, and the defender's defense stat (ruled 2026-08-10, grilling issue 16). Because combat is deterministic, the forecast is a promise, and the triangle is only a meaningful decision if the player can see it before committing.
 
+Enemy threat display and inspection (ruled 2026-08-12, reference-mining issue 34 — DECISIONS G31): a danger-zone overlay exists in both forms — selecting/hovering an enemy paints that enemy's threat range (movement + attack range, §3.4), and a global toggle paints the union of all enemy threat ranges. On fog chapters the overlay is computed from **visible enemies only** — it honestly under-reports, hidden threats stay hidden (§3.6/G12), and ambush risk stays real. Inspecting any unit discloses its §3.3 stat block only (HP, defense, armament, tier, move, ranges, abilities); raw damage-table rows are never player-facing — concrete damage numbers appear only in the forecast popup against a real attacker/defender pair. The overlay paints sim query results (`get_threat`); the view computes nothing.
+
 3.2 Canonical Worked Examples
 
 Mirrored in /tests — if these fail, the formula is wrong. The first three examples predate the armament triangle and are all armament-neutral matchups (×1.00); they hold unchanged (ruled 2026-08-02, grilling issue 01). Examples 4–5 exercise the triangle. Examples 1–5 all have defender defense 0 (neutral); examples 6–7 exercise the defence term (ruled 2026-08-10, grilling issue 16 — their defense values are authored starting numbers, correctable). The max-HP denominators (…/10, …/25) are the prototype's per-unit values, not tier constants (§3.3).
@@ -101,10 +103,11 @@ Every unit type is defined entirely in data by the following fields (ruled 2026-
 - attack_ranges — explicit list of attack distances (e.g. [1], [2], [2,3]).
 - counter_ranges — explicit list of distances the unit counterattacks at (DECISIONS D9/D11 semantics; e.g. Cannon Crew [2,3], melee [1]).
 - move — movement points, spent against terrain movement costs.
-- move_class — one of infantry / mounted / siege (the former `construct` class was removed — ruled 2026-08-10, grilling issue 22; "construct" survives as flavor only); each terrain type's data declares a movement cost per class, with impassable as a legal cost value (§3.4; supersedes issue 03's allow/deny reading).
+- move_class — one of infantry / mounted / siege (the former `construct` class was removed — ruled 2026-08-10, grilling issue 22; "construct" survives as flavor only); each terrain type's data declares a movement cost per class, with impassable as a legal cost value (§3.4; supersedes issue 03's allow/deny reading). The vocabulary is closed: **no flying class exists** (ruled 2026-08-12, reference-mining issue 30 — DECISIONS G28) — airborne concepts are flavor only, and adding flight would require a new ruling plus a fourth per-terrain cost column.
 - abilities — optional list of ability ids. One shared framework for both sides (§5; ruled 2026-08-03, grilling issue 08): player Generals gain theirs at levels 3/5; any unit, enemy Generals included, may carry abilities in data.
 - sight — vision radius in tiles, used on fog-of-war chapters (§3.6; ruled 2026-08-06, grilling issue 12).
 - slot_category — one of general / tank / infantry; the deployment slot pool this unit occupies (§4 — battle budget and deploy costs were abolished, ruled 2026-08-06, grilling issue 09).
+- throwing — per-unit stat governing item delivery when using consumables on other units (§4 Items; ruled 2026-08-12, reference-mining issue 28 — DECISIONS G26). Ruled (G33 Q4, 2026-08-12, upgrading the G26 simplest reading): throw range = the stat's value in tiles, directly; self-use is range 0; the stat never affects the heal amount — heal values are fixed item data.
 
 Per-unit matchup bonuses do not exist — the prototype's "bonus vs. Riflemen" on Cavalry Squad was cut (ruled 2026-08-02, grilling issue 02). Unit-vs-unit differentiation lives in the damage table, the armament triangle, and the stats above.
 
@@ -117,6 +120,8 @@ Ruled 2026-08-03, grilling issue 03. These are the canonical grid rules:
 - No zone of control: moving adjacent to an enemy never halts or restricts movement. Threat range is always movement + attack range.
 - Terrain movement cost per class: there is no dedicated "infantry-only" terrain flag. Each terrain type's data carries a movement **cost keyed by unit move_class** (§3.3); impassable is a legal per-class cost value, so a ban is a special case of cost. (Ruled 2026-08-10, grilling issue 22 — this corrects G3's logged allow/deny simplest reading exactly as its correct-if-wrong flag anticipated: the per-class cost table was the intent.)
 - Line of fire: attack range is a pure distance check — units never block ranged attacks. Terrain does not currently affect range; terrain-based range effects are reserved as a possible future mechanic (owner note, G3) and are not in the sim.
+- Path authority (ruled 2026-08-11, reference-mining issue 27 — DECISIONS G25): the mover's plotted path is authoritative. A move command carries the full tile path; the sim validates it (contiguity, movement budget under the per-class costs above, legality under the occupancy rules) and never substitutes a path of its own. Under fog this is gameplay-visible: the player chooses which tiles they risk (§3.6 ambush). The AI submits its planned paths through the same contract.
+- Reachability includes staying put (G25): a unit's reachable set includes its own tile — attack-only and wait are zero-length moves through the same activation pipeline (§3.7), not special cases that bypass movement.
 
 Terrain types (data, in `terrain.json`; starting values, tunable):
 
@@ -133,6 +138,8 @@ Terrain types (data, in `terrain.json`; starting values, tunable):
 
 On fog-of-war chapters, terrain additionally carries vision data — concealment and sight modifiers (§3.6; values are data authoring).
 
+Terrain never modifies HP: there are no heal tiles and no damage tiles (ruled 2026-08-11, reference-mining issue 26, Q1 — DECISIONS G24). A terrain record carries defense, per-class movement cost, and fog vision data only; per-turn terrain HP effects are not in the sim and must not be built without a new ruling.
+
 Naval is flavour, not a system (ruled 2026-08-06, grilling issue 13): there is no water movement, no naval move_class, no ship units, and no transport subsystem. "Naval" chapters (ch11 Charleston) are land battles on coastal maps; sink-the-fleet or blockade-style goals are expressed through the five objective types (§8.2) and named kill-targets — no new objective types.
 
 3.5 Enemy AI
@@ -141,7 +148,7 @@ Ruled 2026-08-06, grilling issue 11. This is the canonical AI spec; other docume
 
 - Direction (owner's ruling): the AI plays its army as one strategist — it perceives the field and plans coordinated moves for all its units in accordance with one another, not each unit running its own isolated AI. This supersedes pre_prompt's "do not build anything smarter than this" cap. The coordinator is specified below (ruled 2026-08-10, grilling issue 17); the per-unit model is its `simple` tier and ships first.
 - The coordinator (issue 17): coordination depth is staged as the competence tiers — `simple` = the per-unit model below, no shared state; `medium` = greedy shared-state sequencing — units act in a deterministic order, each picking its best action against a projected board where damage already assigned this phase counts, so focus-fire emerges; `smart` = assignment-based planning — explicit focus-fire packages, chokepoint holders (§3.4 terrain), screens for weakened units — plus active-ability valuation. Planning is one enemy phase at a time, re-planned from the current board; no plan state persists (trivially suspend-safe, §6).
-- Active abilities in planning (issue 17): under `smart`, an active is chosen when it beats the unit's best normal action — strictly: an exact value tie keeps the normal action and holds the charge (ruled 2026-08-10, grilling issue 23); once-per-mission charges are held until a threshold — targets hit ≥ N, or it secures a kill — with thresholds as named tuning constants.
+- Active abilities in planning (issue 17): under `smart`, an active is chosen when it beats the unit's best normal action — strictly: an exact value tie keeps the normal action and holds the charge (ruled 2026-08-10, grilling issue 23); once-per-mission charges are held until a threshold — targets hit ≥ N, or it secures a kill — with thresholds as named tuning constants. Item use from an enemy item pool (§4, G33 Q6) is valued through this same mechanism.
 - Fog (issue 17): on fog chapters the coordinator plans over visible player units and the known map only (§3.6) — hidden units do not exist to its evaluation. The vision state is part of any test fixture.
 - Dormancy: enemy units start dormant and activate permanently when a player unit enters their threat range (movement + attack range, §3.4). Map data may declare activation groups that wake together. Reinforcement spawns (§8.3) enter under normal dormancy unless their spawn event marks them active. Ruled exception (2026-08-10, grilling issue 17): the coordinator may strategically wake dormant groups as a deterministic planned action.
 - Target scoring is importance-based, computed with the real damage pipeline (§3) including squad degradation: a target scores higher when it can be destroyed, when the attacker is likely to survive the aftermath, and when it is isolated. Component weights are named tuning constants in data. The baseline implementation is score = expected_damage − 0.5 × expected_counter + kill_bonus (kill_bonus: named tuning constant, value set at the AI milestone).
@@ -149,6 +156,7 @@ Ruled 2026-08-06, grilling issue 11. This is the canonical AI spec; other docume
 - Sleepy objectives: on defend/survive maps the player may never approach — this is resolved primarily by mission design (aggressive flags, activation groups, scripted reinforcements), not by an engine auto-activation rule; the coordinator's strategic waking (above) is an additional AI-side lever, not a replacement.
 - Determinism: no RNG anywhere in the AI. Equal-scoring choices break by the documented deterministic tie-break chain (ruled 2026-08-10, grilling issue 23; DECISIONS G21): **units act in chapter-data declaration order** (reinforcements append in spawn order); **target ties** break killable-first → higher expected_damage → lower defender current HP → defender board position; **destination-tile ties** break lowest per-class path cost (§3.4) → highest terrain defense → board position. Board position = (row, col), lowest row then lowest column — a total order guaranteed by the occupancy rule (§3.4); every key is computed from sim state. The exact-choice test asserts the full plan (ruled 2026-08-10, grilling issue 17): for a fixed board and vision state, the complete ordered move/attack set of the enemy phase (conventions §8, generalized to army level; stable iteration order is satisfied by the chain above).
 - No production, no economy, no strategic-layer resource AI (§9 cuts stand).
+- No enemy-intent display ships (ruled 2026-08-12, reference-mining issue 30 — DECISIONS G28): the view animates enemy actions without telegraphing targets in advance. A simple attacker→target telegraph may exist in gray-box builds as a **debug toggle only** — a dev affordance, not UI, removable without a ruling. (The player-facing forecast popup, §3.1, is unrelated and unchanged.)
 
 3.6 Fog of War
 
@@ -157,7 +165,7 @@ Ruled 2026-08-06, grilling issue 12. Fog is a per-chapter flag in chapter data; 
 - Vision: every unit has a `sight` radius (§3.3). Terrain interacts with vision (ruled Q1 = B): terrain data may declare concealment — occupants of concealing terrain (e.g. forest) are visible only from adjacent tiles — and sight modifiers (e.g. high ground extends sight). The mechanisms are canonical; per-terrain values are data authoring in terrain.json.
 - Memory: the map and terrain are always known — fog hides units only. Enemy units are visible inside the player's combined vision and their markers vanish when they leave it; there are no last-known-position ghosts.
 - The AI is fogged too: each side perceives only what its own units' vision covers, under the same rules. Dormancy (§3.5) is unchanged. Under the coordinated-AI direction, the coordinator plans from its side's vision — see grilling issue 17.
-- Ambush: enemies block movement (§3.4), hidden or not. A move whose path crosses a hidden enemy stops the unit on the last legal tile and reveals that enemy. Simplest reading, logged G12 (correct if wrong): the stopped unit's action is spent.
+- Ambush: enemies block movement (§3.4), hidden or not. A move whose path crosses a hidden enemy stops the unit on the last legal tile and reveals that enemy. Simplest reading, logged G12 (correct if wrong): the stopped unit's action is spent. Truncation contract (ruled 2026-08-11, reference-mining issue 27 — DECISIONS G25): truncation runs along the player's plotted path (§3.4 path authority); the sim emits the movement first, then the reveal, fires no attack signals, and the command's return value reports truncation as a distinct outcome — a legal command cut short, not an invalid one.
 - The forecast promise is unaffected: forecasts are offered only against visible targets, and a committed attack resolves exactly as forecast.
 
 3.7 Turn Structure
@@ -167,6 +175,8 @@ Confirmed and canonicalized from DECISIONS D15/D16 (ruled 2026-08-06, grilling i
 - Phases: all player units act, then all enemy units (no per-unit initiative).
 - One activation per unit per turn: move-then-attack, move only, attack only, or wait. Wait is a distinct action — ending the unit's activation without moving or attacking.
 - Attack-then-move is impossible. The sole exemption is Ride Through's whitelisted move-again-after-attack (§5).
+- Phase end (ruled 2026-08-12, reference-mining issue 29 — DECISIONS G27): the player phase ends automatically the moment every player unit has acted; the explicit `end_turn` command ends it early, forfeiting the activations of units that have not acted. (Any end-of-phase confirmation dialog is view-side presentation, not a sim rule.)
+- Turn boundary (G27): turn N is player phase N followed by enemy phase N; "end of turn N" — the defend/survive checkpoints of §8.2 — falls **after the enemy phase** of turn N. Simplest reading, logged G27 (correct if wrong): the shared turn number increments when a new player phase begins, and both phases of turn N carry N in `turn_changed`.
 
 4. The Economy: Souls & Deployment Slots (formerly "The Two Currencies" — battle budget abolished, ruled 2026-08-06, grilling issue 09)
 
@@ -180,13 +190,24 @@ Deployment Slots (per-mission; replaced the battle-budget currency — ruled 202
 - Start tiles are authored per map and the player chooses which selected unit stands on which tile. A map provides at least as many start tiles as its total slot cap.
 - There are no deployment prices. Nothing is bought; leftover slots are simply unfilled (and feed the soul bonus above).
 
-Souls (persistent, campaign-wide, shared pool): Awarded on mission completion only — base award + secondary objective bonuses (turn count, squad preservation, kill the enemy champion). Spent between missions on two things:
+Souls (persistent, campaign-wide, shared pool): Awarded on mission completion only — base award + secondary objective bonuses (turn count, squad preservation, kill the enemy champion). Spent between missions on three things:
 
 Leveling Generals (escalating cost per level)
 Reviving dead Generals (flat cost × the character's current level)
+Buying items at the camp shop (ruled 2026-08-12, reference-mining issue 28 — DECISIONS G26; see below)
 
 
 No mid-mission spending. Shared pool means benched Generals never fall behind and rotation is free.
+
+Items & the camp shop (ruled 2026-08-12, reference-mining issue 28 — DECISIONS G26; partially reverses §9's cut):
+
+- Consumable healing items exist, bought with souls. Simplest reading, logged G26 (correct if wrong): the shop lives at camp and sells between missions only — preserving the no-mid-mission-spending rule above; souls remain the only currency.
+- Inventory is one shared army pool — there is no per-unit inventory. Simplest reading, logged G26 (correct if wrong): any deployed unit may use an item from the shared pool during battle.
+- Using an item is the unit's action: using one on another unit means **throwing** it, and a throw consumes the thrower's activation (§3.7). Simplest reading, logged G26: self-use consumes the activation too.
+- The `throwing` stat (§3.3) makes some units better at healing others. Simplest reading, logged G26 (correct if wrong): it governs throw range/delivery, not the heal amount — consumable heal values are **fixed data amounts** (deterministic; no RNG; heals are not attacks, so the §3 damage pipeline and min-1 rule are untouched). A thrown item is consumed on use — throwing is not trading.
+- Rare magical healing: a select few units/characters may heal as an ability effect, scaling with level (§5). Optional content — permitted by this ruling, not committed.
+- The sim emits `unit_healed` for every item or ability heal (DECISIONS signal contract, added G24).
+- Parameters (ruled 2026-08-12, grilling issue 38 — DECISIONS G33): each item is its own data file under `data/items/` (the per-General pattern — adding an item is adding a file, zero code). The shop catalog is **unlock-based**: items enter it on story clears (via §8.3's `unlocks` field, the G14 Q5 pattern) and stay purchasable thereafter. The shared pool is **unlimited and fully available in every battle** — no deployment loadout step (upgrades G26's simplest reading to ruled). **Throw range = the thrower's `throwing` stat in tiles, directly**; self-use is range 0 (upgrades §3.3's simplest reading to ruled). The consumable effect-type vocabulary is reserved up front (the G29 pattern): `heal` implemented; `cure` and `buff` named now, unimplemented (names taken from the ruling's example set — correct if wanted). Items are **side-symmetric**: chapter data may grant the enemy an item pool, the coordinator values item use like active abilities (§3.5), and the exact-choice test fixture includes items when present. UI surface: a camp-shop submenu plus an "Item" entry in the battle action menu (pool list → target selection over throw range); the deployment screen is untouched.
 
 5. General Progression
 
@@ -207,8 +228,7 @@ The ability framework (ruled 2026-08-03, grilling issue 08):
 - Rule exemptions — a closed whitelist of flags, currently: `no_counter` (Key & Kite) and move-again-after-attack (Ride Through, an exemption to one-action-per-turn). Never suspendable by any ability: deterministic no-RNG combat, minimum-1 damage, and forecast=resolution identity. Adding a new exemption requires a new ruling.
 - Per-turn state — the sim tracks per-turn flags (e.g. engaged-this-turn, reset at turn boundaries) as queryable state, and the forecast includes every ability modifier that applies to the hypothetical attack — auras, conditionals, and exemptions. The forecast remains a promise.
 - Symmetry — there is one ability framework for both sides. Enemy Generals (and any enemy unit granted abilities in data) use identical mechanics through the same sim path and signals; §8.2's chapter 10 "begin mirroring player abilities" is the content schedule for enemy ability data, not a separate system.
-Stretch goal (not scope): one secret scene or bonus mission for maxing the full roster.
-
+- HP restoration (ruled 2026-08-12, reference-mining issue 28 — DECISIONS G26) — a legal ability effect, deliberately rare: limited to a select few units/characters ("mage-type healers"), with the healed amount scaling with level. Scaling formula ruled (G33 Q7): heal = the ability's base amount × the General's `power_mult` from the D12 level package — level growth reuses the existing package, no separate heal curve. Deterministic like everything else; emits `unit_healed`. Optional content — the ruling permits it, the roster decides it (§12 item 1). Distinct from consumable item heals (§4), whose values are fixed data.
 Stretch goal (not scope): one secret scene or bonus mission for maxing the full roster.
 
 
@@ -220,7 +240,7 @@ Standard mode (default, single moderate difficulty):
 A downed General is out for the rest of the mission, revivable between missions for souls (flat cost × level — invested carries are expensive to lose).
 Dead-but-not-revived Generals still appear in cutscenes (their spirit attends the war council — one line of flavor text justifies this forever). They simply can't deploy.
 Difficulty curve comes from mission design — enemy compositions that counter learned habits, terrain, objectives, enemy Generals — never stat inflation.
-Farming is the easy mode. Replayable skirmish battles on reused campaign maps, rescaled enemies, souls at the farming yield (design latitude 30–50%; starting constant 40% in economy.json — ruled 2026-08-06, grilling issue 10). Replays pay the base award and secondary bonuses, both scaled by the yield, and already-earned secondaries re-pay on every replay (ruled issue 10, Q4/Q6). Level cap of 5 is the farming ceiling: overpowered-by-breadth allowed, overpowered-by-depth impossible.
+Farming is the easy mode. Replayable skirmish battles on reused campaign maps — the story battle unchanged (the former "rescaled enemies" wording was struck: ruled 2026-08-12, reference-mining issue 35, DECISIONS G32; the reduced yield is the only difference, and §7's never-dynamic-scaling rule stands) — souls at the farming yield (design latitude 30–50%; starting constant 40% in economy.json — ruled 2026-08-06, grilling issue 10). Replays pay the base award and secondary bonuses, both scaled by the yield, and already-earned secondaries re-pay on every replay (ruled issue 10, Q4/Q6). Level cap of 5 is the farming ceiling: overpowered-by-breadth allowed, overpowered-by-depth impossible.
 
 
 No-Revive mode (the hard mode):
@@ -236,7 +256,7 @@ Defeat, retry, and saves (ruled 2026-08-03, grilling issue 05):
 - Retry is a full rollback: all mission state, including General deaths in the failed attempt, is undone. Deaths become permanent record only when a mission completes.
 - No-Revive game over (composed from the rulings above — since failed attempts roll back, the check can only bite at completion): the campaign ends when a mission completes with zero living Generals.
 - A failed mission awards nothing. Souls remain completion-only (§4), secondaries included.
-- Saves: the campaign save is written on camp-screen exit. One mid-mission suspend slot exists — written when quitting mid-mission, deleted on resume — so a session can be interrupted but not save-scummed. File layout per conventions.md §7.
+- Saves: the campaign save is written on mission completion and on camp-screen exit (completion-write added — ruled 2026-08-12, reference-mining issue 35, DECISIONS G32: camp is optional, so completion itself must persist). One mid-mission suspend slot exists — written when quitting mid-mission **and autosaved at every phase boundary** (player-phase start and enemy-phase start — ruled 2026-08-12, reference-mining issue 33, DECISIONS G30). Quitting during the enemy phase stores the enemy-phase-start snapshot; resume replays the phase, which is deterministic, so the outcome is identical to never having quit (the view may fast-forward). Resume consumes the slot on the first player command — loading and looking around is crash-safe; acting deletes. Save-scum residue under this model (logged G30): voluntary quit/resume can never rewind; a deliberate crash rewinds at most to the current player-phase start, and enemy phases are un-scummable by determinism — accepted as the cost of crash resilience. File layout per conventions.md §7.
 
 
 7. Narrative
@@ -263,6 +283,8 @@ Benedict Arnold (recommended): the mage's living American lieutenant — corrupt
 Tone: Stylized, irreverent, "clearly inspired by but renamed/reimagined" wherever safer or funnier.
 Cutscenes: VN-style text with character portraits (2–3 expressions each), no VA. Budget 2–4 scenes per mission (briefing / optional mid-mission banter / debrief) + 14 level-gated character scenes. All scenes proceed regardless of who is dead. No death-variant writing, ever.
 
+Cutscene data (ruled 2026-08-12, reference-mining issue 32 — DECISIONS G29): a scene file is an ordered step list in DoT's JSON schema (/data, D1 — adding a scene is a data edit, zero code). The step-type vocabulary is **reserved up front** (Q2=B): `line` ({speaker, portrait_ref, text} + box-position flag) is implemented first; `camera`, `actor` (move/spawn on the battle view), and `wait` are named now and implemented when a chapter needs them. Presentation is rendered through Dialogic (§10 — the runner drives it; content never lives in Dialogic's own formats).
+
 
 8. Campaign — Major Battles of the Revolutionary War
 
@@ -276,7 +298,9 @@ A single illustrated map of the eastern seaboard with the thirteen colonies draw
 Battle nodes sit at their historical locations on that map — one node per chapter, connected along the campaign route so the war's progress reads as a line moving down the coast.
 Colonies are context, not buttons. They give the player a sense of place, of how far the war has spread, and of which region a mission is fought over. They are not individually selectable and they are not chapters.
 -Node states are visible:** cleared, current, and locked-but-visible future chapters, so the player can see the shape of the war ahead. Selecting a node opens its briefing (objective, slot caps, known enemy composition), then deployment, then battle.
-Cleared story nodes become replayable as farming skirmishes at reduced soul yield.
+Cleared story nodes become replayable as farming skirmishes at reduced soul yield — the node is the replay's only entry point (ruled 2026-08-12, reference-mining issue 35, DECISIONS G32; there is no camp farming menu).
+
+The between-mission loop (ruled G32, Q3=B — map-centric): mission completion → debrief → the campaign map. The camp screen is optional, entered from the map at will and re-enterable freely; each camp exit writes the campaign save, and mission completion writes it too (§6), so skipping camp never loses progress. Choosing a node runs briefing → deployment → battle as always.
 Optional flavor, cheap to build: each colony carries a liberation state that tints as its battles are cleared, turning the map into a progress readout. Purely visual — no mechanical effect.
 
 8.2 Chapter list
@@ -302,12 +326,13 @@ Drawn from the war's major engagements — ~14 missions
 
 Objectives vary FE-style: seize, defend, escape, survive-X-turns, rout. No in-battle economy or capture/income loop.
 
-Objective semantics (ruled 2026-08-03, grilling issue 04). A chapter has exactly one primary objective, plus any number of secondaries:
+Objective semantics (ruled 2026-08-03, grilling issue 04). A chapter has exactly one primary objective **at a time**, plus any number of secondaries — scripted mutation events in chapter data may change the primary or the champion designation mid-mission (ruled 2026-08-12, reference-mining issue 32 — DECISIONS G29 Q4; amends G4 Q6's wording, not its intent — never two primaries at once). Win/loss evaluation always uses the current primary; `objective_progress` announces the change:
 
 - Seize — a General ends its move on the HQ tile; the mission is won instantly on arrival. Squads and singles cannot seize. (A defended HQ must be cleared first — no unit may end its move on an occupied tile, §3.4.)
-- Defend — the mission is won at the end of turn N. An enemy unit ending its turn inside the marked zone loses the mission immediately. Player units are not required to occupy the zone.
+- Defend — the mission is won at the end of turn N ("end of turn" = after the enemy phase of N, §3.7 — ruled G27). An enemy unit ending its turn inside the marked zone loses the mission immediately. Player units are not required to occupy the zone.
 - Escape — all surviving deployed Generals must exit via the exit tiles; the mission completes when the last of them exits. Non-General units left behind are lost: they count as losses for secondary bonuses, but cost no souls (they are per-battle deployments).
-- Survive-X-turns — the mission is won at the end of turn X if it has not been lost. (Loss conditions: §6 "Defeat, retry, and saves", ruled grilling issue 05.)
+- Survive-X-turns — the mission is won at the end of turn X if it has not been lost ("end of turn" = after the enemy phase of X, §3.7 — ruled G27). (Loss conditions: §6 "Defeat, retry, and saves", ruled grilling issue 05.)
+- Checkpoint precedence (ruled 2026-08-12, reference-mining issue 29 — DECISIONS G27): when a win condition and a loss condition are satisfied at the same checkpoint, **the win evaluates first** — a simultaneous win+loss is a win. Mid-phase instant triggers (seize's instant win, defend's immediate zone loss) fire the moment they occur and cannot coincide with each other (D9's counter rule precludes the intra-skirmish case).
 - Rout — every enemy unit that appears in the mission is destroyed: reinforcements included (they exist — §8.3 spawn events, ruled 2026-08-06, grilling issue 14) and enemy Generals included. There is no general flee mechanic; the single exception is a chapter-scripted boss-retreat event (§7, ruled 2026-08-03, grilling issue 07) — a General removed by such an event no longer counts toward rout.
 
 (The chapter table's descriptors map onto the five types — ruled 2026-08-06, grilling issue 14: "siege" = seize, "retreat/survive" = escape, "turn-limit" = survive-X-turns.)
@@ -325,11 +350,13 @@ Chapters are data, not code. The complete chapter schema (consolidated 2026-08-0
 - fog flag (issue 12)
 - `objective` — the single primary: type (`seize | defend | escape | survive | rout`) + parameters per §8.2 (issue 04)
 - optional `loss` conditions beyond the standard ones (issue 05)
-- reinforcement spawn events — turn number + spawn tiles/edges + unit list; spawned units enter under normal dormancy unless the event marks them active; rout counts them (issue 14, Q1)
+- reinforcement spawn events — turn number + spawn tiles/edges + unit list; spawned units enter under normal dormancy unless the event marks them active; rout counts them (issue 14, Q1). A spawned unit **appears on its spawn tile** — no off-map entry walk — and is targetable and visible (fog rules permitting) from that moment; "edges" are simply authored border tiles (ruled 2026-08-11, reference-mining issue 26, Q3 — DECISIONS G24). If the spawn tile is occupied at the spawn turn, the unit spawns on a deterministic alternate tile (Q4 = shift; the shift chain and no-legal-tile fallback are logged at DECISIONS G24)
 - enemy roster, including per-appearance enemy-General levels and scripted retreat events (issue 07); champion designation — the chapter's enemy General; simplest reading, logged G14: with multiple enemy Generals, chapter data marks which one is the champion
-- scenes: intro and debrief ids, plus mid-mission scenes with event triggers — turn number, a unit entering a named region, or a named unit's death or retreat (issue 14, Q2)
+- scenes: intro and debrief ids, plus mid-mission scenes with event triggers — turn number, a unit entering a named region, or a named unit's death or retreat (issue 14, Q2). Event timing & order (ruled 2026-08-12, reference-mining issue 32 — DECISIONS G29): a turn-number trigger authors its boundary — `at: start` (player phase begins) or `at: end` (after the enemy phase, the §3.7/G27 boundary); when a scene and spawns share a trigger, the scene resolves first, then the spawns (the pause → beat → spawn → resume envelope). A turn-end trigger coincides with §8.2 checkpoints, where G27's win-first precedence governs — a won mission ends before the event fires.
+- objective/champion mutation events (ruled G29 Q4) — chapter data may declare scripted events, on the same trigger vocabulary, that replace the primary objective or move the champion designation mid-mission (§8.2). Simplest reading, logged G29 (correct if wrong): the kill-champion secondary follows the current designation at the moment of the kill.
 - base soul award; secondary objectives with their bonuses (per-chapter data, issue 10)
-- unlocks (a General slot, a roster addition) — fire on the first story clear only; farming replays pay souls only and never re-fire unlocks (issue 14, Q5)
+- unlocks (a General slot, a roster addition, an item entering the shop catalog — G33 Q2) — fire on the first story clear only; farming replays pay souls only and never re-fire unlocks (issue 14, Q5)
+- enemy item pool (optional — G33 Q6): items available to the enemy side this chapter; the coordinator values their use like active abilities (§3.5)
 
 Adding or reordering a chapter is a data edit.
 
@@ -343,12 +370,12 @@ Budget carry-over between missions
 Death-variant cutscene writing
 Voice acting
 
-No per-unit inventory, no weapons as items, no durability or weapon uses, no equipping, no consumables, no convoy, no shops, and **no trading between units**. Armament is a fixed property of a unit type in data, not a carried object. Souls plus deployment slots (§4) are the entire economy. This is listed explicitly because the Fire Emblem reference project implements all of it, and none of it carries over.
+Partially reversed (ruled 2026-08-12, reference-mining issue 28 — DECISIONS G26; canonical: §4 "Items & the camp shop"): consumable healing items, a souls-funded camp shop, and one **shared** army inventory now exist. Still cut: per-unit inventory (the pool is shared), weapons as items, durability or weapon uses, equipping, convoy-as-system, and **trading between units** (throwing a consumable consumes it — it is delivery, not transfer). Armament remains a fixed property of a unit type in data, not a carried object. Souls plus deployment slots (§4) remain the only economy — items are a soul sink, not a currency. The Fire Emblem reference implements the full item stack; only the pieces named in §4 carry over.
 Weapon-level stats — might, weight, hit, crit, avoid.
 
 10. Engine & Scope
 
-Engine: Godot. Godot has mature grid-tactics paths (AStarGrid2D, GDQuest tactics tutorials, open-source FE-likes) and Dialogic for the VN layer.
+Engine: Godot. Godot has mature grid-tactics paths (AStarGrid2D, GDQuest tactics tutorials, open-source FE-likes) and Dialogic for the VN layer. Dialogic is **adopted** as the VN/cutscene presentation layer (ruled 2026-08-12, reference-mining issue 32 — DECISIONS G29; owner: "No need to reinvent the wheel") — the single exception to the no-plugins convention. Boundaries: Dialogic renders, never simulates (zero presence in /sim; headless tests stay plugin-free); scene *content* is authored in DoT's JSON schema in /data (D1's one-format rule holds — §7), with the cutscene runner driving Dialogic; the gray-box prototype may still use the stub textbox until the VN layer is built (pre_prompt; simplest reading logged G29 — correct if wrong).
 
 Scope estimate (solo, part-time): ~6–9 months
 
@@ -450,7 +477,7 @@ Camera. Pans across maps of any size; centers on the acting unit during enemy ph
 
 Fonts. One UI font covering Latin + Latin Extended. Locale target: English-only (ruled 2026-08-06, grilling issue 15 — this replaces the former reference to a "§12 item 12" locale list, which never existed). No Cyrillic or CJK stack; `tr()` keys remain mandatory from the first line of UI (conventions §6), so a future locale expansion is a translation task, not a retrofit.
 
-Gray-box phase. Until the skirmish loop is proven fun, all of the above is honored *dimensionally* with ColorRects, polygons, and text labels: units are tinted rectangles with a type initial and HP number, movement range is a blue tile overlay, attack range is red, portraits are colored rectangles. Art drops into the same dimensions later with no relayout. No art money is spent before the loop is fun.
+Gray-box phase. Until the skirmish loop is proven fun, all of the above is honored *dimensionally* with ColorRects, polygons, and text labels: units are tinted rectangles with a type initial and HP number, movement range is a blue tile overlay, attack range is red, enemy danger zones are a third overlay tint (per-enemy and union-toggle forms — G31, §3.1), portraits are colored rectangles. Art drops into the same dimensions later with no relayout. No art money is spent before the loop is fun.
 
 
 

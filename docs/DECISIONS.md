@@ -8,6 +8,7 @@ Log of spec-silent technical decisions. Each entry: the choice, and why it does 
 
 ### D1 — JSON for all data
 All game data (units, terrain, damage table, generals, abilities, maps, scenes, economy) lives in JSON files under `/data`, loaded by a single `DataLoader`. Chosen over Godot `Resource`/`.tres` so `/sim` stays free of `ResourceLoader`/editor coupling and is headless-test friendly. One format everywhere — no mixing.
+Note (G29, 2026-08-12): cutscene *content* stays DoT JSON under this rule; Dialogic (the adopted VN presentation layer, design_doc §10) is driven by the runner and never becomes an authoring format.
 
 ### D2 — Sim purity
 `/sim` classes extend `RefCounted` only. No `Node`, `SceneTree`, or `get_node`. `AStarGrid2D` is a `RefCounted` `Object` (not a `Node`), so it is legal inside sim. Enforced by keeping the view in `/scenes` + `/ui`.
@@ -22,7 +23,7 @@ No `randi`/`randf` anywhere in `/sim`. A test greps `/sim` sources for RNG usage
 A single `BattleSim` `RefCounted` defines the signal surface; the view connects and the sim never references the view. Signal contract below.
 
 ### D6 — Tests via headless runner
-Plain headless runner (`tests/run_tests.gd`) executed with `godot --headless --script`. No GUT dependency ("no plugins"), one command, zero setup.
+Plain headless runner (`tests/run_tests.gd`) executed with `godot --headless --path . -s res://tests/run_tests.gd` (canonical spelling — ruled G23, 2026-08-11; conventions §8 and CLAUDE.md match). No GUT dependency ("no plugins"), one command, zero setup.
 
 ---
 
@@ -65,6 +66,7 @@ Modeled generically as `counter_ranges` on the unit def. Cannon Crew = `[2,3]`; 
 ### D12 — `power_mult` is the level stat package
 Levels 1/2/4 grant a `power_mult` (and small `hp_bonus`) that multiplies the table value pre-floor — the spec's "+15–20% effective power." Levels 3/5 grant an ability instead of a stat bump, and set a character-scene flag.
 Update 2026-08-10 (ruling G16, Q4=B): level packages may additionally grant a `defense` bump (design_doc §5).
+Update 2026-08-12 (ruling G33, Q7): heal-ability amounts scale through this same package — heal = base × `power_mult`; no separate heal curve exists.
 
 ### D13 — Generals do not degrade
 Generals use `tier:"general"` => no HP-degradation multiplier ("static per level, grows via EXP"), side-agnostic (G8 Q6). **Resolved** (ruling G19, 2026-08-10, grilling issue 21): the ruled distinctions are the complete intended General presence — unique damage-table row/column (G18), per-General base HP/stats (G2), defense incl. level bumps (G16), `power_mult` levels (D12), abilities at L3/L5 (§5), seize/escape roles (G4), the mission-loss exemption (G5 Q6), the `general` slot category (G9), and revival/cutscene persistence (§6). No further General-specific battlefield mechanic exists; adding one requires a new ruling. Canonical closure statement: design_doc §3.
@@ -105,12 +107,13 @@ Update 2026-08-10 (ruling G20, grilling issue 22): the authoring landed and the 
 
 ```
 battle_started(state_snapshot)
-turn_changed(faction, turn_number)
+turn_changed(faction, turn_number)     # turn = player phase then enemy phase, one shared number; increments at player-phase start (G27 Q2 simplest reading)
 unit_spawned(unit_id)
 unit_moved(unit_id, path)
 unit_damaged(unit_id, amount, new_hp, source_unit_id)
+unit_healed(unit_id, amount, new_hp, source)     # added G24 Q2; emitters ruled G26 (2026-08-12): consumable item heals + rare level-scaled heal abilities; heal tiles remain nonexistent (G24 Q1)
 unit_destroyed(unit_id, faction, was_general)
-skirmish_resolved(result)              # same payload as forecast
+skirmish_resolved(result)              # same payload as forecast; "defender cannot counter" = the counter section is absent/null (G26 Q2, 2026-08-12); full schema still an implementation-time entry
 ability_triggered(unit_id, ability_id, affected_ids)
 unit_activated(unit_id)                # AI dormancy broken
 unit_exited(unit_id)                   # escape objective — left via exit tile alive (G4)
@@ -121,10 +124,12 @@ objective_progress(text)
 mission_complete(victory, summary)     # turns, squads_lost, champion_killed
 ```
 Attack emission order: `unit_moved` -> `unit_damaged`(defender) -> [`unit_destroyed`] -> [`unit_damaged`(attacker counter)] -> [`unit_destroyed`] -> `skirmish_resolved`.
+Truncated move (fog ambush, G12): `unit_moved`(truncated path) -> `unit_revealed`(ambusher); no attack signals fire; the command returns a distinct truncation outcome — legal-but-cut-short, not invalid (ruled G25 Q2a/Q2b, 2026-08-11).
 
-View→Sim is method calls returning a validity result (never asserts on bad input): `get_reachable`, `get_attackable`, `forecast`, `command_move_attack`, `command_wait`, `command_ability`, `end_turn`.
+View→Sim is method calls returning a validity result (never asserts on bad input): `get_reachable`, `get_attackable`, `get_threat`, `forecast`, `command_move_attack`, `command_wait`, `command_ability`, `end_turn`. (`get_threat` added G31, 2026-08-12 — feeds the danger-zone overlay; visible-enemies-only under fog; provisional-name convention.) Ruled semantics (G25, 2026-08-11): `command_move_attack(unit_id, path, target)` — the caller's full tile path is authoritative; the sim validates (contiguity, G20 budget, G3 legality) and never substitutes its own path; the AI submits planned paths through the same call. `get_reachable` includes the unit's origin tile — attack-only/wait are zero-length moves through the uniform pipeline (whether a zero-length `unit_moved` fires is delegated to an implementation-time entry per this file's protocol).
 
 Update 2026-08-10 (audit F4, issue 19): `unit_exited` / `unit_retreated` / `unit_revealed` / `unit_hidden` added for mechanics ruled after the contract was written (G4 escape exits, G8 boss retreat, G12 fog visibility). Names are provisional until implementation — re-log here if they change.
+Update 2026-08-11 (ruling G24 Q2): `unit_healed` added proactively — no mechanic emits it yet (heal tiles ruled out, G24 Q1; healing as an ability effect remains unruled — flags live on reference-mining issues 28/31/36). Same provisional-name convention.
 
 ---
 
@@ -169,6 +174,7 @@ Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/03-move
 ### G4 — Objective semantics (grilling issue 04)
 Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/04-objective-semantics.md`. Canonical statement: `design_doc.md` §8.2 "Objective semantics".
 - **Q6 = A:** exactly one primary objective per chapter. Owner's words: "One primary + several secondaries." §8.3 schema gains the `objective` field (type + parameters).
+  Amended 2026-08-12 (ruling G29 Q4): "exactly one" now means exactly one **at a time** — scripted chapter events may replace the primary (or move the champion designation) mid-mission; never two primaries at once.
 - **Q1 = B:** only a General satisfies seize; wins instantly on arrival. Owner's words: "Only a general satisfies the seize."
 - **Q2 = A:** defend wins at end of turn N; an enemy ending its turn in the zone = immediate loss; player occupation of the zone is not required.
 - **Q3 = C:** escape requires all Generals to exit. Owner's words: "All generals must exit." Simplest readings logged per this file's protocol: "all Generals" = all *surviving deployed* Generals; the mission completes when the last of them exits; non-General units left behind count as lost for secondary bonuses (no soul cost) — correct this entry if a different reading was intended.
@@ -182,6 +188,7 @@ Ruled by owner, 2026-08-03. Issue: `.scratch/design-doc-gap-sweep/issues/05-defe
 - **Q2 = A:** defeat returns to the pre-battle flow to retry; a voluntary restart behaves identically.
 - **Q3 = A:** retry is a full rollback — deaths from a failed attempt are undone; deaths become permanent only on mission completion.
 - **Q4 = B:** one mid-mission suspend slot, written on quit, deleted on resume; no save-scumming. Resolves conventions §7's "if built" hedge to built; supersedes pre_prompt's "single JSON save file".
+  Amended 2026-08-12 (ruling G30): the slot is additionally autosaved at every phase boundary; an enemy-phase quit stores the enemy-phase-start snapshot (deterministic replay on resume); deletion fires on the first player command after resume. The no-scum rule narrows to its residue — see G30.
 - **Q5 = A:** a failed mission awards nothing; souls stay completion-only.
 - **Q6 = other (owner's words):** "Mission can end without a general. As long as their are units on the map. Generals can be brought back after the battle." General deaths never lose a mission; play continues while player units remain. **Derived composition (flag if wrong):** "brought back after the battle" = normal-mode revival — No-Revive permadeath (locked rule) stands; and since failed attempts roll back (Q3), No-Revive's "losing all Generals = game over" is evaluated when a mission *completes* with zero living Generals.
 
@@ -321,11 +328,113 @@ Ruled by owner, 2026-08-10. Issue: `.scratch/decisions-reconciliation/issues/23-
 - **Q5 = B:** the universal final key is board position — (row, col), lowest row then lowest column — for units and tiles alike; total order guaranteed by the occupancy rule (§3.4), computed from sim state, no RNG. Simplest reading logged per this file's protocol (correct if wrong): under `medium`/`smart` sequencing, "current position" means position on the projected board at the moment the acting unit is evaluated.
 - All rulings by owner, no rationale stated.
 
+### G22 — The reference clone leaves the tracked repo (grilling issue 24, conventions stress-test)
+Ruled by owner, 2026-08-11 (Q5's first submission was "C" against an A/B option set; the apply gate held with no edits, owner re-ruled B). Issue: `.scratch/conventions-stress-test/issues/24-reference-clone-quarantine.md`. Canonical statement: conventions.md §4 (v1.1). Resolves stress-test findings F1/F2/F3/F8 (`.scratch/conventions-stress-test/findings/00-stress-test-findings.md`).
+- **Q1 = C (owner's words):** "Untracked Local folder — We add the folder to gitignore and remove the reference to a /reference directory." The FE clone leaves git tracking entirely and stays on disk as a gitignored local folder; conventions §4's `/reference` tree entry is removed and a one-line pointer bullet replaces the folder rule. Q1a (runnable vs. inert) is moot — it applied only to the in-repo `/reference` move option. Simplest readings logged per this file's protocol (correct if wrong): the clone's tracked root folders (`scenes/`, `assets/`, `engine/`, `save/`, ~1,200 files) consolidate into a single local folder named `fe_reference/` (name unruled; snake_case per conventions §1; the `.gitignore` line and §4 bullet use it); the agent never commits, so the untracking/move is owner-executed from the checklist in the issue's Answer.
+- **Q2 = A:** the DoT `project.godot` is authored fresh at Milestone 0 (pre_prompt: "Include a project.godot"), registering conventions §3's five permitted autoloads only as each is actually built. Until then the tracked `project.godot` remains the clone's — known-wrong, replaced at Milestone 0, not before.
+- **Q3 = C:** the four tracked `save/` files relocate with the clone (leave tracking with it).
+- **Q4 = A:** amended §4 stays a pure picture of the DoT build plus the one-line clone pointer; repo-tooling folders (`.scratch/`, `.agents/`, `file_synopsis/`) stay undocumented in §4.
+- **Q5 = B:** no automated enforcement test; "never referenced from game code" remains a doc-level rule enforced by review.
+- Noted, not ruled (execution consequence): once the clone untracks, `reference_project`'s tracked tree reduces to ≈ `main` + docs/tooling, so a normal merge to `main` becomes possible; branch fate is an execution decision. Rationale beyond Q1's stated words: none given — ruled by owner, 2026-08-11.
+
+### G23 — Wording-only conventions amendments (grilling issue 25, conventions stress-test)
+Ruled by owner, 2026-08-11. Issue: `.scratch/conventions-stress-test/issues/25-wording-amendments.md` (a task ticket run through /grill — the rulings settle presentation choices the ticket's author had embedded without a ruling). Reason: stress-test findings F4/F5/F6, wording-only; no design or structure rule changed. Canonical: conventions.md v1.2.
+- **Q1 = A:** the version bump is an inline parenthetical on the header line (the style 1.1 established); 1.2 retroactively rolls up the already-logged §7 suspend-slot (G5) and §6 English-only (G15) notes — no G16 note exists in conventions to cite (verified during /grill). §11's malformed plain-text heading fixed to a proper `## 11.` heading.
+- **Q2 = A:** §8's required-test list fully refreshed — the stale "exact choice" line becomes the enemy-phase-plan test (full ordered plan for a fixed board and vision state, G17 Q3, asserting through the G21 tie-break chain); fog visibility (G12) and per-class terrain movement costs (G20) added to the permanent list.
+- **Q3 = B:** the runner command's canonical spelling is CLAUDE.md's `godot --headless --path . -s res://tests/run_tests.gd`; conventions §8 and D6 reconciled to it (CLAUDE.md unchanged).
+- All rulings by owner, no rationale stated.
+
+### G24 — Terrain HP effects and reinforcement spawn semantics (reference-mining issue 26)
+Ruled by owner, 2026-08-11. Issue: `.scratch/reference-mining/issues/26-grid-board.md` (a resolved research ticket whose "Flags for /grill" were run through /grill — the G23 precedent). Canonical statements: design_doc.md §3.4 (terrain-never-modifies-HP bullet) and §8.3 (reinforcement spawn-event line).
+- **Q1 = A:** no heal or damage terrain exists — a terrain record carries defense, per-class movement cost, and fog vision data only. The reference clone's Fortress/Heal/Throne/Lava/Poison tile effects map to nothing; a per-turn terrain HP step must not be built without a new ruling. (Q1b — can environment kill — is moot under A.)
+- **Q2 = A:** `unit_healed(unit_id, amount, new_hp, source)` added to the D5 signal contract now, ahead of any emitting mechanic (provisional-name convention applies). Healing as an *ability* effect remains unruled — the convergent flags on reference-mining issues 28/31/36 stay live for capstone triage.
+- **Q3 = A:** a reinforcement appears **on its spawn tile** — no off-map entry concept in the sim; it is targetable and visible (fog rules permitting) from the moment `unit_spawned` fires; spawn "edges" are authored border tiles.
+- **Q4 = C:** an occupied spawn tile shifts the spawn to a deterministic alternate tile. Shift chain not specified in the ruling — simplest reading logged per this file's protocol (correct if wrong): nearest legal tile (unoccupied, terrain not impassable for the unit's move_class, G20) by Manhattan distance from the authored spawn tile, ties broken by the G21 universal board-position key (lowest row, then lowest column); if no legal tile exists on the map (pathological under the occupancy rule), the spawn defers to the next turn and retries — deferral is the fallback, not the mechanic. The enemy-phase exact-choice test should cover a plugged-spawn board once the sim exists.
+- All rulings by owner, no rationale stated.
+
+### G25 — Path authority, ambush truncation, and reachability semantics (reference-mining issue 27)
+Ruled by owner, 2026-08-11 (submitted under "26" — applied to 27, whose template the rulings match exactly; 26 was already closed under G24 and had no Q2a/Q2b — the G13/G20 misfiling precedent). Issue: `.scratch/reference-mining/issues/27-movement-pathfinding.md` (research-ticket flags run through /grill, per the G23 precedent). Canonical statements: design_doc.md §3.4 (path authority + reachability bullets) and §3.6 (ambush truncation contract); contract details in this file's Signal contract block.
+- **Q1 = B:** the mover's plotted path is authoritative — `command_move_attack(unit_id, path, target)`; the sim validates (contiguity, G20 movement budget, G3 occupancy legality) and never substitutes a path. Under fog the player chooses which tiles they risk; the AI submits its planned paths symmetrically (fits G17's planner, which already plans moves).
+- **Q2a = A:** ambush-truncation emission order is `unit_moved`(truncated path) → `unit_revealed`(ambusher); no attack signals fire (the attack never happens; action spent per G12).
+- **Q2b = A:** the command's return value reports truncation as a distinct outcome — a legal command cut short, distinct from the invalid-input rejection D5 already defines.
+- **Q3 = A:** `get_reachable` includes the unit's origin tile; attack-only and wait are zero-length moves through the uniform activation pipeline (§3.7). Whether a zero-length move emits `unit_moved` is an implementation detail delegated to an implementation-time DECISIONS entry.
+- All rulings by owner, no rationale stated.
+
+### G26 — Items, the camp shop, and healing; SkirmishResult cannot-counter (reference-mining issue 28)
+Ruled by owner, 2026-08-12 (submitted under "26" — applied to 28, whose template the rulings match; the G13/G20/G25 misfiling precedent. First submission gate-failed on §9 conflict and under-specification; owner clarified in full — treated as their decision). Issue: `.scratch/reference-mining/issues/28-combat-forecast.md`. Canonical statements: design_doc.md §4 "Items & the camp shop", §3.3 `throwing` field, §5 HP-restoration bullet, §9 (partial-reversal paragraph).
+- **Q1 = other (owner's words):** "Items will heal. Will add an item shop. Items will be thrown if used to heal other units. Inventory will be shared across units. Souls will be used to buy items. Some units will also be able to heal. Throwing an item will count as an action. The unit will have a throwing stat making some units better at healing than others. Healing as a mage or similar type will be rare and limited to a select few units or characters. Heal values are fixed if potions or the like are used. If there is a mage healer using magic (if we go that far) then it will scale with level."
+- **This knowingly and partially reverses §9's item cut** (the G9-pivot precedent). Lifted: consumables (healing), a shop, an army inventory. Standing (not mentioned, so not lifted): weapons-as-items, durability/uses, equipping, per-unit inventory (pool is shared), trading (a thrown consumable is consumed, not transferred), weapon-level stats.
+- **Simplest readings logged per this file's protocol (correct if wrong):** the shop is at camp and sells **between missions only, for souls** — the sole reading preserving the locked "souls spent between missions only" rule, which stands; the `throwing` stat governs **throw range/delivery, not heal amount** — the sole reading reconciling "better at healing" with "heal values are fixed"; self-use of an item also consumes the activation (D15's one-action rule, wait-style); any deployed unit may draw from the shared pool.
+- **Determinism untouched:** consumable heal values are fixed data amounts; mage-type ability healing scales with level deterministically; heals are not attacks — the §3 pipeline, min-1 floor, and forecast=resolution identity are unaffected.
+- **Q2 = A:** `SkirmishResult` represents "defender cannot counter" as an absent/null counter section; the full payload schema remains delegated to an implementation-time entry (constrained by D3/D5/G16 Q6).
+- Sibling flags closed by Q1: issue 31 flag 1 (healing exists — via items + rare abilities) and issue 36 flags 1/3 (heal ability now ruled; consumables as between-mission purchases now ruled). Issue 36 flag 2 (equippable loadouts) stays resolved-as-banned: equipping was not lifted.
+- Open parameters spawned as **grilling issue 38** (`.scratch/reference-mining/issues/38-item-system-parameters.md`): item data schema/file, shop stock authoring, shared-pool capacity, throw-range formula and `throwing`-stat values, offensive/utility items or heal-only, enemy/AI item symmetry, mage-heal scaling formula, and the deployment/UI surface for the pool.
+
+### G27 — Phase end, turn boundary, and win/loss precedence (reference-mining issue 29)
+Ruled by owner, 2026-08-12. Issue: `.scratch/reference-mining/issues/29-turn-victory.md` (research-ticket flags run through /grill, per the G23 precedent). Canonical statements: design_doc.md §3.7 (phase-end + turn-boundary bullets) and §8.2 (checkpoint-precedence bullet + defend/survive annotations).
+- **Q1 = A:** the player phase ends automatically when every player unit has acted (the reference clone's behavior); explicit `end_turn` ends the phase early and forfeits unacted units' activations. End-of-phase confirmation dialogs are view-side presentation, outside the sim rule.
+- **Q2 = A:** turn N = player phase N followed by enemy phase N; the defend/survive "end of turn N" checkpoint falls after the **enemy** phase of N. Simplest reading logged per this file's protocol (correct if wrong): the shared `turn_number` increments when a new player phase begins, both phases of turn N carry N in `turn_changed` — the reference's separate player/enemy counters are rejected by the contract's single number.
+- **Q3 = B:** at a shared checkpoint, the win evaluates first — a simultaneous win+loss is a win. Mid-phase instant triggers stay unordered because they cannot coincide; the /grill session verified D9 (no counter from a destroyed defender) precludes the intra-skirmish win/loss collision.
+- All rulings by owner, no rationale stated.
+
+### G28 — No enemy-intent display; no flying units (reference-mining issue 30)
+Ruled by owner, 2026-08-12. Issue: `.scratch/reference-mining/issues/30-enemy-ai.md` (research-ticket flags run through /grill, per the G23 precedent). Canonical statements: design_doc.md §3.5 (no-intent-display bullet) and §3.3 (move_class closure).
+- **Q1 = A:** no enemy-intent display ships. The reference's attacker→target telegraph widget survives only as a gray-box **debug toggle** — dev affordance, not UI, no D5 contract impact, removable without a ruling. The player's forecast popup (§3.1/G16) is unrelated and unchanged.
+- **Q2 = A:** no flying units — a standing rule, not a deferral. move_class stays closed at `infantry | mounted | siege`; airborne concepts are flavor only (§7's constructs line licenses exotic *ground* units). The G20 cost model could express flight as data, so this is deliberately a vocabulary ruling: adding flight later requires a new ruling plus a fourth per-terrain cost column.
+- Housekeeping (this apply, G23 wording-fix precedent): removed a duplicated "Stretch goal" line in §5 introduced by the G26 apply (found during this issue's /grill verification).
+- All rulings by owner, no rationale stated.
+
+### G29 — Dialogic adopted; cutscene schema, event timing, and objective mutation (reference-mining issue 32)
+Ruled by owner, 2026-08-12. Issue: `.scratch/reference-mining/issues/32-events-cutscenes.md` (research-ticket flags run through /grill, per the G23 precedent). Canonical statements: design_doc.md §10 (Dialogic adoption + boundaries), §7 (cutscene data schema), §8.2 (one-primary-at-a-time), §8.3 (event timing/order + mutation events).
+- **Q1 = other (owner's words):** "Dialogic is a go. No need to reinvent the wheel." Dialogic is adopted as the VN/cutscene presentation layer — the single ruled exception to the no-plugins convention (CLAUDE.md and pre_prompt reconciled; conventions §8's plugin-free *test* stance is untouched). Boundaries: never in `/sim`; headless tests stay plugin-free. **Derived compositions logged (correct if wrong):** (1) because Q2=B was ruled in the same stroke, scene content is authored in DoT's JSON schema and the runner *drives* Dialogic — D1's one-format rule holds and Dialogic's timeline format is never an authoring format; (2) pre_prompt's stub-textbox-for-the-prototype stands as build-order latitude — Dialogic arrives when the VN layer is built. Execution consequence (not ruled here): installing Dialogic adds its autoload; conventions §3's permitted-autoload list will need that noted at adoption time.
+- **Q2 = B:** the cutscene step-type vocabulary is reserved up front — `line` implemented first; `camera` / `actor` / `wait` named now, implemented when a chapter needs them.
+- **Q3a = C:** turn-number triggers author their boundary in data — `at: start` (player-phase start) or `at: end` (after the enemy phase, G27's boundary). A turn-end trigger coincides with §8.2 checkpoints, where G27's win-first precedence governs.
+- **Q3b = A:** when a scene and spawns share a trigger, the scene resolves first, then the spawns (the reference's pause → beat → spawn → resume envelope, made data-driven).
+- **Q4 = B:** narrow scripted mutation — chapter data may declare events (same trigger vocabulary) replacing the primary objective or moving the champion designation mid-mission; exactly one primary at a time (G4 Q6 amended, wording not intent); evaluation always uses the current primary; `objective_progress` announces changes. Simplest reading logged (correct if wrong): the kill-champion secondary follows the current designation at the moment of the kill.
+- Rationale stated only for Q1 (quoted above); Q2/Q3a/Q3b/Q4 ruled by owner, no rationale stated.
+
+### G30 — Suspend cadence, enemy-phase quits, and slot consumption (reference-mining issue 33)
+Ruled by owner, 2026-08-12 (submitted under "32" — applied to 33, whose template the rulings match; 32 closed under G29 with a different sub-question set. The standing misfiling precedent). Issue: `.scratch/reference-mining/issues/33-save-suspend.md` (research-ticket flags run through /grill, per the G23 precedent). Canonical statement: design_doc.md §6 (saves paragraph); conventions §7 defers to it.
+- **Q1 = C:** the suspend slot is written on mid-mission quit and autosaved at every phase boundary (player-phase start and enemy-phase start, the G27 boundaries). Crash recovery restores the last boundary snapshot; a session without the slot falls back to the pre-battle retry flow (G5 Q2, only the attempt lost).
+- **Q2 = B:** quitting during the enemy phase stores the enemy-phase-start snapshot; resume replays the phase from its start. The AI is deterministic and no player input intervenes, so the replayed phase is identical to the uninterrupted one — no plan state is ever serialized (G17 Q2 upheld) and no `smart`-tier divergence can occur. The view may fast-forward the replay (presentation).
+- **Q3 = B:** "deleted on resume" fires on the first player command after resume. Loading and inspecting the board is crash-safe (slot intact); acting consumes the slot; reloading without acting changes nothing.
+- **Derived composition, logged per this file's protocol (correct if wrong):** the G5 "no save-scumming" rule narrows to its factual residue under C+B+B — voluntary quit/resume can never rewind; a deliberate crash rewinds at most to the current player-phase start (undoing only the player's own uncommitted phase); enemy-phase outcomes are un-scummable by determinism. Accepted as the cost of crash resilience.
+- All rulings by owner, no rationale stated.
+
+### G31 — Danger-zone overlay and inspection disclosure (reference-mining issue 34)
+Ruled by owner, 2026-08-12. Issue: `.scratch/reference-mining/issues/34-battle-ui.md` (research-ticket flags run through /grill, per the G23 precedent). Canonical statement: design_doc.md §3.1 (threat-display-and-inspection paragraph); §14 gray-box inventory and pre_prompt reconciled.
+- **Q1 = D:** the enemy threat-range overlay exists in both forms — per-enemy highlight (the reference's `highlight_enemy` pattern) and a global union toggle. It paints results of the new `get_threat` sim query (added to the D5 View→Sim surface, provisional name); the view computes nothing. Distinct from and unaffected by G28's no-intent-display ruling — range, not intent.
+- **Q2 = A:** on fog chapters the overlay is computed from visible enemies only; hidden enemies contribute nothing (G12's no-ghosts rule upheld — an overlay must not reveal hidden units through their ranges); the overlay under-reports honestly and ambush risk stays real.
+- **Q3 = A:** unit inspection discloses the §3.3 stat block only; raw damage-table rows/columns are never player-facing. Concrete damage numbers exist solely in the forecast popup against a real attacker/defender pair — G16 Q6's popup boundary is now also the disclosure boundary.
+- All rulings by owner, no rationale stated.
+
+### G32 — Farming-replay entry, "rescaled enemies" struck, and the between-mission loop (reference-mining issue 35)
+Ruled by owner, 2026-08-12 (submitted under "34" — applied to 35, whose template the rulings match; the standing misfiling precedent. A first submission carried a stray Q4 against a three-question template and gate-failed with no edits; this resubmission — including Q3 changed from A to B — is the authoritative set). Issue: `.scratch/reference-mining/issues/35-campaign-flow.md`. Canonical statements: design_doc.md §8.1 (replay entry + the loop) and §6 (farming wording + save writes).
+- **Q1 = A:** farming replays launch from cleared campaign-map nodes — the node is the only entry point; pre_prompt's camp farming option is reconciled away (no camp farming menu exists).
+- **Q2 = C:** "rescaled enemies" struck from §6 — a replay is the story battle unchanged; the reduced yield (G10) is the only difference; §7's never-dynamic-scaling rule stands untouched and the chapter schema gains no replay-variant field.
+- **Q3 = B:** the between-mission loop is map-centric — completion → debrief → campaign map; camp is optional, entered from the map at will, freely re-enterable. The campaign save is written on mission completion *and* on every camp exit (§6 amended from camp-exit-only), so skipping camp never loses progress.
+- All rulings by owner, no rationale stated.
+
+### G33 — Item-system parameters (grilling issue 38)
+Ruled by owner, 2026-08-12. Issue: `.scratch/reference-mining/issues/38-item-system-parameters.md` (the follow-through spawned by G26). Canonical statements: design_doc.md §4 (parameters bullet in the Items block); §3.3, §3.5, §5, §8.3 carry the per-topic statements.
+- **Q1 = B:** each item is its own data file under `data/items/` — the per-General pattern; adding an item is adding a file, zero code.
+- **Q2 = C:** the shop catalog is unlock-based — items enter on first story clears via §8.3's `unlocks` field (the G14 Q5 pattern; farming replays never re-fire) and stay purchasable thereafter.
+- **Q3 = A:** the shared pool is unlimited and fully available in every battle; no deployment loadout step. Upgrades G26's any-unit-draws simplest reading to ruled.
+- **Q4 = A:** throw range = the thrower's `throwing` stat in tiles, directly; self-use is range 0. Upgrades G26's stat-is-range-not-amount simplest reading to ruled (§3.3 annotation updated).
+- **Q5 = B:** effect-type vocabulary reserved up front (the G29 Q2 pattern): `heal` implemented; `cure` and `buff` named now, unimplemented. The two reserved names come from the option's example set — correct if different names are wanted.
+- **Q6 = A:** items are side-symmetric — chapter data may grant the enemy an item pool (§8.3 field added); the coordinator values item use through the G17 Q6 active-valuation mechanism (§3.5 annotated); the exact-choice enemy-phase test fixture includes items when present.
+- **Q7 = A:** mage-heal scaling reuses the D12 level package — heal = base × `power_mult`; no separate heal curve (D12 annotated).
+- **Q8 = A:** UI surface is minimal — a camp-shop submenu and an "Item" entry in the battle action menu (pool list → target selection over throw range); the deployment screen is untouched. Gray-box ColorRect lists; the issue-36 salvage shapes are the rebuild references.
+- Propagation note: conventions.md §4's `data/` tree gained `items/` (one file per item) under §11's amendment protocol — conventions → v1.3, reason: G33 Q1.
+- All rulings by owner, no rationale stated.
+
 ---
 
 ## Reference-project engine migration (Godot 3.x → 4.6.1)
 
 Applied to the imported Fire Emblem reference clone under `engine/scenes/assets` on branch `reference_project`. Not game-design decisions — recorded here as the audit trail for the conversion. Date: 2026-07-26/27.
+
+Update 2026-08-11 (ruling G22, grilling issue 24): the clone was ruled out of the tracked repo — it relocates to `fe_reference/`, an untracked gitignored local folder (owner-executed). These M-entries stand unchanged as the audit trail of the conversion as it happened; the location they describe is historical.
 
 ### M1 — Converted via Godot's built-in `--convert-3to4`, then hand-fixed residuals
 Ran `Godot_v4.6.1 --convert-3to4` (683 files) for the mechanical bulk (scene format, `Sprite→Sprite2D`, `KinematicBody2D→CharacterBody2D`, `yield→await`, `connect()` signatures, `instance()→instantiate()`, `Texture→Texture2D`). Everything the converter could not do was fixed by hand.

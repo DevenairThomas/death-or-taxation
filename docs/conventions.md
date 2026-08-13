@@ -1,6 +1,6 @@
 # CONVENTIONS — DEATH OR TAXATION
 
-**Version 1.0 · Locked**
+**Version 1.3 · Locked** *(1.3 — §4 tree: `data/items/` added per the item-system ruling — G33, 2026-08-12; 1.2 — retroactive roll-up of the already-ruled §7 suspend-slot (G5) and §6 English-only (G15) notes, §8 test-list refresh, §11 heading fix, runner-command spelling — G23, 2026-08-11; 1.1 — reference-clone home ruled out of the tracked repo: §4 tree + folder rule — G22, 2026-08-11)*
 
 This document is the mechanical rulebook for the codebase. `design_doc.md` says *what the game is*; this says *how the repo is written*. Where the two disagree, `design_doc.md` wins on design and this document wins on structure. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries; where they disagree with `design_doc.md` on a design rule, `design_doc.md` wins (ruled 2026-08-02, grilling issue 01).
 
@@ -122,6 +122,7 @@ res://
 │  ├─ units/                 squads.json, singles.json
 │  ├─ generals/              one file per General
 │  ├─ abilities/             abilities.json
+│  ├─ items/                 one file per item (G33)
 │  ├─ maps/                  one file per battle map
 │  ├─ chapters/              campaign graph + per-chapter definitions
 │  ├─ scenes/                VN cutscene timelines
@@ -156,13 +157,12 @@ res://
 │
 ├─ locale/                   translation CSVs + generated .translation
 ├─ tests/                    run_tests.gd + test_*.gd
-├─ docs/                     design_doc.md, conventions.md, DECISIONS.md
-└─ reference/                READ-ONLY. The Fire Emblem reference clone. Never imported.
+└─ docs/                     design_doc.md, conventions.md, DECISIONS.md
 ```
 
 Folder rules:
 
-- **`/reference` is read-only and never referenced from game code.** No `res://reference/...` path appears anywhere outside `/reference`. It is documentation that happens to compile.
+- **The Fire Emblem reference clone is not part of the tracked repo** (ruled 2026-08-11, G22). It lives in `fe_reference/`, an untracked, gitignored local folder — read-only study material. No game code references it and no `res://` path into it appears anywhere in the tracked tree; this is a doc-level rule enforced by review, with no automated test (G22 Q5).
 - **Nothing in `/data` contains logic.** No expressions, no script paths that get executed, no conditionals. Data describes; code decides.
 - **No folder exceeds roughly fifteen files.** Past that, it wants a subfolder. This is a human-navigability rule, not a technical one.
 - **Feature-local assets live with the feature.** A placeholder texture used only by the forecast popup lives in `ui/forecast_popup/`. Anything used by two features moves to `/assets`.
@@ -197,7 +197,7 @@ Every user-visible string goes through `tr()` from the first line of UI written.
 ## 7. Saves and user files
 
 - **All writes go to `user://`. Never `res://`.** `res://` is read-only in an exported build; a save system that writes there works in the editor and silently fails for every player. The reference project has this bug.
-- Two files, separate concerns: campaign meta save, and settings. The mid-mission suspend is a third (ruled built — 2026-08-03, grilling issue 05: a single slot, written on mid-mission quit, deleted on resume; no save-scumming).
+- Two files, separate concerns: campaign meta save, and settings. The mid-mission suspend is a third (ruled built — 2026-08-03, grilling issue 05; cadence amended 2026-08-12, G30: a single slot, written on mid-mission quit and autosaved at every phase boundary; an enemy-phase quit stores the enemy-phase-start snapshot; consumed on the first player command after resume — see design_doc §6 for the canonical statement and the accepted crash-rewind residue).
 - Every save file's first key is `schema_version` (integer). A migration function exists from version 1 onward, even when it is a no-op, because writing it later means guessing at old formats.
 - Saves are serialized from `/sim` data structures directly. Never by walking the scene tree, never by asking nodes to serialize themselves.
 - A corrupt or unreadable save produces a clear message and a safe state, never a crash.
@@ -206,10 +206,10 @@ Every user-visible string goes through `tr()` from the first line of UI written.
 
 ## 8. Testing
 
-- Runner: `godot --headless --script res://tests/run_tests.gd`. Plain GDScript, no plugin dependency, one command, zero setup.
+- Runner: `godot --headless --path . -s res://tests/run_tests.gd`. Plain GDScript, no plugin dependency, one command, zero setup.
 - **New logic in `/sim` requires new tests in the same commit.** This is the only hard gate.
 - Tests are assertion-based. A script that prints output for a human to eyeball is not a test.
-- Required permanent tests: the worked damage examples from `design_doc.md` §3, the minimum-damage rule, the armament triangle at every matchup, squad HP degradation, singles and Generals not degrading, counterattack conditions, objective evaluation for each objective type, AI target selection on a fixed board with an asserted exact choice, the soul level-cost table, revival pricing, and the RNG grep of `/sim`.
+- Required permanent tests: the worked damage examples from `design_doc.md` §3, the minimum-damage rule, the armament triangle at every matchup, squad HP degradation, singles and Generals not degrading, counterattack conditions, objective evaluation for each objective type, the enemy-phase plan test — the full ordered enemy-phase plan asserted for a fixed board and vision state (G17), through the deterministic tie-break chain (G21) — fog visibility (G12), per-class terrain movement costs (G20), the soul level-cost table, revival pricing, and the RNG grep of `/sim`.
 - A test names what it asserts: `test_min_damage_applies_when_formula_floors_to_zero`, not `test_damage_2`.
 - The suite passes before every commit. A red suite is fixed or reverted, never left.
 
@@ -250,6 +250,6 @@ Each of these is a specific, identified failure in the reference project. They a
 
 ---
 
-11. Amending this document
+## 11. Amending this document
 
 Changing a rule here means changing the codebase to match. Amendments are made by editing this file, bumping its version, and logging the reason in `DECISIONS.md`. Rules are not suspended for a single file, and "just this once" is not a category that exists.

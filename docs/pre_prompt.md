@@ -122,7 +122,7 @@ Trenton — small elite force ("low budget" superseded by tight slot caps, issue
 (Objective semantics — seize/defend/escape/survive/rout win and loss conditions — are canonical in design_doc.md §8.2, ruled 2026-08-03, grilling issue 04.)
 
 
-Campaign flow for the prototype: Mode select (Standard / No-Revive with warning) → Map 1 → camp screen → Map 2 → camp → Map 3 → victory screen. Camp screen = souls display, level-up UI, revival UI, cutscene stub playback, farming option (replay a completed map at 40% souls).
+Campaign flow for the prototype: Mode select (Standard / No-Revive with warning) → Map 1 → campaign map → Map 2 → Map 3 → victory screen; the camp screen is optional, entered from the campaign map (ruled 2026-08-12, DECISIONS G32 — map-centric loop; completion and camp exit both write the campaign save). Camp screen = souls display, level-up UI, revival UI, cutscene stub playback. Farming replays launch from cleared campaign-map nodes, not a camp option (G32).
 
 Cutscene system: minimal VN stub — full-width bottom textbox, speaker name label, colored rectangle as portrait placeholder, advance on click/space, scenes defined in data files. 1 short placeholder scene before each map (3–5 lines, comedic tone: the lich is sincerely furious about tax policy) + character-scene stubs that fire on Generals reaching L3/L5. All scenes play regardless of who is dead.
 </prototype_scope>
@@ -130,10 +130,10 @@ Cutscene system: minimal VN stub — full-width bottom textbox, speaker name lab
 <technical_requirements>
 
 
-Godot 4.x (latest stable), GDScript. No C#, no plugins except optionally built-in features. Do not use Dialogic for the prototype — the stub textbox is enough.
+Godot 4.x (latest stable), GDScript. No C#, no plugins except optionally built-in features — amended (ruled 2026-08-12, DECISIONS G29): Dialogic is adopted as the VN/cutscene presentation layer (the single plugin exception; see design_doc §10 for its boundaries). For the gray-box prototype the stub textbox remains sufficient — adopt Dialogic when the VN layer is actually built (G29 simplest reading).
 Grid: use AStarGrid2D for pathfinding. Terrain per tile: movement cost + terrain defense value. Terrain types: Plains (def 0, cost 1), Forest (def 0.2, cost 2), Mountain (def 0.4, cost 3, entry restricted by move_class in data — prototype: infantry only), Road (def 0 — the original −0.1 was ruled a typo, issue 03 Q5 — cost 1), River (impassable except bridges), HQ/Zone (def 0.3, cost 1). (Movement/occupancy rules — allies pass through, enemies block, never end on an occupied tile, no zone of control, range is a pure distance check: canonical in design_doc.md §3.4, ruled 2026-08-03, grilling issue 03.)
 Data-driven everything: unit stats, the damage table, terrain, Generals, abilities, maps, scenes, and economy constants live in data files (custom Resource classes or JSON — choose one and be consistent). Adding a unit or map must require zero code changes.
-Rendering: ColorRect/Polygon2D units with faction tint + a text label (type initial + HP number). Movement range = blue tile overlay; attack range = red; a damage-forecast popup before confirming any attack (show exact both-sides damage — the game is deterministic, so the forecast is a promise, not an estimate).
+Rendering: ColorRect/Polygon2D units with faction tint + a text label (type initial + HP number). Movement range = blue tile overlay; attack range = red; enemy danger zones = a third overlay tint, per-enemy highlight + global union toggle, visible-enemies-only under fog (ruled 2026-08-12, DECISIONS G31); a damage-forecast popup before confirming any attack (show exact both-sides damage — the game is deterministic, so the forecast is a promise, not an estimate). Unit inspection shows the stat block only — never raw damage-table rows (G31).
 Architecture: separate sim from view. The battle simulation (grid state, units, skirmish resolution, AI) must be pure GDScript classes that never touch nodes — unit-testable headlessly. The scene layer renders state and forwards input. Use signals for sim→view events (unit_damaged, unit_destroyed, turn_changed, mission_complete).
 Save: campaign JSON save file — campaign progress, souls, General levels/alive-state, mode flag — saved on camp-screen exit; plus a single mid-mission suspend slot (written on quit, deleted on resume — no save-scumming). The original "single file" wording was superseded by the two-files-plus-suspend layout of conventions.md §7 (ruled 2026-08-03, grilling issue 05). Defeat/retry semantics: design_doc.md §6.
 Project structure: /sim (pure logic), /data (resources), /scenes (view), /ui, /tests. Include a project.godot and a README with exact run instructions.
@@ -149,7 +149,7 @@ Sim core: grid, terrain, units, movement ranges, skirmish resolution with the da
 Battle scene: rendering, input, turn loop, movement/attack overlays, damage forecast, win/loss for rout + seize + defend objectives.
 Enemy AI: dormancy, activation, target scoring with degradation-aware math, guard/aggressive flags.
 Deployment + economy: pre-battle deployment screen with per-category slot caps (general/tank/infantry — battle budget and unit costs abolished, ruled 2026-08-06, grilling issue 09) and player-assigned start-tile placement.
-Campaign layer: mode select (with No-Revive warning + game-over-on-last-General), camp screen (souls, level-ups with ability unlocks at 3/5, revival at 18×level, farming replay at 40% yield), save/load.
+Campaign layer: mode select (with No-Revive warning + game-over-on-last-General), camp screen (souls, level-ups with ability unlocks at 3/5, revival at 18×level), farming replays from cleared campaign-map nodes at 40% yield (G32), save/load.
 Cutscene stub + content: the VN textbox, the 3 maps' scenes, character-scene flags, and the 3 maps themselves, tuned so Map 3 is genuinely hard with the given slot caps.
 
 
