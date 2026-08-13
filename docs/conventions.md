@@ -1,6 +1,6 @@
 # CONVENTIONS — DEATH OR TAXATION
 
-**Version 1.3 · Locked** *(1.3 — §4 tree: `data/items/` added per the item-system ruling — G33, 2026-08-12; 1.2 — retroactive roll-up of the already-ruled §7 suspend-slot (G5) and §6 English-only (G15) notes, §8 test-list refresh, §11 heading fix, runner-command spelling — G23, 2026-08-11; 1.1 — reference-clone home ruled out of the tracked repo: §4 tree + folder rule — G22, 2026-08-11)*
+**Version 1.4 · Locked** *(1.4 — single-unit paradigm (G35, 2026-08-12): §1 `Tier` enum two-valued, §2 inheritance example reworded, §4 `units/` file note, §8 test list — squads/singles merged, degradation abolished; 1.3 — §4 tree: `data/items/` added per the item-system ruling — G33, 2026-08-12; 1.2 — retroactive roll-up of the already-ruled §7 suspend-slot (G5) and §6 English-only (G15) notes, §8 test-list refresh, §11 heading fix, runner-command spelling — G23, 2026-08-11; 1.1 — reference-clone home ruled out of the tracked repo: §4 tree + folder rule — G22, 2026-08-11)*
 
 This document is the mechanical rulebook for the codebase. `design_doc.md` says *what the game is*; this says *how the repo is written*. Where the two disagree, `design_doc.md` wins on design and this document wins on structure. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries; where they disagree with `design_doc.md` on a design rule, `design_doc.md` wins (ruled 2026-08-02, grilling issue 01).
 
@@ -25,7 +25,7 @@ Godot's own style guide is followed, with no local deviations. The single guidin
 | Private members (functions and vars) | `_snake_case` | `var _dirty_tiles`, `func _rebuild_cache()` |
 | Constants | SCREAMING_SNAKE_CASE | `const MIN_DAMAGE := 1` |
 | Enum type | PascalCase | `enum Tier` |
-| Enum values | SCREAMING_SNAKE_CASE | `enum Tier { SQUAD, SINGLE, GENERAL }` |
+| Enum values | SCREAMING_SNAKE_CASE | `enum Tier { UNIT, GENERAL }` |
 | Signals | snake_case, past tense | `signal unit_destroyed(unit_id)` |
 | Data keys (JSON) | snake_case | `"move_class": "infantry"` |
 | Localization keys | snake_case, dot-scoped | `ui.battle.end_turn` |
@@ -75,7 +75,7 @@ func forecast(attacker: SimUnit, defender: SimUnit, from_tile: Vector2i) -> Skir
 
 **Node access.** Inside a scene, use typed `@onready var` references with `%UniqueName` or a short `$Path`. Never reach outside your own scene with `get_parent()`, and never chain more than one `get_parent()`. Cross-scene communication is by signal upward and method call downward, never by tree walking.
 
-**Prefer composition over inheritance.** Inheritance is for genuine engine specialization (`extends Control`, `extends RefCounted`) and for a small number of deliberate base classes. It is never used to express content differences. There will be no `LineInfantry extends Squad` — a Line Infantry squad is a row in `units.json`.
+**Prefer composition over inheritance.** Inheritance is for genuine engine specialization (`extends Control`, `extends RefCounted`) and for a small number of deliberate base classes. It is never used to express content differences. There will be no `LineInfantry extends SimUnit` — Line Infantry is a row in `units.json`.
 
 ---
 
@@ -119,7 +119,7 @@ res://
 │
 ├─ data/                     JSON only — no code, no logic
 │  ├─ combat/                damage_table.json, armament_triangle.json, terrain.json
-│  ├─ units/                 squads.json, singles.json
+│  ├─ units/                 unit-type definitions (the squads/singles file split was superseded — G35; final file layout: schema-forge ticket 40)
 │  ├─ generals/              one file per General
 │  ├─ abilities/             abilities.json
 │  ├─ items/                 one file per item (G33)
@@ -209,7 +209,7 @@ Every user-visible string goes through `tr()` from the first line of UI written.
 - Runner: `godot --headless --path . -s res://tests/run_tests.gd`. Plain GDScript, no plugin dependency, one command, zero setup.
 - **New logic in `/sim` requires new tests in the same commit.** This is the only hard gate.
 - Tests are assertion-based. A script that prints output for a human to eyeball is not a test.
-- Required permanent tests: the worked damage examples from `design_doc.md` §3, the minimum-damage rule, the armament triangle at every matchup, squad HP degradation, singles and Generals not degrading, counterattack conditions, objective evaluation for each objective type, the enemy-phase plan test — the full ordered enemy-phase plan asserted for a fixed board and vision state (G17), through the deterministic tie-break chain (G21) — fog visibility (G12), per-class terrain movement costs (G20), the soul level-cost table, revival pricing, and the RNG grep of `/sim`.
+- Required permanent tests: the worked damage examples from `design_doc.md` §3, the minimum-damage rule (initiated attacks) and the counter zero-damage exemption (G35), damage independence from attacker HP (no degradation — G35), the armament triangle at every matchup, counterattack conditions including `counter_mult`, objective evaluation for each objective type, the enemy-phase plan test — the full ordered enemy-phase plan asserted for a fixed board and vision state (G17), through the deterministic tie-break chain (G21) — fog visibility (G12), per-class terrain movement costs (G20), the soul level-cost table, revival pricing, and the RNG grep of `/sim`.
 - A test names what it asserts: `test_min_damage_applies_when_formula_floors_to_zero`, not `test_damage_2`.
 - The suite passes before every commit. A red suite is fixed or reverted, never left.
 

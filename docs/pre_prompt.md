@@ -1,27 +1,26 @@
 You are a senior Godot 4 gameplay engineer building the gray-box prototype of DEATH OR TAXATION, a turn-based tactics game. You write clean, data-driven, production-quality GDScript. The complete design specification is below. It is locked: implement exactly what is specified, and where the spec is silent, choose the simplest option that doesn't contradict it and log the choice in DECISIONS.md rather than inventing new mechanics.
 
 <project_overview>
-DEATH OR TAXATION is an HD 2D tactics game blending Advance Wars (army-scale grid combat, deterministic skirmish math) with Fire Emblem (persistent named characters, VN-style story scenes). Premise: an isekai'd mage seized control of the Crown and assassinated America's founding fathers; the player is an isekai'd lich sent to rescue America from the horrors of Taxation without Representation by raising the founders as undead Generals and fighting the Revolutionary War as the Continentals.
+DEATH OR TAXATION is an HD 2D tactics game in the Fire Emblem lineage — persistent named characters, VN-style story scenes — over army-scale, deterministic, table-driven skirmish combat (the Advance Wars citation was dropped — ruled 2026-08-12, G35). Premise: an isekai'd mage seized control of the Crown and assassinated America's founding fathers; the player is an isekai'd lich sent to rescue America from the horrors of Taxation without Representation by raising the founders as undead Generals and fighting the Revolutionary War as the Continentals.
 
 This build is the gray-box prototype: every system real and playable, all visuals placeholder (ColorRects, simple polygons, text labels). Its purpose is to prove the skirmish loop is fun before any art money is spent. No art assets. No music. Placeholder everything visual.
 </project_overview>
 
 <locked_design_spec>
 
-The three unit tiers — "Squads degrade. Singles endure. Generals grow."
+The two unit tiers (squads/singles merged, degradation abolished — ruled 2026-08-12, G35)
 
 
-SQUADS (massed troops): AW model. Damage dealt scales with the squad's remaining HP percentage. Disposable, purchased per battle.
-SINGLE UNITS (monsters/war-engines, e.g., Death Knight): static stats — full damage at any HP. Purchased per battle.
+UNITS (soldiers, monsters, war-engines — e.g., Death Knight): static stats — full damage at any HP. Disposable, per battle.
 GENERALS (named characters): persistent roster, level 1–5, grow via souls. Deployed per battle into general slots (budget cost superseded — issue 09).
 
 
 Combat resolution (deterministic — NO RNG anywhere)
 
 
-When two units engage, a skirmish resolves: attacker deals damage first, then the defender counterattacks with its remaining strength (if still alive and the target is within its range).
-damage = base_table[attacker_type][defender_type] × armament_triangle[attacker_arm][defender_arm] (advantage ×1.5 / neutral ×1.0 / disadvantage ×0.5; rifle → melee → musket → rifle; three classes, no arcane armament class) × attacker_hp_percent (squads only; 1.0 for singles/generals) × (1 − defender_terrain_defense) × (1 − defender_defense) (per-unit stat, 0.0 neutral — ruled 2026-08-10, grilling issue 16)
-Round down. Minimum 1 damage on any legal attack. Zero-damage attacks must be impossible.
+When two units engage, a skirmish resolves: attacker deals damage first, then the defender counterattacks (if still alive and the attacker is within its counter_ranges). A counter is the same formula additionally × the countering unit's counter_mult stat, and is exempt from the minimum-1 rule — a counter may deal 0 (ruled 2026-08-12, G35).
+damage = base_table[attacker_type][defender_type] × armament_triangle[attacker_arm][defender_arm] (advantage ×1.5 / neutral ×1.0 / disadvantage ×0.5; rifle → melee → musket → rifle; three classes, no arcane armament class) × power/ability multipliers (Generals and abilities; 1.0 otherwise — term restored to this summary, G38) × counter_mult (counters only; 1.0 on initiated attacks — G35) × (1 − defender_terrain_defense) × (1 − defender_defense) (per-unit stat, 0.0 neutral — ruled 2026-08-10, grilling issue 16)
+Round down. Minimum 1 damage on any legal initiated attack (counters excepted — G35). Zero-damage initiated attacks must be impossible. Damage never scales with remaining HP — no degradation mechanic exists (G35).
 Guaranteed hits. No hit chance, no crit, no dodge, no luck value of any kind.
 (This file is a derived summary; design_doc.md §3 is the canonical statement of the damage pipeline — ruled 2026-08-02, grilling issue 01.)
 
@@ -29,13 +28,16 @@ Guaranteed hits. No hit chance, no crit, no dodge, no luck value of any kind.
 Worked examples (use these as unit tests)
 
 
-The first three examples are armament-neutral matchups (×1.0); the next two exercise the triangle; all five have defender defense 0, and design_doc.md §3.2 adds two defence-term examples (ruled 2026-08-10, grilling issue 16). Canonical statement: design_doc.md §3.2.
+The set was re-derived when degradation was abolished (ruled 2026-08-12, G35). Examples 1–4 have defender defense 0; 5–6 exercise the defence term; 7–8 exercise the counter stat and its min-1 exemption. Canonical statement: design_doc.md §3.2.
 
-Squad (10 HP max, currently 7 HP) attacks a squad on forest (terrain defense 0.2), table value 6, neutral armament: 6 × 0.7 × 0.8 = 3.36 → floor → 3 damage.
-Same attacker at 1 HP vs. table value 2 on mountain (defense 0.4), neutral armament: 2 × 0.1 × 0.6 = 0.12 → floor → 0 → minimum rule → 1 damage.
-A Single unit at 1/25 HP with table value 8 vs. plains (defense 0), neutral armament: 8 × 1.0 × 1.0 = 8 damage — singles never degrade.
-Squad at 10/10 HP, table value 6, armament advantage (×1.5), vs. plains (defense 0): 6 × 1.5 × 1.0 × 1.0 = 9 damage.
-Squad at 7/10 HP, table value 6, armament disadvantage (×0.5), vs. forest (defense 0.2): 6 × 0.5 × 0.7 × 0.8 = 1.68 → floor → 1 damage.
+Unit, table 6, neutral armament, defense 0, vs. forest (def 0.2): 6 × 1.0 × 0.8 = 4.8 → 4
+Unit, table 2, disadvantage (×0.5), defense 0, vs. mountain (def 0.4): 2 × 0.5 × 0.6 = 0.6 → 0 → min rule → 1
+Unit, table 6, advantage (×1.5), defense 0, vs. plains (def 0): 6 × 1.5 × 1.0 × 1.0 = 9
+Unit, table 6, disadvantage (×0.5), defense 0, vs. forest (def 0.2): 6 × 0.5 × 0.8 = 2.4 → 2
+Unit, table 6, neutral armament, defender defense 0.25, vs. plains (def 0): 6 × 1.0 × 1.0 × 0.75 = 4.5 → 4
+Unit, table 6, neutral armament, defender defense 0.25, vs. forest (def 0.2): 6 × 0.8 × 0.75 = 3.6 → 3
+Counter — surviving defender with counter_mult 0.5 counters, table 4, neutral armament, target on plains (def 0), defense 0: 4 × 0.5 = 2
+Counter — counter_mult 0.5, table 1, neutral armament, target on forest (def 0.2), defense 0: 1 × 0.5 × 0.8 = 0.4 → 0 (counters are exempt from the min rule — a zero-damage counter is legal, G35)
 
 
 The two currencies
@@ -68,14 +70,14 @@ Farming: skirmish battles replayable on existing maps at 40% soul yield (startin
 Souls economy constants (tunable data, start here)
 
 
-Base mission award: 100. Secondary objective bonuses: per-chapter data, up to +50 as an authoring guideline (e.g., finish under N turns +25, lose no squads +15, kill enemy champion +10 — an example palette, not a canonical set; ruled 2026-08-06, grilling issue 10).
+Base mission award: 100. Secondary objective bonuses: per-chapter data, up to +50 as an authoring guideline (e.g., finish under N turns +25, lose no units +15, kill enemy champion +10 — an example palette, not a canonical set; ruled 2026-08-06, grilling issue 10).
 
 
 Enemy AI (FE-tier, intentionally simple)
 
 
 Enemy units are dormant until a player unit enters their threat range (movement + attack range), then activate permanently.
-Active units move to attack the target with the highest score: score = expected_damage_dealt − 0.5 × expected_counter_damage, with a bonus for kills. The AI must use the real damage formula — including squad HP-degradation — when scoring. (This formula is the baseline of the ruled importance-based scoring model — design_doc.md §3.5, ruled 2026-08-06, grilling issue 11.)
+Active units move to attack the target with the highest score: score = expected_damage_dealt − 0.5 × expected_counter_damage, with a bonus for kills. The AI must use the real damage formula — counter_mult included (G35) — when scoring. (This formula is the baseline of the ruled importance-based scoring model — design_doc.md §3.5, ruled 2026-08-06, grilling issue 11.)
 Optional per-unit AI flags: guard (never moves, attacks in range), aggressive (active from turn 1). (The canonical flag set also includes balanced and the competence axis simple/medium/smart — all behaviors ruled 2026-08-10, grilling issue 17; design_doc.md §3.5.)
 No production, no economy, no strategic-layer resource AI. ~~Do not build anything smarter than this.~~ — superseded (ruled 2026-08-06, grilling issue 11): the AI is a coordinated army-level strategist, fully specified in design_doc.md §3.5 (issues 11 + 17).
 
@@ -97,7 +99,7 @@ Prototype-only reductions (these are scope cuts for the gray-box, NOT design cha
 3 Generals (data-driven; adding the rest later must require only new data files):
 
 
-Washington — durable frontliner. L3 ability: Command Aura (adjacent friendly squads +20% damage). L5: Crossing (+2 movement to all adjacent allies at turn start).
+Washington — durable frontliner. L3 ability: Command Aura (+20% damage to adjacent friendly units matching the ability's data-declared target filter — ruled 2026-08-12, G36 Q4; the filter's contents are authored when /data lands). L5: Crossing (+2 movement to all adjacent allies at turn start).
 Franklin — ranged caster, electricity. L3: Lightning Rod (ranged attack hits target tile + 2 tiles in a line behind it; once per mission — ruled 2026-08-03, grilling issue 08, locking it into the active_once trigger). L5: Key & Kite (once per mission: strike every enemy within 3 tiles for table damage; no counter).
 (Ability framework — triggers, targeting shapes, charges, rule exemptions, forecast obligations — canonical in design_doc.md §5, ruled 2026-08-03, grilling issue 08.)
 Lafayette — cavalry, high movement. L3: Ride Through (may move again after attacking, up to leftover movement). L5: Vive la Liberté (+30% damage when attacking a unit already engaged this turn).
@@ -106,18 +108,17 @@ Lafayette — cavalry, high movement. L3: Ride Through (may move again after att
 Unit roster (data-driven):
 
 
-Squads (10 HP): Line Infantry (balanced), Riflemen (range 2, weak defense), Cavalry Squad (move 6), Cannon Crew (range 2–3, cannot counter at range 1, immobile-after-firing NO — keep it simple: just range 2–3, move 3).
-Singles (25 HP): Death Knight (player; melee wall), Bound Golem (enemy; the mage's construct, melee wall), Arcane Sentinel (enemy; range 2 construct).
-Enemy squads mirror player squads as redcoat recolors (same data, different faction tint).
-(Stat-block note, ruled 2026-08-02, grilling issue 02 — canonical: design_doc.md §3.3. Max HP is a per-unit data field; the 10/25 above are prototype values, and Generals set per-General base HP/stats in their data files. Every unit also carries defense (multiplied in as (1 − defense), 0.0 neutral — ruled 2026-08-10, grilling issue 16; "weak defense" above is that stat, below baseline), attack_ranges, counter_ranges, move, and move_class. Cavalry Squad's former "bonus vs. Riflemen" was cut here per that ruling.)
-(move_class assignments, ruled 2026-08-10, grilling issue 22 — canonical: design_doc.md §3.3/§3.4: Line Infantry, Riflemen, Washington, Franklin = infantry; Cavalry Squad, Lafayette = mounted; Cannon Crew, Death Knight, Bound Golem, Arcane Sentinel = siege. The `construct` move_class was removed — "construct" above is flavor only. Terrain costs are per-class; Mountain severely slows non-infantry instead of banning them.)
+Units (one tier — G35; renamed to individual-unit names — G36): Line Infantry (balanced, 10 HP), Rifleman (range 2, weak defense, 10 HP), Cavalryman (move 6, 10 HP), Cannoneer (range 2–3, move 3, 10 HP — cannot counter at range 1, immobile-after-firing NO — keep it simple), Death Knight (player; melee wall, 25 HP), Bound Golem (enemy; the mage's construct, melee wall, 25 HP), Arcane Sentinel (enemy; range 2 construct, 25 HP).
+Enemy units mirror player units as redcoat recolors (same data, different faction tint).
+(Stat-block note, ruled 2026-08-02, grilling issue 02 — canonical: design_doc.md §3.3. Max HP is a per-unit data field; the 10/25 above are prototype values, and Generals set per-General base HP/stats in their data files. Every unit also carries defense (multiplied in as (1 − defense), 0.0 neutral — ruled 2026-08-10, grilling issue 16; "weak defense" above is that stat, below baseline), counter_mult (per-unit counterattack multiplier, 1.0 neutral — ruled 2026-08-12, G35), attack_ranges, counter_ranges, move, and move_class. Cavalry Squad's former "bonus vs. Riflemen" was cut here per that ruling.)
+(move_class assignments, ruled 2026-08-10, grilling issue 22 — canonical: design_doc.md §3.3/§3.4; unit names updated per G36: Line Infantry, Rifleman, Washington, Franklin = infantry; Cavalryman, Lafayette = mounted; Cannoneer, Death Knight, Bound Golem, Arcane Sentinel = siege. The `construct` move_class was removed — "construct" above is flavor only. Terrain costs are per-class; Mountain severely slows non-infantry instead of banning them.)
 
 
 3 test maps (hand-authored in data, ~12×12 to 16×16):
 
 
-Lexington Green — tutorial-shaped. Squads only, rout objective, teaches skirmish math and terrain.
-Bunker Hill — defend objective (hold a marked zone 8 turns). Introduces singles and one deployable General. Secondary: lose no squads.
+Lexington Green — tutorial-shaped. Rout objective, teaches skirmish math and terrain (composition beats are objective-only — G36 Q2).
+Bunker Hill — defend objective (hold a marked zone 8 turns). Introduces one deployable General. Secondary: lose no units (loss scope authored in chapter data — G36 Q3).
 Trenton — small elite force ("low budget" superseded by tight slot caps, issue 09), seize objective (move a General onto the HQ tile — the original "any unit" was superseded: only a General satisfies seize, ruled 2026-08-03, grilling issue 04). Enemy includes a Bound Golem as a named kill-target ("champion" now denotes a chapter's enemy General — ruled 2026-08-03, grilling issue 07; Trenton has none, so the Golem keeps the kill secondary without the label). Secondary: finish under 10 turns, kill the Bound Golem.
 (Objective semantics — seize/defend/escape/survive/rout win and loss conditions — are canonical in design_doc.md §8.2, ruled 2026-08-03, grilling issue 04.)
 
@@ -137,7 +138,7 @@ Rendering: ColorRect/Polygon2D units with faction tint + a text label (type init
 Architecture: separate sim from view. The battle simulation (grid state, units, skirmish resolution, AI) must be pure GDScript classes that never touch nodes — unit-testable headlessly. The scene layer renders state and forwards input. Use signals for sim→view events (unit_damaged, unit_destroyed, turn_changed, mission_complete).
 Save: campaign JSON save file — campaign progress, souls, General levels/alive-state, mode flag — saved on camp-screen exit; plus a single mid-mission suspend slot (written on quit, deleted on resume — no save-scumming). The original "single file" wording was superseded by the two-files-plus-suspend layout of conventions.md §7 (ruled 2026-08-03, grilling issue 05). Defeat/retry semantics: design_doc.md §6.
 Project structure: /sim (pure logic), /data (resources), /scenes (view), /ui, /tests. Include a project.godot and a README with exact run instructions.
-Tests: GUT or a plain test-runner script — at minimum, unit tests for the three worked damage examples above, the minimum-1-damage rule, squad-degradation scoring in AI target selection, level-cost table, and revival pricing.
+Tests: GUT or a plain test-runner script — at minimum, unit tests for the worked damage examples above, the minimum-1-damage rule on initiated attacks, the counter min-1 exemption (a zero-damage counter is legal — G35), counter_mult in AI target scoring, level-cost table, and revival pricing.
 </technical_requirements>
 
 
@@ -147,7 +148,7 @@ Work in milestones. After each milestone, the project must run without errors. D
 Plan first: before any code, output the full file tree, the data schema for units/maps/abilities, and the sim/view signal contract. Wait for my confirmation.
 Sim core: grid, terrain, units, movement ranges, skirmish resolution with the damage formula + tests passing for the worked examples.
 Battle scene: rendering, input, turn loop, movement/attack overlays, damage forecast, win/loss for rout + seize + defend objectives.
-Enemy AI: dormancy, activation, target scoring with degradation-aware math, guard/aggressive flags.
+Enemy AI: dormancy, activation, target scoring on the real damage formula (counter_mult included — G35), guard/aggressive flags.
 Deployment + economy: pre-battle deployment screen with per-category slot caps (general/tank/infantry — battle budget and unit costs abolished, ruled 2026-08-06, grilling issue 09) and player-assigned start-tile placement.
 Campaign layer: mode select (with No-Revive warning + game-over-on-last-General), camp screen (souls, level-ups with ability unlocks at 3/5, revival at 18×level), farming replays from cleared campaign-map nodes at 40% yield (G32), save/load.
 Cutscene stub + content: the VN textbox, the 3 maps' scenes, character-scene flags, and the 3 maps themselves, tuned so Map 3 is genuinely hard with the given slot caps.

@@ -34,30 +34,34 @@ Canonical statement: `design_doc.md` §3 (per ruling G1 below). Mirror:
 ```
 base  = damage_table[attacker.type][defender.type]   # `type` = the §3.3 field name
 base *= armament_triangle[attacker.armament][defender.armament]  # design_doc §3.1; three classes, no arcane
-base *= attacker.power_mult            # general level package; 1.0 for squads/singles
+base *= attacker.power_mult            # general level package; 1.0 for units
 base *= ability modifiers              # e.g. command_aura x1.20, multiplicative, pre-floor
-hp_f  = attacker.hp / attacker.max_hp  if tier == squad else 1.0
+base *= attacker.counter_mult          # counter resolutions only (G35); 1.0 when the attack is initiated
 terr  = 1.0 - terrain[defender.tile].defense
 defn  = 1.0 - defender.defense         # per-unit stat, 0.0 neutral (G16)
-dmg   = floor(base * hp_f * terr * defn)
-dmg   = max(dmg, MIN_DAMAGE)           # MIN_DAMAGE = 1
+dmg   = floor(base * terr * defn)
+dmg   = max(dmg, MIN_DAMAGE)           # MIN_DAMAGE = 1; initiated attacks only (G35) — a counter skips this line and may deal 0
 ```
-Verified vs. the seven canonical worked examples (design_doc §3.2). The original three are armament-neutral (×1.0): `6×0.7×0.8=3.36 → 3`; `2×0.1×0.6=0.12 → 0 → 1`; `8×1.0×1.0=8`. Triangle examples: advantage `6×1.5=9`; disadvantage `6×0.5×0.7×0.8=1.68 → 1`. Defence examples (G16): `6×0.75=4.5 → 4`; `6×0.7×0.8×0.75=2.52 → 2`.
+Verified vs. the eight canonical worked examples (design_doc §3.2, the G35 set): `6×1.0×0.8=4.8 → 4`; min-1 `2×0.5×0.6=0.6 → 0 → 1`; advantage `6×1.5=9`; disadvantage `6×0.5×0.8=2.4 → 2`. Defence examples (G16 term): `6×0.75=4.5 → 4`; `6×0.8×0.75=3.6 → 3`. Counter examples (G35): `4×0.5=2`; `1×0.5×0.8=0.4 → 0` (exempt from MIN_DAMAGE).
 
 Update 2026-08-02 (ruling G2): a per-unit `defense` stat was ruled into existence (issue 02, Q2=B); its pipeline term was pending grilling issue 16.
-Update 2026-08-10 (ruling G16): the defence term landed — multiplicative `(1 − defender.defense)`, stacking independently with terrain, uncapped. Canonical examples now number seven (design_doc §3.2), examples 6–7 exercising defence.
+Update 2026-08-10 (ruling G16): the defence term landed — multiplicative `(1 − defender.defense)`, stacking independently with terrain, uncapped. Canonical examples then numbered seven (design_doc §3.2), examples 6–7 exercising defence.
+Update 2026-08-12 (ruling G35): degradation abolished — the `hp_f` line deleted (no unit's damage scales with HP); counters multiply in the countering unit's `counter_mult` and skip the MIN_DAMAGE floor (a counter may deal 0); the canonical set re-derived as eight examples (design_doc §3.2).
 
 ### D8 — Squad degradation uses current/max HP
 HP-degradation factor is `current_hp / max_hp`, exactly as the worked examples imply. Only `tier == squad` degrades; singles and generals use `1.0`.
+Update 2026-08-12 (ruling G35): **superseded** — degradation was abolished project-wide with the squad/single merge; no unit's damage scales with HP. This entry stands as historical record only.
 
 ### D9 — Counterattack uses post-damage HP
 The counter fires only if the defender survives the initial hit, the attacker's tile range is within the defender's `counter_ranges`, and the counter's degradation factor uses the defender's HP *after* taking damage.
+Update 2026-08-12 (ruling G35): **amended** — the survive-then-counter and `counter_ranges` conditions stand; the degradation-factor clause is void (no degradation exists). A counter now multiplies in the countering unit's `counter_mult` (§3.3) and is exempt from MIN_DAMAGE — a counter may deal 0.
 
 ### D10 — Ability damage modifiers
 Multiplicative, applied to `base` pre-floor, in data-declared order. Keeps the formula a single ordered pipeline.
 
 ### D11 — Cannon Crew "no counter at range 1"
 Modeled generically as `counter_ranges` on the unit def. Cannon Crew = `[2,3]`; melee = `[1]`. No special-case code.
+Update 2026-08-12 (ruling G36): Cannon Crew renamed **Cannoneer** (individual-unit roster renames); the rule is unchanged.
 
 ---
 
@@ -71,6 +75,7 @@ Update 2026-08-12 (ruling G33, Q7): heal-ability amounts scale through this same
 ### D13 — Generals do not degrade
 Generals use `tier:"general"` => no HP-degradation multiplier ("static per level, grows via EXP"), side-agnostic (G8 Q6). **Resolved** (ruling G19, 2026-08-10, grilling issue 21): the ruled distinctions are the complete intended General presence — unique damage-table row/column (G18), per-General base HP/stats (G2), defense incl. level bumps (G16), `power_mult` levels (D12), abilities at L3/L5 (§5), seize/escape roles (G4), the mission-loss exemption (G5 Q6), the `general` slot category (G9), and revival/cutscene persistence (§6). No further General-specific battlefield mechanic exists; adding one requires a new ruling. Canonical closure statement: design_doc §3.
 Update 2026-08-02 (ruling G2): Generals are no longer stat-identical to singles — each General sets a per-General base HP and stats in its own data file (issue 02, Q1b=C).
+Update 2026-08-12 (ruling G35): the tier vocabulary collapsed to `unit | general` (squads/singles merged) and degradation was abolished — "no HP-degradation" ceased to be a General distinction because nothing degrades. The G19 closure list stands with that item struck (design_doc §3).
 
 ### D14 — Per-General damage-table rows (archetype sharing rejected)
 The original recommendation — Generals sharing archetype rows/columns (Washington→`heavy_melee`, Franklin→`arcane_ranged`, Lafayette→`cavalry`, a ~7x7 matrix) — was **rejected** (ruling G18, 2026-08-10, grilling issue 20 decisions-reconciliation). Every General, player and enemy alike, carries a unique `type`: its own row and column in the damage table. The matrix grows with the roster (full campaign ≈ 8–10 unit types + ~11–12 Generals ≈ 19–22 rows); adding a General means authoring its row and column as data — the zero-code-changes rule holds (G18 Q4). `power_mult`, per-General stats, and abilities (D12/G2/G16) individuate on top of the unique row.
@@ -121,7 +126,7 @@ unit_retreated(unit_id)                # scripted boss retreat — alive, exclud
 unit_revealed(unit_id)                 # fog — entered player vision, incl. ambush reveal (G12)
 unit_hidden(unit_id)                   # fog — left player vision, marker vanishes (G12)
 objective_progress(text)
-mission_complete(victory, summary)     # turns, squads_lost, champion_killed
+mission_complete(victory, summary)     # turns, units_lost, champion_killed (renamed from squads_lost — G35; units_lost = total non-General losses, while preservation secondaries evaluate via their chapter-authored slot-category scope — G36 Q3)
 ```
 Attack emission order: `unit_moved` -> `unit_damaged`(defender) -> [`unit_destroyed`] -> [`unit_damaged`(attacker counter)] -> [`unit_destroyed`] -> `skirmish_resolved`.
 Truncated move (fog ambush, G12): `unit_moved`(truncated path) -> `unit_revealed`(ambusher); no attack signals fire; the command returns a distinct truncation outcome — legal-but-cut-short, not invalid (ruled G25 Q2a/Q2b, 2026-08-11).
@@ -155,7 +160,7 @@ Ruled by owner, 2026-08-02. Issue: `.scratch/design-doc-gap-sweep/issues/01-cano
 
 ### G2 — The unit stat block (grilling issue 02)
 Ruled by owner, 2026-08-02. Issue: `.scratch/design-doc-gap-sweep/issues/02-unit-stat-block.md`. Canonical statement: `design_doc.md` §3.3.
-- **Q1a = B:** max HP is a per-unit data field, not a tier constant. Owner's rationale: "We will need to give certain units more hp depending on class and level. This makes units more unique." Prototype values (squads 10, singles 25) are starting data.
+- **Q1a = B:** max HP is a per-unit data field, not a tier constant. Owner's rationale: "We will need to give certain units more hp depending on class and level. This makes units more unique." Prototype values (squads 10, singles 25) are starting data. *(Framing updated 2026-08-12, G35 Q5: the ruling stands; the per-tier framing of the values is historical — docs no longer quote them, values live in unit data files.)*
 - **Q1b = C:** Generals set per-General base HP and stats in their own data files. Owner's rationale: "Units will have per unit hp and stats."
 - **Q2 = B:** a per-unit `defense` stat exists. Owner's rationale: "Units will have a defense stat." This knowingly reopens the pipeline shape ruled in G1; the term's mathematical form, terrain composition, and revised worked examples are spawned as grilling issue 16 — the G1 pipeline stays canonical until 16 is ruled.
 - **Q3 = C:** per-unit matchup bonuses cut — Cavalry Squad's "bonus vs. Riflemen" removed from the roster.
@@ -325,7 +330,7 @@ Ruled by owner, 2026-08-10. Issue: `.scratch/decisions-reconciliation/issues/23-
 - **Q2 = A:** target ties break killable-first → higher `expected_damage` → lower defender current HP → defender board position.
 - **Q3 = B:** destination-tile ties break lowest per-class path cost (G20 costs) → highest terrain defense → board position.
 - **Q4 = A:** under `smart`, an active must strictly beat the best normal action — an exact tie keeps the normal action and holds the charge.
-- **Q5 = B:** the universal final key is board position — (row, col), lowest row then lowest column — for units and tiles alike; total order guaranteed by the occupancy rule (§3.4), computed from sim state, no RNG. Simplest reading logged per this file's protocol (correct if wrong): under `medium`/`smart` sequencing, "current position" means position on the projected board at the moment the acting unit is evaluated.
+- **Q5 = B:** the universal final key is board position — (row, col), lowest row then lowest column — for units and tiles alike; total order guaranteed by the occupancy rule (§3.4), computed from sim state, no RNG. **Amended 2026-08-12 (ruling G34 Q6a, schema-forge issue 39): the key is now (x, y) — lowest x, then lowest y — and data files author all tile coordinates as `[x, y]`; design_doc §3.5 carries the canonical statement.** Simplest reading logged per this file's protocol (correct if wrong): under `medium`/`smart` sequencing, "current position" means position on the projected board at the moment the acting unit is evaluated.
 - All rulings by owner, no rationale stated.
 
 ### G22 — The reference clone leaves the tracked repo (grilling issue 24, conventions stress-test)
@@ -349,7 +354,7 @@ Ruled by owner, 2026-08-11. Issue: `.scratch/reference-mining/issues/26-grid-boa
 - **Q1 = A:** no heal or damage terrain exists — a terrain record carries defense, per-class movement cost, and fog vision data only. The reference clone's Fortress/Heal/Throne/Lava/Poison tile effects map to nothing; a per-turn terrain HP step must not be built without a new ruling. (Q1b — can environment kill — is moot under A.)
 - **Q2 = A:** `unit_healed(unit_id, amount, new_hp, source)` added to the D5 signal contract now, ahead of any emitting mechanic (provisional-name convention applies). Healing as an *ability* effect remains unruled — the convergent flags on reference-mining issues 28/31/36 stay live for capstone triage.
 - **Q3 = A:** a reinforcement appears **on its spawn tile** — no off-map entry concept in the sim; it is targetable and visible (fog rules permitting) from the moment `unit_spawned` fires; spawn "edges" are authored border tiles.
-- **Q4 = C:** an occupied spawn tile shifts the spawn to a deterministic alternate tile. Shift chain not specified in the ruling — simplest reading logged per this file's protocol (correct if wrong): nearest legal tile (unoccupied, terrain not impassable for the unit's move_class, G20) by Manhattan distance from the authored spawn tile, ties broken by the G21 universal board-position key (lowest row, then lowest column); if no legal tile exists on the map (pathological under the occupancy rule), the spawn defers to the next turn and retries — deferral is the fallback, not the mechanic. The enemy-phase exact-choice test should cover a plugged-spawn board once the sim exists.
+- **Q4 = C:** an occupied spawn tile shifts the spawn to a deterministic alternate tile. Shift chain not specified in the ruling — simplest reading logged per this file's protocol (correct if wrong): nearest legal tile (unoccupied, terrain not impassable for the unit's move_class, G20) by Manhattan distance from the authored spawn tile, ties broken by the G21 universal board-position key (lowest row, then lowest column — since amended to (x, y), lowest x then lowest y, G34 Q6a, 2026-08-12; the shift chain follows the amended key); if no legal tile exists on the map (pathological under the occupancy rule), the spawn defers to the next turn and retries — deferral is the fallback, not the mechanic. The enemy-phase exact-choice test should cover a plugged-spawn board once the sim exists.
 - All rulings by owner, no rationale stated.
 
 ### G25 — Path authority, ambush truncation, and reachability semantics (reference-mining issue 27)
@@ -426,6 +431,63 @@ Ruled by owner, 2026-08-12. Issue: `.scratch/reference-mining/issues/38-item-sys
 - **Q7 = A:** mage-heal scaling reuses the D12 level package — heal = base × `power_mult`; no separate heal curve (D12 annotated).
 - **Q8 = A:** UI surface is minimal — a camp-shop submenu and an "Item" entry in the battle action menu (pool list → target selection over throw range); the deployment screen is untouched. Gray-box ColorRect lists; the issue-36 salvage shapes are the rebuild references.
 - Propagation note: conventions.md §4's `data/` tree gained `items/` (one file per item) under §11's amendment protocol — conventions → v1.3, reason: G33 Q1.
+- All rulings by owner, no rationale stated.
+
+### G34 — Schema meta-conventions (schema-forge issue 39)
+Ruled by owner, 2026-08-12. Issue: `.scratch/schema-forge/issues/39-schema-meta-conventions.md`. Canonical statements: this entry (shape rulings) and design_doc.md §3.5 (the amended board-position key); `docs/data_schemas.md` §0 is the derived consolidation (per Q1).
+- **Q1 = B:** `docs/data_schemas.md` is a **derived document** — every schema shape traces to a ruling or a DECISIONS-logged shape choice; where it disagrees with design_doc.md or DECISIONS.md, they win. The conventions.md two-authority preamble is unchanged; no third authority exists.
+- **Q2 = A:** `/data` files carry **no `schema_version`** — repo data ships in lockstep with the code that reads it; conventions §7's version key remains a save-file (user://) rule only.
+- **Q3 = A:** every field a schema defines is **required-explicit** in authored files — no loader-supplied defaults; design-optional features are authored as explicit empty/off values (e.g. `"abilities": []`, `"fog": false`). A missing key is a load error (composes with Q7). Design_doc's "optional" wording (§3.3 abilities, §8.3 loss/enemy-item-pool) describes design optionality, not key absence.
+- **Q4 = B:** **underscore-prefixed annotation keys** (e.g. `"_placeholder"`, `"_note"`) are legal in any data file, carry no game meaning, and are skipped by the loader — the mechanism for marking unruled placeholder values in example files (schema-forge placeholder policy).
+- **Q5 = A:** in one-file-per-entity folders, the file carries `"id"` and the loader **validates `id` == filename** (sans `.json`); mismatch is a load error naming both.
+- **Q6a = C (owner's words: "Revert G21 ruled (row, col) order"):** all tile/board coordinates in data are **`[x, y]` arrays**, and G21 Q5's universal board-position key is **amended to (x, y) — lowest x, then lowest y** — one coordinate order project-wide, matching Godot's `Vector2i`. Derived reading logged per this file's protocol (correct if wrong): "revert" = reverse — the comparison order itself flips to x-first; not a notation-only restatement of the old row-major order.
+- **Q6b = A:** confirmed — localization keys use the singular-domain dot-scoped scheme (conventions §6: `general.washington.name`, `unit.line_infantry.name`), and every displayable entity's field is named `name_key`.
+- **Q7 = A:** **unknown keys are load errors** (strict validation). Derived composition logged per this file's protocol (correct if wrong): Q4 = B requires the underscore prefix as the whitelisted exception — strict applies to every non-underscore key; this composition is materially Q7's option C and was applied as the only reading coherent with Q4 = B.
+- All rulings by owner, no rationale stated beyond Q6a's quoted directive.
+
+### G35 — The single-unit paradigm: squads/singles merged, degradation abolished, counter stat added (wayfinder single-unit-shift, ticket 50)
+Ruled by owner, 2026-08-12. Issue: `.scratch/single-unit-shift/issues/50-unified-unit-ruling.md` (charter rulings: `.scratch/single-unit-shift/map.md`; the line-referenced contradiction inventory: ticket 49 findings). Canonical statements: design_doc.md §3 (tiers, pipeline, counter rule, degradation door-closed), §3.2 (the eight-example set), §3.3 (`counter_mult`, max_hp framing).
+- **Charter (owner, wayfinder charting session, 2026-08-12):** squads and singles merge into one tier; no HP-degradation anywhere; individual-unit fiction — squad vocabulary purged (roster renames and content beats: ticket 51).
+- **Q1 = B (word: "unit"):** the two tiers are **unit | general** — `enum Tier { UNIT, GENERAL }` (conventions §1). The mantra ("Squads degrade. Singles endure. Generals grow.") is dropped with no replacement slogan; §2's pillar reads "Two unit tiers, each defined by one rule" (units: per-battle; Generals: persistent growth).
+- **Q2 = A:** the pipeline change is the pure deletion of the `hp_f` term; armament, power_mult, ability modifiers, terrain, defense, floor all stand unchanged.
+- **Q7 = B (owner's words: "Add a stat for counter attacking. Some units should be better at counter-attacking than others"):** counters are governed by a **per-unit counter stat**, not a global constant. Simplest reading, logged per this file's protocol (correct if wrong): field `counter_mult`, a multiplier folded into the counter's run of the standard pipeline, 1.0 = neutral, values are data authoring. **Counters are exempt from the minimum-1 rule and may deal 0** (owner-ruled consequence); the min-1 lock narrows to *initiated* attacks. D9 amended accordingly.
+- **Q3 = A:** the canonical example set is a minimal-edit derivation — old examples 1/5/7 promoted to full strength (now 1/4/6), old 2 rebuilt as the stacked min-1 case (disadvantage × mountain), old 3 deleted (it demonstrated only the dead squads-degrade/singles-don't asymmetry), old 4/6 kept (now 3/5), plus two new counter examples (7: `counter_mult` applied; 8: a zero-damage counter is legal). Eight examples, design_doc §3.2; CLAUDE.md and pre_prompt mirror them.
+- **Q4 = C:** the Advance Wars citation is dropped from the high concept (design_doc §1, CLAUDE.md, pre_prompt) — Fire Emblem is the sole named lineage; §10's risk line reworded to two tiers.
+- **Q5 = B:** §3.3's max_hp framing no longer quotes values (the "(squads 10, singles 25)" parenthetical dropped); starting values live in unit data files. G2 Q1a annotated — its ruling stands, its per-tier framing is historical.
+- **Q6 = A:** the door is closed — design_doc §3 + §9 and CLAUDE.md's never-implement list now state that no mechanic may scale damage with either side's remaining HP without a new ruling.
+- Propagation: design_doc → v1.7; conventions → v1.4 (§1 enum, §2 inheritance example, §4 `units/` tree note pending schema-forge ticket 40's file-layout decision, §8 test list) under §11's protocol; D7 mirror updated; D8 superseded; D9 amended; D13 annotated; signal contract `squads_lost` → `units_lost` (provisional-name convention; loss scope follows ticket 51's secondary-objective ruling).
+- **Deliberately NOT propagated here** (content re-authoring parked to wayfinder ticket 51, not vocabulary): the prototype roster names (Line Infantry, Riflemen, Cavalry Squad, Cannon Crew), ch1 "squads only" / ch2 "introduce singles" chapter beats (design_doc §8.2 table, pre_prompt maps), Washington's Command Aura "adjacent friendly squads" scope (design_doc §5 aura example + pre_prompt), the exact loss-scope of the preservation secondary, §7's "redcoat squads" narrative framing, §13 sprite counts.
+- Rationale stated only where quoted (Q7); all other rulings by owner without stated rationale.
+
+### G36 — Individual-unit roster renames & content beats (wayfinder single-unit-shift, ticket 51)
+Ruled by owner, 2026-08-12. Issue: `.scratch/single-unit-shift/issues/51-roster-renames-and-content-beats.md` (the G35 follow-through; charter: individual-unit fiction). Canonical statements: design_doc.md §4 (renamed slot mapping), §5 (target-filter mechanism), §7 ("redcoats"), §8.2 (chapter roles), §8.3 (preservation-secondary scope), §12 item 2, §13.
+- **Q1 = B (owner's words):** Cavalry Squad → **Cavalryman**; Cannon Crew → **Cannoneer**; Riflemen → **Rifleman**; **Line Infantry kept**. Death Knight, Bound Golem, Arcane Sentinel confirmed unchanged. The redcoat-recolor pattern (same data, faction tint) is untouched. No data ids exist yet, so the renames are doc-only — ids will be authored fresh at schema time (`line_infantry` examples in conventions §5 / data_schemas §0 remain valid).
+- **Q2 = C:** chapter composition beats are dropped — beats are objective-only. Ch1 "Tutorial — rout objective"; ch2 "Defend objective" (design_doc §8.2 table); pre_prompt's Lexington/Bunker Hill sketches reworded (Bunker Hill keeps its prototype "one deployable General" pacing).
+- **Q3 = C:** the preservation secondary's loss scope is **per-chapter authored** — the secondary's chapter data declares which slot categories count as losses. `units_lost` in the mission summary reports total non-General losses regardless; evaluation reads the authored filter. Exact field shape: schema-forge ticket 44 (via reconciliation ticket 54).
+- **Q4 = C:** abilities declare a **target filter** in data — an aura's affected set is authored, never hardcoded (design_doc §5 targeting bullet). Washington's Command Aura wording updated in pre_prompt; its actual filter contents are authored when /data lands. Exact filter vocabulary: schema-forge ticket 42 (via ticket 54).
+- **Q5 = confirm:** the §12 item-2 wording from the G35 apply stands; its pointer now records the G36 renames.
+- **Q6 = B:** §13's sprite estimate reworded to "~8–10 generic types" matching §12's target.
+- **Q8 = B (owner's choice: "redcoats"):** §7's "redcoat squads plus his summoned constructs" → "redcoats plus his summoned constructs" — the prose-level purge is complete.
+- Deliberate survivals (historical citations, not renamed): "Cavalry Squad's 'bonus vs. Riflemen' was cut" (design_doc §3.3, G2 Q3), DECISIONS G20/G22 assignment lists as originally ruled, design_doc §7's lowercase "riflemen/skirmishers" Daniel Morgan flavor.
+- design_doc → v1.8. All rulings by owner, no rationale stated.
+
+### G37 — Supersession-annotation depth & single-unit-shift verification close-out (wayfinder single-unit-shift, ticket 52)
+Ruled by owner, 2026-08-12. Issue: `.scratch/single-unit-shift/issues/52-propagate-design-doc.md`.
+- **Q1 = A:** the existing annotation set suffices — the directly-affected D-entries (D7, D8, D9, D11, D13) and G2 Q1a carry Update lines; historical G-entries (G6, G8, G9, G11, G16, G17, G19, G20, G22) stand unannotated as append-only history, per the G34/G21 precedent. No blanket back-annotation policy is adopted; readers reach current truth via design_doc v1.8 and G35/G36.
+- **Q2 = B:** the derived-doc verification ticket (single-unit-shift 53) stays separate; not folded into 52.
+- Verification record: the five-doc residual sweep (2026-08-12) found **zero live superseded statements** across design_doc.md, CLAUDE.md, pre_prompt.md, conventions.md, data_schemas.md; every remaining old-paradigm string is a G35/G36 supersession note, a ruled survival (findings-49 appendix + the G36 survivals list), or this file's historical record.
+- All rulings by owner, no rationale stated.
+
+### G38 — Derived-doc verification close-out; pre_prompt formula summary completed (wayfinder single-unit-shift, ticket 53)
+Ruled by owner, 2026-08-12. Issue: `.scratch/single-unit-shift/issues/53-propagate-derived-docs.md`.
+- **Q1 = A:** the independent derived-doc sweep closes the ticket. Result: zero live superseded statements in CLAUDE.md / pre_prompt.md / conventions.md / data_schemas.md — every hit is a G35/G36 supersession note, a ruled survival, or generic-English "single". The three derivation-sensitive canonical examples (1, 2, 8) verified character-identical across design_doc §3.2, CLAUDE.md, and pre_prompt.
+- **Q2 = B:** a pre-existing variance surfaced by the sweep is fixed — pre_prompt's damage-formula summary line had always omitted the power/ability multiplier term that design_doc §3 and CLAUDE.md carry; the term is restored, making all three formula statements structurally identical (pre_prompt's deferral note to design_doc §3 as canonical stands unchanged).
+- All rulings by owner, no rationale stated.
+
+### G39 — Schema-forge reconciled to the single-unit paradigm; effort complete (wayfinder single-unit-shift, ticket 54)
+Ruled by owner, 2026-08-13. Issue: `.scratch/single-unit-shift/issues/54-reconcile-schema-forge.md`. Tracker-artifact reconciliation only — no design-doc content changed.
+- **Q1 = A:** the five-item reconciliation applied — schema-forge map (destination wording; the secondaries fog note updated, its G-ruling half now answered by G36 Q3), ticket 40 (one-tier file-layout question; **`counter_mult` added to its ruled stat-block list** — it predated G35; renamed roster; recolor wording), ticket 42 (filter-based effect examples; the G36 Q4 target-filter vocabulary added as question 2b), ticket 44 (Q5 reduced to field grammar; "squads only" dropped from the deliverable per G36 Q2), reference-mining 37 (paradigm warning against re-importing squad-era vocabulary). No schema-forge decision was answered — questions reworded, options left open.
+- **Q2 = A:** the single-unit-shift wayfinder map is **complete** — destination reached 2026-08-13; all six tickets closed; audit trail G35–G39.
 - All rulings by owner, no rationale stated.
 
 ---
