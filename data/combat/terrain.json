@@ -1,0 +1,61 @@
+{
+	"_note": "Schema: docs/data_schemas.md section 2 (G40). defense and move_cost quote the ruled design_doc section 3.4 / G20 table exactly. concealment/sight_modifier values are data authoring per section 3.6 (forest concealment and mountain high-ground are the doc's own examples). -1 = impassable sentinel (G40 Q5a).",
+	"plains": {
+		"name_key": "terrain.plains.name",
+		"defense": 0,
+		"move_cost": { "infantry": 1, "mounted": 1, "siege": 1 },
+		"concealment": false,
+		"sight_modifier": 0
+	},
+	"forest": {
+		"name_key": "terrain.forest.name",
+		"defense": 0.2,
+		"move_cost": { "infantry": 2, "mounted": 2, "siege": 2 },
+		"concealment": true,
+		"sight_modifier": 0
+	},
+	"mountain": {
+		"name_key": "terrain.mountain.name",
+		"defense": 0.4,
+		"move_cost": { "infantry": 3, "mounted": 6, "siege": 6 },
+		"concealment": false,
+		"sight_modifier": 1
+	},
+	"road": {
+		"name_key": "terrain.road.name",
+		"defense": 0,
+		"move_cost": { "infantry": 1, "mounted": 1, "siege": 1 },
+		"concealment": false,
+		"sight_modifier": 0
+	},
+	"river": {
+		"_note": "defense is unreachable (impassable to all classes) — authored 0 per the all-fields-explicit rule (G34 Q3).",
+		"name_key": "terrain.river.name",
+		"defense": 0,
+		"move_cost": { "infantry": -1, "mounted": -1, "siege": -1 },
+		"concealment": false,
+		"sight_modifier": 0
+	},
+	"bridge": {
+		"name_key": "terrain.bridge.name",
+		"defense": 0,
+		"move_cost": { "infantry": 1, "mounted": 1, "siege": 1 },
+		"concealment": false,
+		"sight_modifier": 0
+	},
+	"sea": {
+		"_note": "defense is unreachable (impassable to all classes) — authored 0 per the all-fields-explicit rule (G34 Q3).",
+		"name_key": "terrain.sea.name",
+		"defense": 0,
+		"move_cost": { "infantry": -1, "mounted": -1, "siege": -1 },
+		"concealment": false,
+		"sight_modifier": 0
+	},
+	"hq": {
+		"name_key": "terrain.hq.name",
+		"defense": 0.3,
+		"move_cost": { "infantry": 1, "mounted": 1, "siege": 1 },
+		"concealment": false,
+		"sight_modifier": 0
+	}
+}

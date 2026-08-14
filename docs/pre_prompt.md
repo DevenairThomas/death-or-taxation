@@ -109,12 +109,12 @@ Unit roster (data-driven):
 
 
 Units (one tier — G35; renamed to individual-unit names — G36): Line Infantry (balanced, 10 HP), Rifleman (range 2, weak defense, 10 HP), Cavalryman (move 6, 10 HP), Cannoneer (range 2–3, move 3, 10 HP — cannot counter at range 1, immobile-after-firing NO — keep it simple), Death Knight (player; melee wall, 25 HP), Bound Golem (enemy; the mage's construct, melee wall, 25 HP), Arcane Sentinel (enemy; range 2 construct, 25 HP).
-Enemy units mirror player units as redcoat recolors (same data, different faction tint).
+Enemy units mirror player units as redcoat recolors — authored as separate data entries with their own ids and damage-table rows (ruled 2026-08-13, DECISIONS G40 Q2; the former "same data" reading is superseded — the visual recolor with faction tint stands).
 (Stat-block note, ruled 2026-08-02, grilling issue 02 — canonical: design_doc.md §3.3. Max HP is a per-unit data field; the 10/25 above are prototype values, and Generals set per-General base HP/stats in their data files. Every unit also carries defense (multiplied in as (1 − defense), 0.0 neutral — ruled 2026-08-10, grilling issue 16; "weak defense" above is that stat, below baseline), counter_mult (per-unit counterattack multiplier, 1.0 neutral — ruled 2026-08-12, G35), attack_ranges, counter_ranges, move, and move_class. Cavalry Squad's former "bonus vs. Riflemen" was cut here per that ruling.)
 (move_class assignments, ruled 2026-08-10, grilling issue 22 — canonical: design_doc.md §3.3/§3.4; unit names updated per G36: Line Infantry, Rifleman, Washington, Franklin = infantry; Cavalryman, Lafayette = mounted; Cannoneer, Death Knight, Bound Golem, Arcane Sentinel = siege. The `construct` move_class was removed — "construct" above is flavor only. Terrain costs are per-class; Mountain severely slows non-infantry instead of banning them.)
 
 
-3 test maps (hand-authored in data, ~12×12 to 16×16):
+3 test maps (hand-authored in Tiled per G43; sized per the G44 map-scale bands — the former "~12×12 to 16×16" envelope was superseded 2026-08-14: tutorial band 16×12–20×16, standard 24×20–32×24, set-piece 32×24–40×30; Lexington Green = 20×16, G44 Q5 protocol-authored):
 
 
 Lexington Green — tutorial-shaped. Rout objective, teaches skirmish math and terrain (composition beats are objective-only — G36 Q2).

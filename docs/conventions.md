@@ -1,6 +1,6 @@
 # CONVENTIONS — DEATH OR TAXATION
 
-**Version 1.4 · Locked** *(1.4 — single-unit paradigm (G35, 2026-08-12): §1 `Tier` enum two-valued, §2 inheritance example reworded, §4 `units/` file note, §8 test list — squads/singles merged, degradation abolished; 1.3 — §4 tree: `data/items/` added per the item-system ruling — G33, 2026-08-12; 1.2 — retroactive roll-up of the already-ruled §7 suspend-slot (G5) and §6 English-only (G15) notes, §8 test-list refresh, §11 heading fix, runner-command spelling — G23, 2026-08-11; 1.1 — reference-clone home ruled out of the tracked repo: §4 tree + folder rule — G22, 2026-08-11)*
+**Version 1.7 · Locked** *(1.7 — map-authoring pipeline: §3 authoring-time-tools clause + §4 `maps/` = Tiled `.tmj` — G43, 2026-08-13; 1.6 — §4 tree: `data/enemy_generals/` added per the ticket-41 ruling — G41, 2026-08-13; 1.5 — §4 `units/` layout finalized to a single `units.json` per the ticket-40 ruling — G40, 2026-08-13; 1.4 — single-unit paradigm (G35, 2026-08-12): §1 `Tier` enum two-valued, §2 inheritance example reworded, §4 `units/` file note, §8 test list — squads/singles merged, degradation abolished; 1.3 — §4 tree: `data/items/` added per the item-system ruling — G33, 2026-08-12; 1.2 — retroactive roll-up of the already-ruled §7 suspend-slot (G5) and §6 English-only (G15) notes, §8 test-list refresh, §11 heading fix, runner-command spelling — G23, 2026-08-11; 1.1 — reference-clone home ruled out of the tracked repo: §4 tree + folder rule — G22, 2026-08-11)*
 
 This document is the mechanical rulebook for the codebase. `design_doc.md` says *what the game is*; this says *how the repo is written*. Where the two disagree, `design_doc.md` wins on design and this document wins on structure. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries; where they disagree with `design_doc.md` on a design rule, `design_doc.md` wins (ruled 2026-08-02, grilling issue 01).
 
@@ -99,6 +99,7 @@ Supporting rules:
 - **Autoloads are a short, deliberate, documented list.** Permitted: `data_loader`, `save_manager`, `settings_manager`, `audio_manager`, `scene_router`. Adding a sixth requires a written justification in `DECISIONS.md`. Autoloads hold no gameplay rules.
 - **Content is data, never code.** Adding a unit type, map, General, ability, chapter, or cutscene must require zero new `.gd` files and zero edits to existing ones. If adding content means writing code, the system is wrong.
 - **Everything is loaded through one loader.** `/sim` never touches the filesystem. `data_loader` reads `/data` and hands plain dictionaries or typed sim objects to whoever asks.
+- **Authoring-time tools are outside the no-plugins rule** (ruled 2026-08-13, G43). The no-plugins rule governs *runtime* code shipped with the game (sole exception: Dialogic — G29). Tools that exist only at edit time — external editors (Tiled for battle maps, G43), first-party `@tool`/`EditorScript` code — are legal without a ruling per tool category; they must never be loaded by the game at runtime, and `/sim` must never know they exist.
 
 ---
 
@@ -119,11 +120,12 @@ res://
 │
 ├─ data/                     JSON only — no code, no logic
 │  ├─ combat/                damage_table.json, armament_triangle.json, terrain.json
-│  ├─ units/                 unit-type definitions (the squads/singles file split was superseded — G35; final file layout: schema-forge ticket 40)
-│  ├─ generals/              one file per General
+│  ├─ units/                 units.json — one per-domain file, all unit types (G40; the squads/singles split was superseded — G35)
+│  ├─ generals/              one file per player General
+│  ├─ enemy_generals/        one file per enemy General — identical schema (G41)
 │  ├─ abilities/             abilities.json
 │  ├─ items/                 one file per item (G33)
-│  ├─ maps/                  one file per battle map
+│  ├─ maps/                  one .tmj file per battle map — Tiled JSON, authored in Tiled, parsed directly (G43; the ruled exception to DoT-schema JSON)
 │  ├─ chapters/              campaign graph + per-chapter definitions
 │  ├─ scenes/                VN cutscene timelines
 │  └─ economy.json           level costs, revival rate, soul awards, slot-bonus tuning

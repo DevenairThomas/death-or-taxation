@@ -1,0 +1,73 @@
+{
+	"_note": "Schema: docs/data_schemas.md section 4 (G42). Kit numbers quote pre_prompt exactly (ruled content); ids command_aura and crossing are referenced by data/generals/washington.json (G41). on_attack abilities are owner-scoped: shape/target_filter authored neutral and inert (G42).",
+	"command_aura": {
+		"name_key": "ability.command_aura.name",
+		"trigger": "passive_aura",
+		"shape": { "type": "radius", "size": 1 },
+		"target_filter": { "side": "friendly", "tier": "any", "slot_category": "any" },
+		"effects": [
+			{ "type": "damage_mult", "value": 1.2, "condition": null }
+		],
+		"exemptions": [],
+		"uses_per_mission": null,
+		"charge_conditions": []
+	},
+	"crossing": {
+		"name_key": "ability.crossing.name",
+		"trigger": "turn_start",
+		"shape": { "type": "radius", "size": 1 },
+		"target_filter": { "side": "friendly", "tier": "any", "slot_category": "any" },
+		"effects": [
+			{ "type": "move_bonus", "value": 2, "condition": null }
+		],
+		"exemptions": [],
+		"uses_per_mission": null,
+		"charge_conditions": []
+	},
+	"lightning_rod": {
+		"name_key": "ability.lightning_rod.name",
+		"trigger": "active_once",
+		"shape": { "type": "line", "size": 2 },
+		"target_filter": { "side": "enemy", "tier": "any", "slot_category": "any" },
+		"effects": [
+			{ "type": "table_damage", "condition": null }
+		],
+		"exemptions": [],
+		"uses_per_mission": 1,
+		"charge_conditions": []
+	},
+	"key_and_kite": {
+		"name_key": "ability.key_and_kite.name",
+		"trigger": "active_once",
+		"shape": { "type": "radius", "size": 3 },
+		"target_filter": { "side": "enemy", "tier": "any", "slot_category": "any" },
+		"effects": [
+			{ "type": "table_damage", "condition": null }
+		],
+		"exemptions": ["no_counter"],
+		"uses_per_mission": 1,
+		"charge_conditions": []
+	},
+	"ride_through": {
+		"name_key": "ability.ride_through.name",
+		"trigger": "on_attack",
+		"shape": { "type": "single", "size": 0 },
+		"target_filter": { "side": "any", "tier": "any", "slot_category": "any" },
+		"effects": [],
+		"exemptions": ["move_again"],
+		"uses_per_mission": null,
+		"charge_conditions": []
+	},
+	"vive_la_liberte": {
+		"name_key": "ability.vive_la_liberte.name",
+		"trigger": "on_attack",
+		"shape": { "type": "single", "size": 0 },
+		"target_filter": { "side": "any", "tier": "any", "slot_category": "any" },
+		"effects": [
+			{ "type": "damage_mult", "value": 1.3, "condition": { "subject": "target", "state": "engaged_this_turn" } }
+		],
+		"exemptions": [],
+		"uses_per_mission": null,
+		"charge_conditions": []
+	}
+}

@@ -1,5 +1,5 @@
 PROJECT: DEATH OR TAXATION
-Backlog Design Document — v1.8
+Backlog Design Document — v2.0
 
 This document is authoritative on design rules (ruled 2026-08-02, grilling issue 01). `conventions.md` is authoritative on repo structure. `CLAUDE.md` and `docs/pre_prompt.md` are derived summaries — where they disagree with this document on a design rule, this document wins.
 
@@ -291,6 +291,8 @@ Cutscene data (ruled 2026-08-12, reference-mining issue 32 — DECISIONS G29): a
 Mission list drawn from the war's major engagements (~14 missions). Roughly 20–25 min/mission ≈ 5+ hours.
 The thirteen colonies are the canvas those chapters sit on, not the selector itself.
 
+Map scale (ruled 2026-08-14, DECISIONS G44 — owner: maps should "feel larger like you are actually fighting a battle"): map sizes follow **per-archetype bands** — skirmish/tutorial **16×12–20×16**, standard battle **24×20–32×24**, set-piece **32×24–40×30**; band assignment is per-chapter authoring (G15's no-hard-bounds stands). The battle feel is delivered by both ruled levers: per-chapter slot caps scale with the envelope toward genre density (~1 enemy per 20–35 tiles), and standard/set-piece chapters carry a **multi-front composition mandate** — simultaneous objectives and reinforcement-wave pressure staged via activation groups, spawn events, and strategic wakes; dead space is the documented failure this mandate prevents. Defend/survive turn clocks and enemy staging must be co-authored with march distance at standard+ bands. Movement stats retune upward with the envelope (G44 Q4; current +1 authoring in unit data).
+
 8.1 The campaign map
 
 A single illustrated map of the eastern seaboard with the thirteen colonies drawn and labeled as visible geography. This is the between-mission navigation screen, in the Fire Emblem world-map idiom.
@@ -345,7 +347,7 @@ Chapters are data, not code. The complete chapter schema (consolidated 2026-08-0
 
 - `id`, name key, colony, position on the campaign map
 - prerequisite chapter id — singular: the campaign is strictly linear (issue 14, Q4)
-- battle map file — map data holds the terrain grid, start tiles (G9), and activation groups (G11)
+- battle map file — map data holds the terrain grid, start tiles (G9), and activation groups (G11). Authored in **Tiled** and stored as Tiled JSON (`data/maps/<id>.tmj`), parsed directly by the loader — ruled 2026-08-13, DECISIONS G43; the authoring profile and validation rules are the map schema (schema-forge ticket 43)
 - per-category deployment slot caps: general / tank / infantry (issue 09)
 - fog flag (issue 12)
 - `objective` — the single primary: type (`seize | defend | escape | survive | rout`) + parameters per §8.2 (issue 04)
@@ -474,7 +476,7 @@ Direction: HD 2D — high-resolution flat 2D sprites, drawn for a flat tactics g
 | Texture filter | Linear, mipmaps on |
 | Frame rate target | 60 fps |
 
-Camera. Pans across maps of any size; centers on the acting unit during enemy phase. (The former "fits maps up to 16 tiles wide without scrolling" claim was struck — maps have no hard dimension bounds, and no minimum was ruled; the prototype's 12×12–16×16 envelope is authoring practice, not a rule. Ruled 2026-08-06, grilling issue 15. At 96 px tiles a 1920×1080 viewport shows 20 × 11.25 tiles.)
+Camera. Pans across maps of any size; centers on the acting unit during enemy phase; plus a **zoom-out toggle and a minimap/overview mode** (ruled 2026-08-14, DECISIONS G44 Q3 — the G44 map-scale bands put standard maps at 2+ screens, where pan-only navigation and the danger-zone union overlay stop fitting one view; gray-box implementations are ColorRect-grade). (The former "fits maps up to 16 tiles wide without scrolling" claim was struck — maps have no hard dimension bounds; the old 12×12–16×16 authoring practice was superseded by the G44 bands, §8. Ruled 2026-08-06, grilling issue 15 / 2026-08-14, G44. At 96 px tiles a 1920×1080 viewport shows 20 × 11.25 tiles.)
 
 Fonts. One UI font covering Latin + Latin Extended. Locale target: English-only (ruled 2026-08-06, grilling issue 15 — this replaces the former reference to a "§12 item 12" locale list, which never existed). No Cyrillic or CJK stack; `tr()` keys remain mandatory from the first line of UI (conventions §6), so a future locale expansion is a translation task, not a retrofit.
 
@@ -482,4 +484,4 @@ Gray-box phase. Until the skirmish loop is proven fun, all of the above is honor
 
 
 
-End of document (v1.8 — individual-unit roster renames (Cavalryman, Cannoneer, Rifleman; Line Infantry kept), objective-only chapter beats, per-chapter preservation-secondary scope, data-declared ability target filters, G36; v1.7 — the single-unit paradigm: squads/singles merged into one unit tier, degradation abolished, per-unit counter_mult added, min-1 narrowed to initiated attacks, AW citation dropped, G35). Next session suggested focus: the General roster + abilities (open decision #1), or the character design conversation.
+End of document (v2.0 — map scale: per-archetype bands (16×12–20×16 / 24×20–32×24 / 32×24–40×30), scaled slot caps + multi-front mandate, §14 zoom+minimap, movement +1 retune, G44; v1.9 — map-authoring pipeline: Tiled adopted as the map editor, `data/maps/*.tmj` canonical, G43; v1.8 — individual-unit roster renames (Cavalryman, Cannoneer, Rifleman; Line Infantry kept), objective-only chapter beats, per-chapter preservation-secondary scope, data-declared ability target filters, G36; v1.7 — the single-unit paradigm: squads/singles merged into one unit tier, degradation abolished, per-unit counter_mult added, min-1 narrowed to initiated attacks, AW citation dropped, G35). Next session suggested focus: the General roster + abilities (open decision #1), or the character design conversation.

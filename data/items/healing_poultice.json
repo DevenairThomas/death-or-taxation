@@ -1,0 +1,7 @@
+{
+	"_note": "Schema: docs/data_schemas.md section 5 (G42). price and amount are placeholder authoring; heal amounts are fixed data, never scaled (G26/G33 Q4).",
+	"id": "healing_poultice",
+	"name_key": "item.healing_poultice.name",
+	"price": 20,
+	"effect": { "type": "heal", "amount": 6 }
+}
